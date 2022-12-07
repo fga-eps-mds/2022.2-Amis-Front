@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
 import { BiUser } from "react-icons/bi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { useLocation } from "react-router-dom";
 
 const Container = styled.div`
   width: 200px;
@@ -12,14 +13,22 @@ const Container = styled.div`
   background: ${(props) => props.theme.colors.white};
 `;
 
-const SidebarItem = styled.div`
+const SidebarItem = styled.div<{ isActive?: boolean }>`
   width: 200px;
-  height: 50px;
+  height: 60px;
   border: none;
-  background: ${(props) => props.theme.colors.white};
   display: inline-flex;
   align-items: center;
   padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px 0 0 5px;
+  padding-left: ${(props) => props.isActive && "13px"};
+  background: ${(props) =>
+    props.isActive ? props.theme.colors.grey : props.theme.colors.white};
+  color: ${(props) =>
+    props.isActive ? props.theme.colors.primary : "#525252"};
+  border-left: ${(props) =>
+    props.isActive && "7px solid" + props.theme.colors.primary};
 `;
 
 const ItemText = styled.h1`
@@ -27,7 +36,6 @@ const ItemText = styled.h1`
   align-items: center;
   font-size: 16px;
   font-weight: 300;
-  color: #525252;
   padding-left: 10px;
 `;
 
@@ -42,27 +50,68 @@ const Logo = styled.div`
 `;
 
 export function Sidebar() {
-  const [pathname] = useState(false);
+  const [pathname, setPathname] = useState("alunas");
+
+  const sidebarData = [
+    {
+      id: 1,
+      name: "Visão geral",
+      path: "geral",
+      icon: (
+        <AiOutlineHome
+          color={pathname === "geral" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+    {
+      id: 2,
+      name: "Alunas",
+      path: "alunas",
+      icon: (
+        <BiUser
+          color={pathname === "alunas" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+    {
+      id: 3,
+      name: "Turmas",
+      path: "turmas",
+      icon: (
+        <AiOutlineAudit
+          color={pathname === "turmas" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+    {
+      id: 3,
+      name: "Relatórios",
+      path: "relatorios",
+      icon: (
+        <HiOutlineDocumentReport
+          color={pathname === "relatorios" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+  ];
 
   return (
     <Container>
       <Logo>AMIS</Logo>
-      <SidebarItem>
-        <AiOutlineHome color="#525252" size={22} />
-        <ItemText>Visão Geral</ItemText>
-      </SidebarItem>
-      <SidebarItem>
-        <BiUser color="#525252" size={22} />
-        <ItemText>Alunas</ItemText>
-      </SidebarItem>
-      <SidebarItem>
-        <AiOutlineAudit color="#525252" size={22} />
-        <ItemText>Turmas</ItemText>
-      </SidebarItem>
-      <SidebarItem>
-        <HiOutlineDocumentReport color="#525252" size={22} />
-        <ItemText>Relatórios</ItemText>
-      </SidebarItem>
+      {sidebarData.map((itemData, index) => (
+        <SidebarItem
+          key={index}
+          isActive={pathname === itemData.path}
+          onClick={() => setPathname(itemData.path)}
+        >
+          {itemData.icon}
+          <ItemText>{itemData.name}</ItemText>
+        </SidebarItem>
+      ))}
     </Container>
   );
 }
