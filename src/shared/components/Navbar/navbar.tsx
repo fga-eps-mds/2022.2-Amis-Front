@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../Button/Button";
 import styled from "styled-components";
 
@@ -29,10 +29,12 @@ const Title = styled.h1`
   border-right: 1px solid #666666;
   padding-right: 100px;
   margin-right: 45px;
+  font-size: 24px;
 `;
 
-const MenuButton = styled.button`
-  color: ${(props) => props.theme.colors.black};
+const MenuButton = styled.button<{ isActive?: boolean }>`
+  color: ${(props) =>
+    props.isActive ? props.theme.colors.primary : props.theme.colors.black};
   margin-right: 50px;
   border: none;
   background-color: ${(props) => props.theme.colors.white};
@@ -41,17 +43,38 @@ const MenuButton = styled.button`
   cursor: pointer;
 `;
 
-const receitas = "/receitas";
-
 export function Navbar() {
+  const [pathname, setPathname] = useState("/");
+
+  const menuData = [
+    {
+      name: "Home",
+      path: "/",
+    },
+    {
+      name: "Receitas",
+      path: "/receitas",
+    },
+    {
+      name: "Contato",
+      path: "/",
+    },
+  ];
+
   return (
     <DivNavbar>
       <DivNavbarCenter>
         <DivNavbarMenu>
           <Title>AMIS</Title>
-          <MenuButton>Home</MenuButton>
-          <MenuButton>Receitas</MenuButton>
-          <MenuButton>Contato</MenuButton>
+          {menuData.map((itemData, index) => (
+            <MenuButton
+              key={index}
+              isActive={pathname === itemData.path}
+              onClick={() => setPathname(itemData.path)}
+            >
+              {itemData.name}
+            </MenuButton>
+          ))}
         </DivNavbarMenu>
         <Button>Área Logada</Button>
       </DivNavbarCenter>
