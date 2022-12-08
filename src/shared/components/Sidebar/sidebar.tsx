@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
 import { BiUser } from "react-icons/bi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { useLocation } from "react-router-dom";
 
 const Container = styled.div`
   width: 200px;
@@ -87,7 +86,7 @@ export function Sidebar() {
       ),
     },
     {
-      id: 3,
+      id: 4,
       name: "Relatórios",
       path: "relatorios",
       icon: (
