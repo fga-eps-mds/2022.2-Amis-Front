@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
 import { BiUser } from "react-icons/bi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   width: 200px;
@@ -12,7 +13,7 @@ const Container = styled.div`
   background: ${(props) => props.theme.colors.white};
 `;
 
-const SidebarItem = styled.div<{ isActive?: boolean }>`
+const SidebarItem = styled(Link)<{ isActive?: boolean }>`
   width: 200px;
   height: 60px;
   border: none;
@@ -21,6 +22,7 @@ const SidebarItem = styled.div<{ isActive?: boolean }>`
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 5px 0 0 5px;
+  text-decoration: none;
   padding-left: ${(props) => props.isActive && "13px"};
   background: ${(props) =>
     props.isActive ? props.theme.colors.grey : props.theme.colors.white};
@@ -49,16 +51,16 @@ const Logo = styled.div`
 `;
 
 export function Sidebar() {
-  const [pathname, setPathname] = useState("alunas");
+  const [pathname, setPathname] = useState("/alunas");
 
   const sidebarData = [
     {
       id: 1,
       name: "Visão geral",
-      path: "geral",
+      path: "/geral",
       icon: (
         <AiOutlineHome
-          color={pathname === "geral" ? "#da4d3d" : "#525252"}
+          color={pathname === "/geral" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
@@ -66,10 +68,10 @@ export function Sidebar() {
     {
       id: 2,
       name: "Alunas",
-      path: "alunas",
+      path: "/alunas",
       icon: (
         <BiUser
-          color={pathname === "alunas" ? "#da4d3d" : "#525252"}
+          color={pathname === "/alunas" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
@@ -77,10 +79,10 @@ export function Sidebar() {
     {
       id: 3,
       name: "Turmas",
-      path: "turmas",
+      path: "/turmas",
       icon: (
         <AiOutlineAudit
-          color={pathname === "turmas" ? "#da4d3d" : "#525252"}
+          color={pathname === "/turmas" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
@@ -88,10 +90,10 @@ export function Sidebar() {
     {
       id: 4,
       name: "Relatórios",
-      path: "relatorios",
+      path: "/relatorios",
       icon: (
         <HiOutlineDocumentReport
-          color={pathname === "relatorios" ? "#da4d3d" : "#525252"}
+          color={pathname === "/relatorios" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
@@ -106,6 +108,7 @@ export function Sidebar() {
           key={index}
           isActive={pathname === itemData.path}
           onClick={() => setPathname(itemData.path)}
+          to={itemData.path}
         >
           {itemData.icon}
           <ItemText>{itemData.name}</ItemText>
