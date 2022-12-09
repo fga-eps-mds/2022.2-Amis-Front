@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "../Button/Button";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const DivNavbar = styled.div`
   width: 100vw;
@@ -34,7 +35,9 @@ const Title = styled.h1`
 
 const MenuButton = styled.button<{ isActive?: boolean }>`
   color: ${(props) =>
-    props.isActive ? props.theme.colors.primary : props.theme.colors.black};
+    props.isActive ?? false
+      ? props.theme.colors.primary
+      : props.theme.colors.black};
   margin-right: 50px;
   border: none;
   background-color: ${(props) => props.theme.colors.white};
@@ -57,9 +60,11 @@ export function Navbar() {
     },
     {
       name: "Contato",
-      path: "/",
+      path: "/contato",
     },
   ];
+
+  const alunas = "/alunas";
 
   return (
     <DivNavbar>
@@ -67,16 +72,20 @@ export function Navbar() {
         <DivNavbarMenu>
           <Title>AMIS</Title>
           {menuData.map((itemData, index) => (
-            <MenuButton
-              key={index}
-              isActive={pathname === itemData.path}
-              onClick={() => setPathname(itemData.path)}
-            >
-              {itemData.name}
-            </MenuButton>
+            <Link key={index} to={itemData.path}>
+              <MenuButton
+                key={index}
+                isActive={pathname === itemData.path}
+                onClick={() => setPathname(itemData.path)}
+              >
+                {itemData.name}
+              </MenuButton>
+            </Link>
           ))}
         </DivNavbarMenu>
-        <Button>Área Logada</Button>
+        <Link to={alunas}>
+          <Button>Área Logada</Button>
+        </Link>
       </DivNavbarCenter>
     </DivNavbar>
   );
