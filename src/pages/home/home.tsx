@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
