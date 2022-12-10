@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const DivNavbar = styled.div`
-  width: 100vw;
+  width: 100%;
   height: 106px;
   background: ${(props) => props.theme.colors.white};
   display: flex;
