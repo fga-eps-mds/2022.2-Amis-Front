@@ -43,6 +43,7 @@ export default function TablePagination() {
         margin: "0 auto",
         background: "#FFF",
         padding: "0 20px",
+        marginTop: "100px",
       }}
     >
       <DataGrid

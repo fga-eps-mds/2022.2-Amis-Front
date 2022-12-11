@@ -21,10 +21,31 @@ const Title = styled.h1`
   align-items: center;
 `;
 
+const UserName = styled.h1`
+  color: ${(props) => props.theme.colors.black};
+  font-size: 15px;
+  font-weight: 350;
+  display: flex;
+  align-items: center;
+  padding-left: 800px;
+`;
+
+const UserFunction = styled.h1`
+  color: ${(props) => props.theme.colors.black};
+  font-size: 11px;
+  font-weight: 350;
+  display: flex;
+  align-items: center;
+  margin-top: 40px;
+  margin-left: -35px;
+`;
+
 export function Navbarlog() {
   return (
     <DivNavbar>
       <Title> Alunas </Title>
+      <UserName>JOSÉ MARIA</UserName>
+      <UserFunction>Admin</UserFunction>
     </DivNavbar>
   );
 }
