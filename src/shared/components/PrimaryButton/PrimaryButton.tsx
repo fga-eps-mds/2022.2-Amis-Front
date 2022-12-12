@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 interface ButtonProps {
-  text: string;
+  text?: string;
   handleClick?: () => void;
 }
 
@@ -14,7 +14,7 @@ const Button = styled.button`
   cursor: pointer;
   color: ${(props) => props.theme.colors.white};
   background: ${(props) => props.theme.colors.primary};
-
+  font-weight: bold;
   &:hover {
     background-color: #d2301e;
   }

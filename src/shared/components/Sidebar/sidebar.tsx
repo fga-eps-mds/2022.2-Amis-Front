@@ -57,7 +57,7 @@ export function Sidebar() {
     {
       id: 1,
       name: "Visão geral",
-      path: "/geral",
+      path: "/",
       icon: (
         <AiOutlineHome
           color={pathname === "/geral" ? "#da4d3d" : "#525252"}
