@@ -50,6 +50,14 @@ const Form = styled.form`
   gap: 30px;
 `;
 
+const FormText = styled.h1`
+  color: #525252;
+  font-size: 18px;
+  font-weight: 400;
+  text-align: left;
+  padding-bottom: 25px;
+`;
+
 const style = {
   position: "absolute" as const,
   top: "50%",
@@ -136,6 +144,7 @@ export function Alunas() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
+          <FormText>Preencha corretamente os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(cadastrarAlunas)}>
             <TextField
               id="outlined-nome"

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const DivNavbar = styled.div`
-  width: 1054px;
+  width: 85%;
   height: 100px;
   background: ${(props) => props.theme.colors.grey};
   padding: 20px 0px;
