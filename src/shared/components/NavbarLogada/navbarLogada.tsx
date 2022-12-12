@@ -27,7 +27,7 @@ const UserName = styled.h1`
   font-weight: 350;
   display: flex;
   align-items: center;
-  padding-left: 800px;
+  padding-left: 650px;
 `;
 
 const UserFunction = styled.h1`
