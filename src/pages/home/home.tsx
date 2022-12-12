@@ -29,74 +29,81 @@ const HomeText = styled.h1`
   font-size: 60px;
 `;
 
-// Div para todo conteúdo Quem somos e Nossa missão
+const SquareButton = styled(Button)`
+  border-radius: 10px;
+`;
+
+const SquareButton2 = styled(Button)`
+  border-radius: 10px;
+  color: ${(props) => props.theme.colors.primary};
+  background: ${(props) => props.theme.colors.white};
+  border: 1px solid ${(props) => props.theme.colors.primary};
+`;
+
 const DivText = styled.div`
   background-color: ${(props) => props.theme.colors.white};
   align-items: center;
-  padding: 140px 265px 195px 300px;
+  padding: 70px 150px 120px 150px;
   text-align: center;
 `;
 
-// Título para Quem somos e Nossa missão
 const TitleText = styled.h1`
   font-weight: bold;
-  font-size: 60px;
+  font-size: 45px;
   text-align: center;
-  padding: 30px;
+  padding: 40px;
 `;
 
-// Texto para Quem somos e Nossa missão
 const Text = styled.span`
-  font-weight: 400px;
+  font-weight: light;
   font-size: 20px;
+  color: #4f4f4f;
 `;
 
-// Div para região Contador
-const DivContador = styled.div`
+const DivCounter = styled.div`
   width: 100%;
   background: ${(props) => props.theme.colors.primary};
   display: flex;
-  padding: 45px;
-  justify-content: space-around;
+  padding: 45px 150px;
+  justify-content: space-between;
 `;
 
-// Título para números Contador
-const NumeroContador = styled.h1`
-  font-size: 96px;
+const DivEachCounter = styled.div`
+  width: 300px;
+  text-align: center;
+`;
+
+const CounterNumber = styled.h1`
+  font-size: 70px;
   text-align: center;
   color: ${(props) => props.theme.colors.white};
 `;
 
-// Texto para descrição Contador
-const TextoContador = styled.span`
+const CounterText = styled.span`
   color: ${(props) => props.theme.colors.white};
   font-weight: 400px;
-  font-size: 32px;
+  font-size: 25px;
 `;
 
-// Div para parte nossas receitas
 const DivRec = styled.div`
   background-color: ${(props) => props.theme.colors.white};
-  padding: 95px 300px 95px 300px;
+  padding: 95px 300px;
 `;
 
-// Titulo Nossas receitas
 const TituloReceitas = styled.h1`
   font-weight: bold;
   font-size: 50px;
   text-align: center;
 `;
 
-// Div para o footer
 const DivFooter = styled.div`
   width: 100%;
   background: ${(props) => props.theme.colors.primary};
-  padding: 90px;
+  padding: 50px;
   text-align: center;
 `;
 
-// Texto footer
-const Textofooter = styled.span`
+const FooterText = styled.span`
   color: ${(props) => props.theme.colors.white};
   font-weight: 400px;
   font-size: 13px;
@@ -117,19 +124,21 @@ export function Home() {
             Varius sed pharetra dictum neque massa congue
           </span>
           <div>
-            <Button>Saiba Mais</Button>
-            <Button style={{ marginLeft: "16px" }}>Faça um Pedido</Button>
+            <SquareButton>Saiba Mais</SquareButton>
+            <SquareButton2 style={{ marginLeft: "16px" }}>
+              Faça um Pedido
+            </SquareButton2>
           </div>
         </DivPresentationText>
         <div style={{ position: "relative" }}>
           <Image
             src={home_image1}
             style={{
-              width: "300px",
+              width: "350px",
               zIndex: 5,
               position: "absolute",
               bottom: -80,
-              left: -200,
+              left: -250,
             }}
           ></Image>
           <Image
@@ -174,20 +183,20 @@ export function Home() {
           suscipit rutrum.
         </Text>
       </DivText>
-      <DivContador>
-        <div>
-          <NumeroContador>98</NumeroContador>
-          <TextoContador>Mulheres atendidas</TextoContador>
-        </div>
-        <div>
-          <NumeroContador>187</NumeroContador>
-          <TextoContador>Famílias impactadas</TextoContador>
-        </div>
-        <div>
-          <NumeroContador>91</NumeroContador>
-          <TextoContador>Formações profissionais</TextoContador>
-        </div>
-      </DivContador>
+      <DivCounter>
+        <DivEachCounter>
+          <CounterNumber>98</CounterNumber>
+          <CounterText>Mulheres atendidas</CounterText>
+        </DivEachCounter>
+        <DivEachCounter>
+          <CounterNumber>187</CounterNumber>
+          <CounterText>Famílias impactadas</CounterText>
+        </DivEachCounter>
+        <DivEachCounter>
+          <CounterNumber>91</CounterNumber>
+          <CounterText>Formações profissionais</CounterText>
+        </DivEachCounter>
+      </DivCounter>
       <DivRec>
         <div>
           <TituloReceitas>Nossas receitas</TituloReceitas>
@@ -199,13 +208,12 @@ export function Home() {
             src={footer_image1}
             style={{
               width: "40px",
-              position: "relative",
-              bottom: 35,
+              marginBottom: "20px",
             }}
           ></Image>
         </a>
         <div>
-          <Textofooter>© 2022. All rights reserved.</Textofooter>
+          <FooterText>© 2022. All rights reserved.</FooterText>
         </div>
       </DivFooter>
     </div>
