@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Button from "../Button/Button";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import PrimaryButton from "../PrimaryButton/PrimaryButton";
 
 const DivNavbar = styled.div`
   width: 100%;
@@ -84,7 +84,7 @@ export function Navbar() {
           ))}
         </DivNavbarMenu>
         <Link to={alunas}>
-          <Button>Área Logada</Button>
+          <PrimaryButton text="Área Logada" />
         </Link>
       </DivNavbarCenter>
     </DivNavbar>

@@ -3,8 +3,8 @@ import { Navbar } from "../../shared/components/Navbar/navbar";
 import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
 import home_image2 from "../../assets/home_image2.png";
-import Button from "../../shared/components/Button/Button";
 import footer_image1 from "../../assets/footer_image1.png";
+import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -27,17 +27,6 @@ const HomeText = styled.h1`
   color: ${(props) => props.theme.colors.darkGray};
   font-weight: bold;
   font-size: 60px;
-`;
-
-const SquareButton = styled(Button)`
-  border-radius: 10px;
-`;
-
-const SquareButton2 = styled(Button)`
-  border-radius: 10px;
-  color: ${(props) => props.theme.colors.primary};
-  background: ${(props) => props.theme.colors.white};
-  border: 1px solid ${(props) => props.theme.colors.primary};
 `;
 
 const DivText = styled.div`
@@ -123,11 +112,9 @@ export function Home() {
           <span style={{ paddingBottom: "30px" }}>
             Varius sed pharetra dictum neque massa congue
           </span>
-          <div>
-            <SquareButton>Saiba Mais</SquareButton>
-            <SquareButton2 style={{ marginLeft: "16px" }}>
-              Faça um Pedido
-            </SquareButton2>
+          <div style={{ display: "flex", gap: "15px" }}>
+            <PrimaryButton text="Saiba Mais" />
+            <PrimaryButton text="Faça um pedido" />
           </div>
         </DivPresentationText>
         <div style={{ position: "relative" }}>
