@@ -40,7 +40,7 @@ const DivText = styled.div`
 // Título para Quem somos e Nossa missão
 const TitleText = styled.h1`
   font-weight: bold;
-  font-size: 50px;
+  font-size: 60px;
   text-align: center;
   padding: 30px;
 `;
@@ -48,7 +48,7 @@ const TitleText = styled.h1`
 // Texto para Quem somos e Nossa missão
 const Text = styled.span`
   font-weight: 400px;
-  font-size: 16px;
+  font-size: 20px;
 `;
 
 // Div para região Contador
@@ -77,17 +77,15 @@ const TextoContador = styled.span`
 // Div para parte nossas receitas
 const DivRec = styled.div`
   background-color: ${(props) => props.theme.colors.white};
-  padding: 140px 165px 195px 300px;
-  `;
+  padding: 95px 300px 95px 300px;
+`;
 
 // Titulo Nossas receitas
 const TituloReceitas = styled.h1`
   font-weight: bold;
   font-size: 50px;
-  position: absolute;
-  top: 1905px;
-  left: 465px;
-  `;``
+  text-align: center;
+`;
 
 // Div para o footer
 const DivFooter = styled.div`
@@ -157,8 +155,9 @@ export function Home() {
           iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut
           fermentum non libero ut consequat. Quisque elementum velit eget ipsum
           suscipit rutrum.
-        <TitleText>  Nossa missão</TitleText>
         </Text>
+        <TitleText> Nossa missão</TitleText>
+        <Text>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
           aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate,
           sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem.
@@ -173,6 +172,7 @@ export function Home() {
           iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut
           fermentum non libero ut consequat. Quisque elementum velit eget ipsum
           suscipit rutrum.
+        </Text>
       </DivText>
       <DivContador>
         <div>
@@ -189,7 +189,7 @@ export function Home() {
         </div>
       </DivContador>
       <DivRec>
-      <div>
+        <div>
           <TituloReceitas>Nossas receitas</TituloReceitas>
         </div>
       </DivRec>
@@ -202,7 +202,8 @@ export function Home() {
               position: "relative",
               bottom: 35,
             }}
-          ></Image></a>
+          ></Image>
+        </a>
         <div>
           <Textofooter>© 2022. All rights reserved.</Textofooter>
         </div>
