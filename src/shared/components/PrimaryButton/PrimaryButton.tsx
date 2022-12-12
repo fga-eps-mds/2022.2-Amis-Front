@@ -21,7 +21,11 @@ const Button = styled.button`
 `;
 
 export function PrimaryButton({ text, handleClick }: ButtonProps) {
-  return <Button onClick={handleClick}>{text}</Button>;
+  return (
+    <Button type="submit" onClick={handleClick}>
+      {text}
+    </Button>
+  );
 }
 
 export default PrimaryButton;

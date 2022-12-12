@@ -4,16 +4,20 @@ import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
-import { Box, Modal } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
 import { useQuery } from "react-query";
 import axios from "axios";
-
-export interface Repository {
-  id: string;
-  nome: string;
-  cpf: string;
-  dNascimento: string;
-}
+import { useForm } from "react-hook-form";
+import { AlunasListarDTO } from "./dtos/AlunasListarDTO";
+import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrarDTO";
 
 const Container = styled.div`
   width: 100%;
@@ -38,16 +42,25 @@ const DivButtons = styled.div`
   padding-top: 30px;
 `;
 
+const Form = styled.form`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+`;
+
 const style = {
   position: "absolute" as const,
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 600,
   bgcolor: "background.paper",
   border: "none",
   boxShadow: 24,
   p: 4,
+  padding: "50px",
 };
 
 export function Alunas() {
@@ -55,14 +68,44 @@ export function Alunas() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
+
+  const cadastrarAlunas = async (data: any) => {
+    const aluna = {
+      nome: data.nome,
+      nomeSocial: data.nome,
+      cpf: data.cpf,
+      rg: data.rg,
+      dNascimento: data.dNascimento,
+      nomePai: data.nomePai,
+      nomeMae: data.nomeMae,
+      deficiencia: data.deficiencia,
+      idEndereco: 1,
+    } as AlunasCadastrarDTO;
+
+    console.log(aluna);
+
+    await axios
+      .post("https://amis-service-stg.azurewebsites.net/alunas/", aluna)
+      .then((response) => {
+        console.log(response.status);
+        handleClose();
+      })
+      .catch((err) => console.warn(err));
+  };
 
   useQuery("listar_alunas", async () => {
     const response = await axios.get(
       "https://amis-service-stg.azurewebsites.net/alunas/"
     );
 
-    const temp: Repository[] = [];
-    response.data.forEach((value: Repository) => {
+    const temp: AlunasListarDTO[] = [];
+    response.data.forEach((value: AlunasListarDTO) => {
       temp.push({
         id: value.id,
         nome: value.nome,
@@ -87,12 +130,67 @@ export function Alunas() {
         <Navbarlog />
         <DivButtons>
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-          <PrimaryButton text={"Editar"} />
+          {/* <PrimaryButton text={"Editar"} /> */}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
       </Content>
       <Modal open={open} onClose={handleClose}>
-        <Box sx={style}></Box>
+        <Box sx={style}>
+          <Form onSubmit={handleSubmit(cadastrarAlunas)}>
+            <TextField
+              id="outlined-nome"
+              label="Nome"
+              {...register("nome")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-cpf"
+              label="CPF"
+              {...register("cpf")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-rg"
+              label="RG"
+              {...register("rg")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dNascimento"
+              label="Data de Nascimento"
+              {...register("dNascimento")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nome-pai"
+              label="Nome do pai"
+              {...register("nomePai")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nome-mae"
+              label="Nome da mãe"
+              {...register("nomeMae")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                Possui deficiência?
+              </InputLabel>
+              <Select
+                id="simple-select-label-deficiencia"
+                labelId="simple-select-deficiencia"
+                label="Possui deficiência?"
+                {...register("deficiencia")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={false as any}>Não</MenuItem>
+                <MenuItem value={true as any}>Sim</MenuItem>
+              </Select>
+            </FormControl>
+            <PrimaryButton text={"Cadastrar"} />
+          </Form>
+        </Box>
       </Modal>
     </Container>
   );
