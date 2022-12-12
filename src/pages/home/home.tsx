@@ -4,6 +4,7 @@ import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
 import home_image2 from "../../assets/home_image2.png";
 import Button from "../../shared/components/Button/Button";
+import footer_image1 from "../../assets/footer_image1.png";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -39,7 +40,7 @@ const DivText = styled.div`
 // Título para Quem somos e Nossa missão
 const TitleText = styled.h1`
   font-weight: bold;
-  font-size: 60px;
+  font-size: 50px;
   text-align: center;
   padding: 30px;
 `;
@@ -47,7 +48,7 @@ const TitleText = styled.h1`
 // Texto para Quem somos e Nossa missão
 const Text = styled.span`
   font-weight: 400px;
-  font-size: 20px;
+  font-size: 16px;
 `;
 
 // Div para região Contador
@@ -73,6 +74,36 @@ const TextoContador = styled.span`
   font-size: 32px;
 `;
 
+// Div para parte nossas receitas
+const DivRec = styled.div`
+  background-color: ${(props) => props.theme.colors.white};
+  padding: 140px 165px 195px 300px;
+  `;
+
+// Titulo Nossas receitas
+const TituloReceitas = styled.h1`
+  font-weight: bold;
+  font-size: 50px;
+  position: absolute;
+  top: 1905px;
+  left: 465px;
+  `;``
+
+// Div para o footer
+const DivFooter = styled.div`
+  width: 100%;
+  background: ${(props) => props.theme.colors.primary};
+  padding: 90px;
+  text-align: center;
+`;
+
+// Texto footer
+const Textofooter = styled.span`
+  color: ${(props) => props.theme.colors.white};
+  font-weight: 400px;
+  font-size: 13px;
+`;
+
 export function Home() {
   return (
     <div>
@@ -96,11 +127,11 @@ export function Home() {
           <Image
             src={home_image1}
             style={{
-              width: "350px",
+              width: "300px",
               zIndex: 5,
               position: "absolute",
               bottom: -80,
-              left: -300,
+              left: -200,
             }}
           ></Image>
           <Image
@@ -126,7 +157,22 @@ export function Home() {
           iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut
           fermentum non libero ut consequat. Quisque elementum velit eget ipsum
           suscipit rutrum.
+        <TitleText>  Nossa missão</TitleText>
         </Text>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
+          aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate,
+          sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem.
+          Maecenas et lacus vel lacus lacinia porttitor. Nulla tempus dictum
+          efficitur. Suspendisse potenti. Sed ac nulla eget nunc tempor faucibus
+          sed et mauris. Lorem ipsum dolor sit amet, consectetur adipiscing
+          elit. Suspendisse potenti. Quisque tortor ipsum, tincidunt eget ligula
+          at, aliquet commodo purus. Vestibulum ante ipsum primis in faucibus
+          orci luctus et ultrices posuere cubilia curae; In pretium leo ac dolor
+          gravida pretium. Sed eu venenatis lacus, efficitur pulvinar massa.
+          Morbi aliquet sapien vitae purus tincidunt, eget consequat erat
+          iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut
+          fermentum non libero ut consequat. Quisque elementum velit eget ipsum
+          suscipit rutrum.
       </DivText>
       <DivContador>
         <div>
@@ -142,6 +188,25 @@ export function Home() {
           <TextoContador>Formações profissionais</TextoContador>
         </div>
       </DivContador>
+      <DivRec>
+      <div>
+          <TituloReceitas>Nossas receitas</TituloReceitas>
+        </div>
+      </DivRec>
+      <DivFooter>
+        <a href="https://www.instagram.com/amismulherescriativas/">
+          <Image
+            src={footer_image1}
+            style={{
+              width: "40px",
+              position: "relative",
+              bottom: 35,
+            }}
+          ></Image></a>
+        <div>
+          <Textofooter>© 2022. All rights reserved.</Textofooter>
+        </div>
+      </DivFooter>
     </div>
   );
 }
