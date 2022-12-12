@@ -1,6 +1,5 @@
 import * as React from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Repository } from "../../../pages/alunas/alunas";
 
 interface TableProps {
   data: Object[];
