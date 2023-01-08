@@ -3,4 +3,5 @@ export interface AssistentesListarDTO {
   nome: string;
   cpf: string;
   dNascimento: string;
+  obs: string;
 }

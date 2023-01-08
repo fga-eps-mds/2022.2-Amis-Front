@@ -115,6 +115,7 @@ export function Assistentes() {
         nome: value.nome,
         cpf: value.cpf,
         dNascimento: value.dNascimento,
+        obs: value.obs,
       });
     });
 
@@ -125,13 +126,14 @@ export function Assistentes() {
     { field: "nome", headerName: "Nome", width: 150 },
     { field: "cpf", headerName: "CPF", width: 150 },
     { field: "dNascimento", headerName: "Data Nascimento", width: 150 },
+    { field: "obs", headerName: "Observações", width: 150 },
   ];
 
   return (
     <Container>
       <Sidebar />
       <Content>
-        <Navbarlog />
+        <Navbarlog text={"Assistentes"} />
         <DivButtons>
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
         </DivButtons>

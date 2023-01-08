@@ -135,7 +135,7 @@ export function Alunas() {
     <Container>
       <Sidebar />
       <Content>
-        <Navbarlog />
+        <Navbarlog text={"Alunas"} />
         <DivButtons>
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
           {/* <PrimaryButton text={"Editar"} /> */}
