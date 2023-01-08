@@ -13,8 +13,12 @@ const DivNavbar = styled.div`
   margin: 0 auto;
 `;
 
-const Title = styled.h1`
-  color: ${(props) => "black"};
+interface TitleProps {
+  text?: string;
+}
+
+const Title = styled.h1<TitleProps>`
+  color: ${(props) => props.theme.colors.black};
   font-size: 28px;
   font-weight: 500;
   height: 40px;
@@ -59,10 +63,10 @@ const UserImage = styled.div`
   background-color: #525252;
 `;
 
-export function Navbarlog() {
+export function Navbarlog({ text }: TitleProps) {
   return (
     <DivNavbar>
-      <Title> Alunas </Title>
+      <Title> {text} </Title>
       <DivUser>
         <DivUserName>
           <UserName>JOSÉ MARIA</UserName>
