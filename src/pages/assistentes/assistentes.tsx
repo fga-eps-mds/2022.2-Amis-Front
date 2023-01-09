@@ -6,6 +6,10 @@ import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import {
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -18,9 +22,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { AssistentesListarDTO } from "./dtos/AssistentesListarDTO";
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
@@ -75,11 +77,17 @@ const style = {
   boxShadow: 24,
   p: 4,
   padding: "50px",
+  height: "85%",
+  overflow: "hidden",
+  overflowY: "scroll",
 };
 
 export function Assistentes() {
   const [open, setOpen] = useState(false);
-  const [dateValue, setDateValue] = React.useState<Dayjs | null>(null);
+  const [id, setId] = useState<GridRowId>(0);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const handleOpenConfirmation = () => setOpenConfirmation(true);
+  const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
@@ -90,22 +98,18 @@ export function Assistentes() {
     formState: { errors },
   } = useForm();
 
-  type Row = typeof dataTable[number];
-
-  const [rows, setRows] = React.useState<Row[]>(dataTable);
-
-  const cadastrarAssistentes = async (data: any) => {
+  const registerAssistentes = async (data: any) => {
     const assistente = {
       id: Math.random(),
       nome: data.nome,
-      dNascimento: dayjs(dateValue)?.format("DD-MM-YYYY"),
+      cpf: data.cpf,
       login: data.login,
       senha: data.senha,
       obs: data.obs,
       admin: data.admin,
+      dCriacao: dayjs().format("DD/MM/YYYY"),
     } as unknown as AssistentesCadastrarDTO;
 
-    console.log(assistente);
     setDataTable([...dataTable, assistente]);
 
     // await axios
@@ -120,34 +124,56 @@ export function Assistentes() {
     //   .catch((err) => console.warn(err));
   };
 
-  useQuery("listar_assistentes", async () => {
-    const response = await axios.get(
-      "https://amis-service-stg.azurewebsites.net/assistentes/"
-    );
+  // useQuery("listar_assistentes", async () => {
+  //   const response = await axios.get(
+  //     "https://amis-service-stg.azurewebsites.net/assistentes/"
+  //   );
+  //   const temp: AssistentesListarDTO[] = [];
+  //   response.data.forEach((value: AssistentesListarDTO) => {
+  //     temp.push({
+  //       id: value.id,
+  //       nome: value.nome,
+  //       obs: value.obs,
+  //       admin: value.admin,
+  //     });
+  //   });
+  //   setDataTable(temp);
+  // });
 
-    const temp: AssistentesListarDTO[] = [];
-    response.data.forEach((value: AssistentesListarDTO) => {
-      temp.push({
-        id: value.id,
-        nome: value.nome,
-        dNascimento: value.dNascimento,
-        obs: value.obs,
-        admin: value.admin,
-      });
-    });
+  const deleteAssistentes = async () => {
+    console.log("Id excluido", id);
+    // await axios
+    //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
+    //   .then((response) => {
+    //     console.log(response.data);
+    //     handleCloseConfirmation();
+    //   })
+    //   .catch((err) => {
+    //     console.warn(err);
+    //     handleCloseConfirmation();
+    //   });
+  };
 
-    setDataTable(temp);
-  });
-
-  const deleteUser = (id: GridRowId) => {
-    console.log(id);
+  const editAssistentes = async () => {
+    console.log("Id excluido", id);
+    // await axios
+    //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
+    //   .then((response) => {
+    //     console.log(response.data);
+    //     handleCloseConfirmation();
+    //   })
+    //   .catch((err) => {
+    //     console.warn(err);
+    //     handleCloseConfirmation();
+    //   });
   };
 
   const columnsTable = [
     { field: "nome", headerName: "Nome", width: 150 },
+    { field: "cpf", headerName: "CPF", width: 150 },
     {
-      field: "dNascimento",
-      headerName: "Data Nascimento",
+      field: "dCriacao",
+      headerName: "Data de criação",
       width: 150,
       type: "date",
     },
@@ -155,7 +181,7 @@ export function Assistentes() {
     {
       field: "admin",
       headerName: "Administrador(a)",
-      width: 150,
+      width: 180,
       type: "boolean",
     },
     {
@@ -167,15 +193,16 @@ export function Assistentes() {
         <GridActionsCellItem
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
-          onClick={() => deleteUser(params.id)}
-          // showInMenu
+          onClick={() => {
+            setId(params.id);
+            handleOpenConfirmation();
+          }}
         />,
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
           icon={<AiFillEdit size={20} />}
           label="Editar"
-          onClick={() => deleteUser(params.id)}
-          // showInMenu
+          onClick={() => true}
         />,
       ],
     },
@@ -190,11 +217,27 @@ export function Assistentes() {
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
+        <Dialog
+          open={openConfirmation}
+          onClose={setOpenConfirmation}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Você tem certeza que deseja excluir?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmation}>Não</Button>
+            <Button onClick={deleteAssistentes} autoFocus>
+              Sim
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <FormText>Preencha corretamente os dados cadastrais.</FormText>
-          <Form onSubmit={handleSubmit(cadastrarAssistentes)}>
+          <Form onSubmit={handleSubmit(registerAssistentes)}>
             <TextField
               id="outlined-nome"
               label="Nome"
@@ -202,25 +245,14 @@ export function Assistentes() {
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Data de nascimento"
-                value={dateValue}
-                onChange={(newValue) => {
-                  setDateValue(newValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    required={true}
-                    sx={{
-                      width: "100%",
-                      background: "#F5F4FF",
-                    }}
-                    {...params}
-                  />
-                )}
-              />
-            </LocalizationProvider>
+            <TextField
+              id="outlined-cpf"
+              label="CPF"
+              required={true}
+              inputProps={{ maxLength: 12 }}
+              {...register("cpf")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
             <TextField
               id="outlined-login"
               label="Login"
