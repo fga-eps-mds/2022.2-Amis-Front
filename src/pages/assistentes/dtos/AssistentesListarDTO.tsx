@@ -1,7 +1,7 @@
 export interface AssistentesListarDTO {
   id: string;
   nome: string;
-  dNascimento: string;
+  dCriacao?: string;
   obs: string;
   admin: boolean;
 }
