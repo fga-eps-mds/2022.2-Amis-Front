@@ -50,7 +50,7 @@ const Logo = styled.div`
 `;
 
 export function Sidebar() {
-  const [pathname, setPathname] = useState("/alunas");
+  const [pathname] = useState(window.location.pathname);
 
   const sidebarData = [
     {
@@ -139,7 +139,6 @@ export function Sidebar() {
         <SidebarItem
           key={index}
           isActive={pathname === itemData.path}
-          onClick={() => setPathname(itemData.path)}
           to={itemData.path}
         >
           {itemData.icon}
