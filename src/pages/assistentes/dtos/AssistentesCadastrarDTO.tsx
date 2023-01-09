@@ -1,8 +1,10 @@
+import { Dayjs } from "dayjs";
+
 export interface AssistentesCadastrarDTO {
   nome: string;
   nomeSocial: string;
   cpf: string;
-  dNascimento: string;
+  dNascimento: Dayjs;
   idEndereco: number;
   senha: string;
   admin: boolean;

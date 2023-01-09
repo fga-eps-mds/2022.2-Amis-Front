@@ -4,12 +4,26 @@ import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
-import { Box, Modal, TextField } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { AssistentesListarDTO } from "./dtos/AssistentesListarDTO";
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
+import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
+import { BsFillTrashFill } from "react-icons/bs";
+import { AiFillEdit } from "react-icons/ai";
 
 const Container = styled.div`
   width: 100%;
@@ -65,6 +79,7 @@ const style = {
 
 export function Assistentes() {
   const [open, setOpen] = useState(false);
+  const [dateValue, setDateValue] = React.useState<Dayjs | null>(null);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
@@ -75,32 +90,34 @@ export function Assistentes() {
     formState: { errors },
   } = useForm();
 
+  type Row = typeof dataTable[number];
+
+  const [rows, setRows] = React.useState<Row[]>(dataTable);
+
   const cadastrarAssistentes = async (data: any) => {
     const assistente = {
+      id: Math.random(),
       nome: data.nome,
-      nomeSocial: data.nome,
-      cpf: data.cpf,
-      dNascimento: data.dNascimento,
-      idEndereco: 1,
-      senha: data.senha,
-      admin: data.admin,
+      dNascimento: dayjs(dateValue)?.format("DD-MM-YYYY"),
       login: data.login,
+      senha: data.senha,
       obs: data.obs,
-      email: data.email,
-    } as AssistentesCadastrarDTO;
+      admin: data.admin,
+    } as unknown as AssistentesCadastrarDTO;
 
     console.log(assistente);
+    setDataTable([...dataTable, assistente]);
 
-    await axios
-      .post(
-        "https://amis-service-stg.azurewebsites.net/assistentes/",
-        assistente
-      )
-      .then((response) => {
-        console.log(response.status);
-        handleClose();
-      })
-      .catch((err) => console.warn(err));
+    // await axios
+    //   .post(
+    //     "https://amis-service-stg.azurewebsites.net/assistentes/",
+    //     assistente
+    //   )
+    //   .then((response) => {
+    //     console.log(response.status);
+    //     handleClose();
+    //   })
+    //   .catch((err) => console.warn(err));
   };
 
   useQuery("listar_assistentes", async () => {
@@ -113,20 +130,55 @@ export function Assistentes() {
       temp.push({
         id: value.id,
         nome: value.nome,
-        cpf: value.cpf,
         dNascimento: value.dNascimento,
         obs: value.obs,
+        admin: value.admin,
       });
     });
 
     setDataTable(temp);
   });
 
+  const deleteUser = (id: GridRowId) => {
+    console.log(id);
+  };
+
   const columnsTable = [
     { field: "nome", headerName: "Nome", width: 150 },
-    { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "dNascimento", headerName: "Data Nascimento", width: 150 },
+    {
+      field: "dNascimento",
+      headerName: "Data Nascimento",
+      width: 150,
+      type: "date",
+    },
     { field: "obs", headerName: "Observações", width: 150 },
+    {
+      field: "admin",
+      headerName: "Administrador(a)",
+      width: 150,
+      type: "boolean",
+    },
+    {
+      field: "actions",
+      type: "actions",
+      width: 80,
+      getActions: (params: { id: GridRowId }) => [
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<BsFillTrashFill size={18} />}
+          label="Deletar"
+          onClick={() => deleteUser(params.id)}
+          // showInMenu
+        />,
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<AiFillEdit size={20} />}
+          label="Editar"
+          onClick={() => deleteUser(params.id)}
+          // showInMenu
+        />,
+      ],
+    },
   ];
 
   return (
@@ -146,39 +198,66 @@ export function Assistentes() {
             <TextField
               id="outlined-nome"
               label="Nome"
+              required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Data de nascimento"
+                value={dateValue}
+                onChange={(newValue) => {
+                  setDateValue(newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    required={true}
+                    sx={{
+                      width: "100%",
+                      background: "#F5F4FF",
+                    }}
+                    {...params}
+                  />
+                )}
+              />
+            </LocalizationProvider>
             <TextField
-              id="outlined-dNascimento"
-              label="Data de Nascimento"
-              {...register("dNascimento")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-email"
-              label="Email"
-              {...register("email")}
+              id="outlined-login"
+              label="Login"
+              required={true}
+              {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-senha"
               label="Senha"
+              type="password"
+              required={true}
               {...register("senha")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-cpf"
-              label="CPF"
-              {...register("cpf")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-obs"
+              id="outlined-Observações"
               label="Observações"
               {...register("obs")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                Administrador(a)?
+              </InputLabel>
+              <Select
+                id="simple-select-label-admin"
+                labelId="simple-select-admin"
+                required={true}
+                label="Administrador(a)?"
+                {...register("admin")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={false as any}>Não</MenuItem>
+                <MenuItem value={true as any}>Sim</MenuItem>
+              </Select>
+            </FormControl>
             <PrimaryButton text={"Cadastrar"} />
           </Form>
         </Box>
