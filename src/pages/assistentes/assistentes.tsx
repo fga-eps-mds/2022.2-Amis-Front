@@ -84,8 +84,10 @@ const style = {
 
 export function Assistentes() {
   const [open, setOpen] = useState(false);
+  const [assistente, setAssistente] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
@@ -96,7 +98,7 @@ export function Assistentes() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({});
 
   const registerAssistentes = async (data: any) => {
     const assistente = {
@@ -155,7 +157,18 @@ export function Assistentes() {
   };
 
   const editAssistentes = async () => {
-    console.log("Id excluido", id);
+    // eslint-disable-next-line array-callback-return
+    dataTable.find((element: any) => {
+      if (element.id === id) {
+        const assistente = {
+          nome: element.nome,
+          cpf: element.cpf,
+          admin: element.admin,
+        };
+        console.log(assistente);
+        setAssistente(assistente);
+      }
+    });
     // await axios
     //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
     //   .then((response) => {
@@ -202,7 +215,10 @@ export function Assistentes() {
         <GridActionsCellItem
           icon={<AiFillEdit size={20} />}
           label="Editar"
-          onClick={() => true}
+          onClick={async () => {
+            setId(params.id);
+            setOpenEdit(true);
+          }}
         />,
       ],
     },
@@ -241,6 +257,7 @@ export function Assistentes() {
             <TextField
               id="outlined-nome"
               label="Nome"
+              defaultValue={assistente.nome}
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -291,6 +308,48 @@ export function Assistentes() {
               </Select>
             </FormControl>
             <PrimaryButton text={"Cadastrar"} />
+          </Form>
+        </Box>
+      </Modal>
+      <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+        <Box sx={style}>
+          <FormText>Altere os dados cadastrais.</FormText>
+          <Form onSubmit={handleSubmit(editAssistentes)}>
+            <TextField
+              id="outlined-nome"
+              label="Nome"
+              defaultValue={assistente.nome}
+              required={true}
+              {...register("nome")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-cpf"
+              label="CPF"
+              required={true}
+              inputProps={{ maxLength: 12 }}
+              defaultValue={assistente.cpf}
+              {...register("cpf")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                Administrador(a)?
+              </InputLabel>
+              <Select
+                id="simple-select-label-admin"
+                labelId="simple-select-admin"
+                required={true}
+                defaultValue={assistente.admin}
+                label="Administrador(a)?"
+                {...register("admin")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={false as any}>Não</MenuItem>
+                <MenuItem value={true as any}>Sim</MenuItem>
+              </Select>
+            </FormControl>
+            <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
       </Modal>
