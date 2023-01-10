@@ -113,6 +113,8 @@ export function Assistentes() {
     } as unknown as AssistentesCadastrarDTO;
 
     setDataTable([...dataTable, assistente]);
+    console.log(assistente);
+    setOpen(false);
 
     // await axios
     //   .post(
@@ -144,6 +146,7 @@ export function Assistentes() {
 
   const deleteAssistentes = async () => {
     console.log("Id excluido", id);
+    setOpenConfirmation(false);
     // await axios
     //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
     //   .then((response) => {
@@ -156,17 +159,19 @@ export function Assistentes() {
     //   });
   };
 
-  const editAssistentes = async () => {
+  const editAssistentes = async (data: any) => {
     // eslint-disable-next-line array-callback-return
     dataTable.find((element: any) => {
       if (element.id === id) {
         const assistente = {
-          nome: element.nome,
-          cpf: element.cpf,
-          admin: element.admin,
+          nome: data.nome,
+          cpf: data.cpf,
+          admin: data.admin,
         };
-        console.log(assistente);
+        element = assistente;
+        console.log("assistente", assistente);
         setAssistente(assistente);
+        setOpenEdit(false);
       }
     });
     // await axios
@@ -266,7 +271,7 @@ export function Assistentes() {
               id="outlined-cpf"
               label="CPF"
               required={true}
-              inputProps={{ maxLength: 12 }}
+              inputProps={{ maxLength: 11 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
@@ -292,14 +297,14 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Administrador(a)?
+              <InputLabel required={true} id="demo-simple-select-label">
+                Administrador (a)?
               </InputLabel>
               <Select
                 id="simple-select-label-admin"
                 labelId="simple-select-admin"
-                required={true}
                 label="Administrador(a)?"
+                required={true}
                 {...register("admin")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
@@ -327,7 +332,7 @@ export function Assistentes() {
               id="outlined-cpf"
               label="CPF"
               required={true}
-              inputProps={{ maxLength: 12 }}
+              inputProps={{ maxLength: 11 }}
               defaultValue={assistente.cpf}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
