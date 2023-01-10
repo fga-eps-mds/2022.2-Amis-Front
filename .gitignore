@@ -7,4 +7,4 @@ yarn.lock
 package-lock.json
 
 # Pastas com cobertura de testes
-coverage
+coverage/lcov-report
