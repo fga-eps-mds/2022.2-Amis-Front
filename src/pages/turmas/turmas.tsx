@@ -82,9 +82,10 @@ const style = {
   overflowY: "scroll",
 };
 
-export function Turmas() { //mudar
+export function Turmas() {
+  // mudar
   const [open, setOpen] = useState(false);
-  const [assistente, setAssistente] = useState(Object);
+  const [turma, setTurma] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -100,24 +101,25 @@ export function Turmas() { //mudar
     formState: { errors },
   } = useForm({});
 
-  const registerTurmas = async (data: any) => { //mudar
-    const assistente = {
+  const registerTurmas = async (data: any) => {
+    // mudar
+    const turma = {
       id: Math.random(),
-      nome: data.nome,
-      cpf: data.cpf,
-      login: data.login,
-      senha: data.senha,
-      obs: data.obs,
+      descricao: data.descrcao,
+      numeroVagas: data.numeroVagas,
+      vagasPrenchidas: data.vagasPrenchidas,
+      horario: data.horario,
+      turno: data.turno,
       admin: data.admin,
       dCriacao: dayjs().format("DD/MM/YYYY"),
     } as unknown as TurmasCadastrarDTO;
 
-    setDataTable([...dataTable, assistente]); //mudar
+    setDataTable([...dataTable, turma]); // mudar
 
     // await axios
     //   .post(
     //     "https://amis-service-stg.azurewebsites.net/Turmas/",
-    //     assistente
+    //     turmas
     //   )
     //   .then((response) => {
     //     console.log(response.status);
@@ -156,17 +158,18 @@ export function Turmas() { //mudar
     //   });
   };
 
-  const editTurmas = async () => { //mudar
+  const editTurmas = async () => {
+    // mudar
     // eslint-disable-next-line array-callback-return
     dataTable.find((element: any) => {
       if (element.id === id) {
-        const assistente = {
-          nome: element.nome,
-          cpf: element.cpf,
-          admin: element.admin,
+        const turma = {
+          descricao: element.descricao,
+          numeroVagas: element.numeroVagas,
+          vagasPrenchidas: element.vagasPrenchidas,
         };
-        console.log(assistente);
-        setAssistente(assistente);
+        console.log(turma);
+        setTurma(turma);
       }
     });
     // await axios
@@ -181,18 +184,19 @@ export function Turmas() { //mudar
     //   });
   };
 
-  const columnsTable = [ //mudar
-    { field: "nome", headerName: "Descrição", width: 150 },
-    { field: "cpf", headerName: "Número de vagas", width: 150 },
-    { field: "obs", headerName: "Vagas preenchidas", width: 150 },
+  const columnsTable = [
+    // mudar
+    { field: "descricao", headerName: "Descrição", width: 150 },
+    { field: "numeroVagas", headerName: "Número de vagas", width: 150 },
+    { field: "vagasPrenchidas", headerName: "Vagas preenchidas", width: 150 },
     {
       field: "dCriacao",
       headerName: "Data de início",
       width: 150,
       type: "date",
     },
-    {field: "login", headerName: "Horário", width: 150},
-    {field: "admin", headerName: "Turno", width: 150},
+    { field: "login", headerName: "Horário", width: 150 },
+    { field: "admin", headerName: "Turno", width: 150 },
     {
       field: "actions",
       type: "actions",
@@ -221,7 +225,8 @@ export function Turmas() { //mudar
   ];
 
   return (
-    <Container> //mudar
+    <Container>
+      {" "}
       <Sidebar />
       <Content>
         <Navbarlog text={"Turmas"} />
@@ -252,42 +257,48 @@ export function Turmas() { //mudar
           <Form onSubmit={handleSubmit(registerTurmas)}>
             <TextField
               id="outlined-nome"
-              label="Descrição"
-              defaultValue={assistente.nome}
+              label="Nome"
+              defaultValue={turma.nome}
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-cpf"
+              id="outlined-descricao"
+              label="Descrição"
+              defaultValue={turma.descricao}
+              required={true}
+              {...register("descricao")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-numeroVagas"
               label="Número de vagas"
               required={true}
-              {...register("cpf")}
+              {...register("numeroVagas")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-Observações"
+              id="outlined-vagasPrenchidas"
               label="Vagas preenchidas"
               required={true}
-              {...register("obs")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />            
-            <TextField
-              id="outlined-login"
-              label="Horário"
-              required={true}
-              {...register("login")}
+              {...register("vagasPrenchidas")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-  
             <TextField
-                id="outlined-admin"
-                required={true}
-                label="Turno"
-                required={true}
-                {...register("admin")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
+              id="outlined-turno"
+              label="Turno"
+              required={true}
+              {...register("turno")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horario"
+              label="Horario"
+              required={true}
+              {...register("horario")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
             <PrimaryButton text={"Cadastrar"} />
           </Form>
         </Box>
@@ -299,24 +310,22 @@ export function Turmas() { //mudar
             <TextField
               id="outlined-nome"
               label="Nome"
-              defaultValue={assistente.nome}
+              defaultValue={turma.nome}
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-cpf"
-              label="CPF"
+              id="outlined-descricao"
+              label="Descrição"
               required={true}
               inputProps={{ maxLength: 12 }}
-              defaultValue={assistente.cpf}
-              {...register("cpf")}
+              defaultValue={turma.descricao}
+              {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Administrador(a)?
-              </InputLabel>
+              {/* <InputLabel id="demo-simple-select-label">Turma(a)?</InputLabel>
               <Select
                 id="simple-select-label-admin"
                 labelId="simple-select-admin"
@@ -328,7 +337,7 @@ export function Turmas() { //mudar
               >
                 <MenuItem value={false as any}>Não</MenuItem>
                 <MenuItem value={true as any}>Sim</MenuItem>
-              </Select>
+              </Select> */}
             </FormControl>
             <PrimaryButton text={"Editar"} />
           </Form>
