@@ -82,7 +82,7 @@ const style = {
   overflowY: "scroll",
 };
 
-export function Turmas() {
+export function Turmas() { //mudar
   const [open, setOpen] = useState(false);
   const [assistente, setAssistente] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
@@ -100,7 +100,7 @@ export function Turmas() {
     formState: { errors },
   } = useForm({});
 
-  const registerTurmas = async (data: any) => {
+  const registerTurmas = async (data: any) => { //mudar
     const assistente = {
       id: Math.random(),
       nome: data.nome,
@@ -112,7 +112,7 @@ export function Turmas() {
       dCriacao: dayjs().format("DD/MM/YYYY"),
     } as unknown as TurmasCadastrarDTO;
 
-    setDataTable([...dataTable, assistente]);
+    setDataTable([...dataTable, assistente]); //mudar
 
     // await axios
     //   .post(
@@ -156,7 +156,7 @@ export function Turmas() {
     //   });
   };
 
-  const editTurmas = async () => {
+  const editTurmas = async () => { //mudar
     // eslint-disable-next-line array-callback-return
     dataTable.find((element: any) => {
       if (element.id === id) {
@@ -181,22 +181,18 @@ export function Turmas() {
     //   });
   };
 
-  const columnsTable = [
-    { field: "nome", headerName: "Nome", width: 150 },
-    { field: "cpf", headerName: "CPF", width: 150 },
+  const columnsTable = [ //mudar
+    { field: "nome", headerName: "Descrição", width: 150 },
+    { field: "cpf", headerName: "Número de vagas", width: 150 },
+    { field: "obs", headerName: "Vagas preenchidas", width: 150 },
     {
       field: "dCriacao",
-      headerName: "Data de criação",
+      headerName: "Data de início",
       width: 150,
       type: "date",
     },
-    { field: "obs", headerName: "Observações", width: 150 },
-    {
-      field: "admin",
-      headerName: "Administrador(a)",
-      width: 180,
-      type: "boolean",
-    },
+    {field: "login", headerName: "Horário", width: 150},
+    {field: "admin", headerName: "Turno", width: 150},
     {
       field: "actions",
       type: "actions",
@@ -225,7 +221,7 @@ export function Turmas() {
   ];
 
   return (
-    <Container>
+    <Container> //mudar
       <Sidebar />
       <Content>
         <Navbarlog text={"Turmas"} />
@@ -256,7 +252,7 @@ export function Turmas() {
           <Form onSubmit={handleSubmit(registerTurmas)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Descrição"
               defaultValue={assistente.nome}
               required={true}
               {...register("nome")}
@@ -264,49 +260,34 @@ export function Turmas() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="Número de vagas"
               required={true}
-              inputProps={{ maxLength: 12 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
+              id="outlined-Observações"
+              label="Vagas preenchidas"
+              required={true}
+              {...register("obs")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />            
+            <TextField
               id="outlined-login"
-              label="Login"
+              label="Horário"
               required={true}
               {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+  
             <TextField
-              id="outlined-senha"
-              label="Senha"
-              type="password"
-              required={true}
-              {...register("senha")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-Observações"
-              label="Observações"
-              {...register("obs")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Administrador(a)?
-              </InputLabel>
-              <Select
-                id="simple-select-label-admin"
-                labelId="simple-select-admin"
+                id="outlined-admin"
                 required={true}
-                label="Administrador(a)?"
+                label="Turno"
+                required={true}
                 {...register("admin")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
-              </Select>
-            </FormControl>
+              />
             <PrimaryButton text={"Cadastrar"} />
           </Form>
         </Box>
