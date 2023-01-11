@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Alunas } from "./pages/alunas/alunas";
 import { Home } from "./pages/home/home";
 import { Receitas } from "./pages/receitas/receitas";
+import { Assistentes } from "./pages/assistentes/assistentes";
+import { Turmas } from "./pages/turmas/turmas";
 
 export default function AppRoutes() {
   return (
@@ -15,6 +17,12 @@ export default function AppRoutes() {
       </Routes>
       <Routes>
         <Route path="/alunas" element={<Alunas />} />
+      </Routes>
+      <Routes>
+        <Route path="/assistentes" element={<Assistentes />} />
+      </Routes>
+      <Routes>
+        <Route path="/turmas" element={<Turmas />} />
       </Routes>
     </Router>
   );
