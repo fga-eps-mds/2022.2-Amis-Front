@@ -105,7 +105,7 @@ export function Turmas() {
     // mudar
     const turma = {
       id: Math.random(),
-      descricao: data.descrcao,
+      descricao: data.descricao,
       numeroVagas: data.numeroVagas,
       vagasPrenchidas: data.vagasPrenchidas,
       horario: data.horario,
@@ -115,10 +115,11 @@ export function Turmas() {
     } as unknown as TurmasCadastrarDTO;
 
     setDataTable([...dataTable, turma]); // mudar
+    setOpen(false);
 
     // await axios
     //   .post(
-    //     "https://amis-service-stg.azurewebsites.net/Turmas/",
+    //     "https://amis-service-stg.azurewebsites.net/turmas/",
     //     turmas
     //   )
     //   .then((response) => {
@@ -130,15 +131,18 @@ export function Turmas() {
 
   // useQuery("listar_Turmas", async () => {
   //   const response = await axios.get(
-  //     "https://amis-service-stg.azurewebsites.net/Turmas/"
+  //     "https://amis-service-stg.azurewebsites.net/turmas/"
   //   );
   //   const temp: TurmasListarDTO[] = [];
   //   response.data.forEach((value: TurmasListarDTO) => {
   //     temp.push({
-  //       id: value.id,
-  //       nome: value.nome,
-  //       obs: value.obs,
-  //       admin: value.admin,
+  //       id: Math.random(),
+  //        descricao: value.descricao,
+  //        numeroVagas: value.numeroVagas,
+  //        vagasPrenchidas: value.vagasPrenchidas,
+  //        horario: value.horario,
+  //        turno: value.turno,
+  //        admin: value.admin,
   //     });
   //   });
   //   setDataTable(temp);
@@ -146,8 +150,9 @@ export function Turmas() {
 
   const deleteTurmas = async () => {
     console.log("Id excluido", id);
+    setOpenConfirmation(false);
     // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/Turmas/", id)
+    //   .delete("https://amis-service-stg.azurewebsites.net/turmas/", id)
     //   .then((response) => {
     //     console.log(response.data);
     //     handleCloseConfirmation();
@@ -158,20 +163,26 @@ export function Turmas() {
     //   });
   };
 
-  const editTurmas = async () => {
+  const editTurmas = async (data: any) => {
     // mudar
     // eslint-disable-next-line array-callback-return
+
     dataTable.find((element: any) => {
       if (element.id === id) {
         const turma = {
-          descricao: element.descricao,
-          numeroVagas: element.numeroVagas,
-          vagasPrenchidas: element.vagasPrenchidas,
+          descricao: data.descricao,
+          numeroVagas: data.numeroVagas,
+          vagasPrenchidas: data.vagasPrenchidas,
+          turno: data.turno,
+          horario: data.horario,
         };
-        console.log(turma);
+        element = turma;
+        console.log("element", element);
         setTurma(turma);
+        setOpenEdit(false);
       }
     });
+    
     // await axios
     //   .delete("https://amis-service-stg.azurewebsites.net/Turmas/", id)
     //   .then((response) => {
@@ -186,17 +197,17 @@ export function Turmas() {
 
   const columnsTable = [
     // mudar
-    { field: "descricao", headerName: "Descrição", width: 150 },
+    { field: "descricao", headerName: "Descrição", width: 250 },
     { field: "numeroVagas", headerName: "Número de vagas", width: 150 },
     { field: "vagasPrenchidas", headerName: "Vagas preenchidas", width: 150 },
     {
       field: "dCriacao",
       headerName: "Data de início",
-      width: 150,
+      width: 120,
       type: "date",
     },
-    { field: "login", headerName: "Horário", width: 150 },
-    { field: "admin", headerName: "Turno", width: 150 },
+    { field: "horario", headerName: "Horário", width: 100 },
+    { field: "turno", headerName: "Turno", width: 100 },
     {
       field: "actions",
       type: "actions",
@@ -256,14 +267,6 @@ export function Turmas() {
           <FormText>Preencha corretamente os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(registerTurmas)}>
             <TextField
-              id="outlined-nome"
-              label="Nome"
-              defaultValue={turma.nome}
-              required={true}
-              {...register("nome")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
               id="outlined-descricao"
               label="Descrição"
               defaultValue={turma.descricao}
@@ -308,14 +311,6 @@ export function Turmas() {
           <FormText>Altere os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
-              id="outlined-nome"
-              label="Nome"
-              defaultValue={turma.nome}
-              required={true}
-              {...register("nome")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
               id="outlined-descricao"
               label="Descrição"
               required={true}
@@ -324,21 +319,38 @@ export function Turmas() {
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <FormControl fullWidth>
-              {/* <InputLabel id="demo-simple-select-label">Turma(a)?</InputLabel>
-              <Select
-                id="simple-select-label-admin"
-                labelId="simple-select-admin"
-                required={true}
-                defaultValue={assistente.admin}
-                label="Administrador(a)?"
-                {...register("admin")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
-              </Select> */}
-            </FormControl>
+            <TextField
+              id="outlined-numeroVagas"
+              label="Número de vagas"
+              required={true}
+              defaultValue={turma.numeroVagas}
+              {...register("numeroVagas")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-vagasPrenchidas"
+              label="Vagas preenchidas"
+              required={true}
+              defaultValue={turma.vagasPrenchidas}
+              {...register("vagasPrenchidas")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-turno"
+              label="Turno"
+              required={true}
+              defaultValue={turma.turno}
+              {...register("turno")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horario"
+              label="Horario"
+              required={true}
+              defaultValue={turma.horario}
+              {...register("horario")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
             <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
