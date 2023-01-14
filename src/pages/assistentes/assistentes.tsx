@@ -26,6 +26,9 @@ import dayjs from "dayjs";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
+import { toast, ToastContainer } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   width: 100%;
@@ -115,6 +118,7 @@ export function Assistentes() {
     setDataTable([...dataTable, assistente]);
     console.log(assistente);
     setOpen(false);
+    toast.success("Assistente cadastrado com sucesso!");
 
     // await axios
     //   .post(
@@ -157,6 +161,7 @@ export function Assistentes() {
     //     console.warn(err);
     //     handleCloseConfirmation();
     //   });
+    toast.success("Assistente excluído com sucesso!");
   };
 
   const editAssistentes = async (data: any) => {
@@ -184,6 +189,7 @@ export function Assistentes() {
     //     console.warn(err);
     //     handleCloseConfirmation();
     //   });
+    toast.success("Assistente editado com sucesso!");
   };
 
   const columnsTable = [
@@ -358,6 +364,8 @@ export function Assistentes() {
           </Form>
         </Box>
       </Modal>
+      {/* <button onClick={notify}>Notify!</button> */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </Container>
   );
 }
