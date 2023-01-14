@@ -16,6 +16,7 @@
     "@mui/material": "^5.10.17",
     "@mui/x-data-grid": "^5.17.14",
     "axios": "^1.2.1",
+    "jest-junit": "^15.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.40.0",

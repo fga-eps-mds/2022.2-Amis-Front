@@ -8,3 +8,7 @@ package-lock.json
 
 # Pastas com cobertura de testes
 coverage/lcov-report
+
+# Arquivo de testes
+coverage/
+jest-report.xml

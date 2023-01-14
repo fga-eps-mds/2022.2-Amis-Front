@@ -12,5 +12,9 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/.jest/setup-tests.js'],
   transform: {
     ".*\\.[jt]sx?$": "babel-jest",
-  }
+  },
+  reporters: [
+    'default',
+    ['jest-junit', {outputDirectory: './', outputName: 'jest-report.xml'}],
+  ],
 }
