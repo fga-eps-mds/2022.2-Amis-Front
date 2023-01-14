@@ -5,7 +5,7 @@ import PrimaryButton from "../PrimaryButton/PrimaryButton";
 
 const DivNavbar = styled.div`
   width: 100%;
-  height: 106px;
+  height: 100px;
   background: ${(props) => props.theme.colors.white};
   display: flex;
   justify-content: center;
@@ -46,7 +46,7 @@ const MenuButton = styled.button<{ isActive?: boolean }>`
   cursor: pointer;
 `;
 
-export function Navbar() {
+export function Navbar(props: any) {
   const [pathname, setPathname] = useState("/");
 
   const menuData = [
@@ -83,9 +83,11 @@ export function Navbar() {
             </Link>
           ))}
         </DivNavbarMenu>
-        <Link to={alunas}>
-          <PrimaryButton text="Área Logada" />
-        </Link>
+        {props.hideButton !== true && (
+          <Link to={alunas}>
+            <PrimaryButton text="Área Logada" />
+          </Link>
+        )}
       </DivNavbarCenter>
     </DivNavbar>
   );

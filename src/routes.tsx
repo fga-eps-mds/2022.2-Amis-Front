@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Alunas } from "./pages/alunas/alunas";
 import { Home } from "./pages/home/home";
+import { Login } from "./pages/login/login";
 import { Receitas } from "./pages/receitas/receitas";
 
 export default function AppRoutes() {
@@ -15,6 +16,9 @@ export default function AppRoutes() {
       </Routes>
       <Routes>
         <Route path="/alunas" element={<Alunas />} />
+      </Routes>
+      <Routes>
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
