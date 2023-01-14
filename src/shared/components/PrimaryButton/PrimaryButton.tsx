@@ -12,8 +12,8 @@ const Button = styled.button`
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  color: ${(props) => props.theme.colors.white};
-  background: ${(props) => props.theme.colors.primary};
+  color: ${(props) => "white"};
+  background: ${(props) => "#da4d3d"};
   font-weight: bold;
   &:hover {
     background-color: #d2301e;

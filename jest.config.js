@@ -8,6 +8,7 @@ module.exports = {
     "src/**/**/*.{ts,tsx}",
     "src/**/**/**/*.{ts,tsx}",
   ],
+  collectCoverage: true,
   testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['<rootDir>/.jest/setup-tests.js'],
   transform: {
