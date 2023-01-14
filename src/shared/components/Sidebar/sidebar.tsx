@@ -5,12 +5,13 @@ import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
 import { BiUser } from "react-icons/bi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { grey } from "@mui/material/colors";
 
 const Container = styled.div`
   width: 200px;
   height: 100%;
   border: none;
-  background: ${(props) => props.theme.colors.white};
+  background: white;
 `;
 
 const SidebarItem = styled(Link)<{ isActive?: boolean }>`
@@ -24,12 +25,9 @@ const SidebarItem = styled(Link)<{ isActive?: boolean }>`
   border-radius: 5px 0 0 5px;
   text-decoration: none;
   padding-left: ${(props) => props.isActive && "13px"};
-  background: ${(props) =>
-    props.isActive ? props.theme.colors.grey : props.theme.colors.white};
-  color: ${(props) =>
-    props.isActive ? props.theme.colors.primary : "#525252"};
-  border-left: ${(props) =>
-    props.isActive && "7px solid" + props.theme.colors.primary};
+  background: ${(props) => (props.isActive ? grey : "white")};
+  color: ${(props) => (props.isActive ? "#da4d3d" : "#525252")};
+  border-left: ${(props) => props.isActive && "7px solid" + "#da4d3d"};
 `;
 
 const ItemText = styled.h1`
@@ -46,7 +44,7 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${(props) => props.theme.colors.primary};
+  color: "#da4d3d";
   font-weight: 600;
 `;
 
