@@ -22,7 +22,6 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListarDTO";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrarDTO";
-import dayjs from "dayjs";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
@@ -106,12 +105,12 @@ export function Turmas() {
     const turma = {
       id: Math.random(),
       descricao: data.descricao,
-      numeroVagas: data.numeroVagas,
-      vagasPrenchidas: data.vagasPrenchidas,
-      horario: data.horario,
       turno: data.turno,
-      admin: data.admin,
-      dCriacao: dayjs().format("DD/MM/YYYY"),
+      capacidade: data.capacidade,
+      horarioInicio: data.horarioInicio,
+      horarioFim: data.horarioFim,
+      dataInicio: data.dataInicio,
+      dataFim: data.dataFim,
     } as unknown as TurmasCadastrarDTO;
 
     setDataTable([...dataTable, turma]); // mudar
@@ -138,11 +137,12 @@ export function Turmas() {
   //     temp.push({
   //       id: Math.random(),
   //        descricao: value.descricao,
-  //        numeroVagas: value.numeroVagas,
-  //        vagasPrenchidas: value.vagasPrenchidas,
-  //        horario: value.horario,
   //        turno: value.turno,
-  //        admin: value.admin,
+  //        capacidade: value.capacidade,
+  //        horarioInicio: value.horarioInicio,
+  //        horarioFim: value.horarioFim,
+  //        dataInicio: value.dataInicio,
+  //        dataFim: value.dataFim
   //     });
   //   });
   //   setDataTable(temp);
@@ -171,10 +171,12 @@ export function Turmas() {
       if (element.id === id) {
         const turma = {
           descricao: data.descricao,
-          numeroVagas: data.numeroVagas,
-          vagasPrenchidas: data.vagasPrenchidas,
           turno: data.turno,
-          horario: data.horario,
+          capacidade: data.capacidade,
+          horarioInicio: data.horarioInicio,
+          horarioFim: data.horarioFim,
+          dataInicio: data.dataInicio,
+          dataFim: data.dataFim,
         };
         element = turma;
         console.log("element", element);
@@ -182,7 +184,7 @@ export function Turmas() {
         setOpenEdit(false);
       }
     });
-    
+
     // await axios
     //   .delete("https://amis-service-stg.azurewebsites.net/Turmas/", id)
     //   .then((response) => {
@@ -197,17 +199,12 @@ export function Turmas() {
 
   const columnsTable = [
     // mudar
-    { field: "descricao", headerName: "Descrição", width: 250 },
-    { field: "numeroVagas", headerName: "Número de vagas", width: 150 },
-    { field: "vagasPrenchidas", headerName: "Vagas preenchidas", width: 150 },
-    {
-      field: "dCriacao",
-      headerName: "Data de início",
-      width: 120,
-      type: "date",
-    },
-    { field: "horario", headerName: "Horário", width: 100 },
+    { field: "descricao", headerName: "Turma", width: 100 },
+    { field: "capacidade", headerName: "Número de vagas", width: 200 },
     { field: "turno", headerName: "Turno", width: 100 },
+    { field: "horarioInicio", headerName: "Horário de Início", width: 200 },
+    { field: "horarioFim", headerName: "Horário de Término", width: 200 },
+    { field: "dataInicio", headerName: "Data de Início", width: 120 },
     {
       field: "actions",
       type: "actions",
@@ -268,24 +265,17 @@ export function Turmas() {
           <Form onSubmit={handleSubmit(registerTurmas)}>
             <TextField
               id="outlined-descricao"
-              label="Descrição"
+              label="Turma"
               defaultValue={turma.descricao}
               required={true}
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-numeroVagas"
+              id="outlined-capacidade"
               label="Número de vagas"
               required={true}
-              {...register("numeroVagas")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-vagasPrenchidas"
-              label="Vagas preenchidas"
-              required={true}
-              {...register("vagasPrenchidas")}
+              {...register("capacidade")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -296,10 +286,31 @@ export function Turmas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-horario"
-              label="Horario"
+              id="outlined-dataInicio"
+              label="Data de Início"
               required={true}
-              {...register("horario")}
+              {...register("dataInicio")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dataFim"
+              label="Data de Término"
+              required={true}
+              {...register("dataFim")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horarioInicio"
+              label="Horário de Inicio"
+              required={true}
+              {...register("horarioInicio")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horarioFim"
+              label="Horário de Término"
+              required={true}
+              {...register("horarioFim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Cadastrar"} />
@@ -312,43 +323,58 @@ export function Turmas() {
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
               id="outlined-descricao"
-              label="Descrição"
-              required={true}
-              inputProps={{ maxLength: 12 }}
+              label="Turma"
               defaultValue={turma.descricao}
+              required={true}
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-numeroVagas"
+              id="outlined-capacidade"
               label="Número de vagas"
+              defaultValue={turma.capacidade}
               required={true}
-              defaultValue={turma.numeroVagas}
-              {...register("numeroVagas")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-vagasPrenchidas"
-              label="Vagas preenchidas"
-              required={true}
-              defaultValue={turma.vagasPrenchidas}
-              {...register("vagasPrenchidas")}
+              {...register("capacidade")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-turno"
               label="Turno"
+              defaultValue={turma.label}
               required={true}
-              defaultValue={turma.turno}
               {...register("turno")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-horario"
-              label="Horario"
+              id="outlined-dataInicio"
+              label="Data de Início"
+              defaultValue={turma.dataInicio}
               required={true}
-              defaultValue={turma.horario}
-              {...register("horario")}
+              {...register("dataInicio")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dataFim"
+              label="Data de Término"
+              defaultValue={turma.dataFim}
+              required={true}
+              {...register("dataFim")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horarioInicio"
+              label="Horário de Inicio"
+              defaultValue={turma.horarioInicio}
+              required={true}
+              {...register("horarioInicio")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horarioFim"
+              label="Horário de Término"
+              defaultValue={turma.horarioFim}
+              required={true}
+              {...register("horarioFim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Editar"} />
