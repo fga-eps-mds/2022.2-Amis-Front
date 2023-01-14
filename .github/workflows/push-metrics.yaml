@@ -3,6 +3,7 @@ on:
  push:
    branches:
      - 92-Criando_testes_no_front
+     - dev
  pull_request:
    types: [opened, synchronize, reopened]
 jobs:
