@@ -54,7 +54,7 @@ const DivCounter = styled.div`
   background: ${(props) => props.theme.colors.primary};
   display: flex;
   padding: 45px 150px;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `;
 
 const DivEachCounter = styled.div`
@@ -174,10 +174,6 @@ export function Home() {
         <DivEachCounter>
           <CounterNumber>98</CounterNumber>
           <CounterText>Mulheres atendidas</CounterText>
-        </DivEachCounter>
-        <DivEachCounter>
-          <CounterNumber>187</CounterNumber>
-          <CounterText>Famílias impactadas</CounterText>
         </DivEachCounter>
         <DivEachCounter>
           <CounterNumber>91</CounterNumber>
