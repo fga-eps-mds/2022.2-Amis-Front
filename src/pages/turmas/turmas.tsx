@@ -22,8 +22,9 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListarDTO";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrarDTO";
-import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
-import { BsFillTrashFill } from "react-icons/bs";
+import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
+import { BsFillTrashFill, BsFillPersonPlusFill, BsFillPersonDashFill } from "react-icons/bs";
+import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 
 const Container = styled.div`
@@ -81,6 +82,7 @@ const style = {
   overflowY: "scroll",
 };
 
+
 export function Turmas() {
   // mudar
   const [open, setOpen] = useState(false);
@@ -88,6 +90,9 @@ export function Turmas() {
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openMatricula, setOpenMatricula] = useState(false);
+  const [openList, setOpenList] = useState(false);
+  const [openRemove, setOpenRemove] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
@@ -161,6 +166,22 @@ export function Turmas() {
     //     console.warn(err);
     //     handleCloseConfirmation();
     //   });
+
+  };
+  const removeAluna = async () => {
+    console.log("Id excluido", id);
+    setOpenRemove(false);
+    // await axios
+    //   .delete("https://amis-service-stg.azurewebsites.net/turmas/", id)
+    //   .then((response) => {
+    //     console.log(response.data);
+    //     handleCloseConfirmation();
+    //   })
+    //   .catch((err) => {
+    //     console.warn(err);
+    //     handleCloseConfirmation();
+    //   });
+
   };
 
   const editTurmas = async (data: any) => {
@@ -185,47 +206,87 @@ export function Turmas() {
       }
     });
 
-    // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/Turmas/", id)
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     handleCloseConfirmation();
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //     handleCloseConfirmation();
-    //   });
+
   };
+
+  const columnsTableAlunas = [
+    { field: "nome", headerName: "Nome", width: 350 },
+    { field: "cpf", headerName: "CPF", width: 150 },
+    { field: "dNascimento", headerName: "Data Nascimento", width: 150 },
+    {
+      field: "actions",
+      headerName: "Remover",
+      type: "actions",
+      width: 100,
+      getActions: (params: { id: GridRowId }) => [
+        <GridActionsCellItem
+        // eslint-disable-next-line react/jsx-key
+          icon={<BsFillPersonDashFill size={18} />}
+          label="Remover aluna da turma"
+          onClick={() => {
+            setId(params.id);
+            //;
+          }}
+        />,
+      ],
+    },
+  ];
+
+  
+
+  const rowsAlunas = [
+    { id: 1, nome: 'Snow', cpf: 'Jon', dNascimento: 35 },
+    { id: 2, nome: 'Snowasd', cpf: 'Jonsdasd', dNascimento: 43 },
+  ];
 
   const columnsTable = [
     // mudar
-    { field: "descricao", headerName: "Turma", width: 100 },
-    { field: "capacidade", headerName: "Número de vagas", width: 200 },
-    { field: "turno", headerName: "Turno", width: 100 },
+    { field: "descricao", headerName: "Turma", width: 350 },
+    { field: "capacidade", headerName: "Número de vagas", width: 180 },
+    { field: "turno", headerName: "Turno", width: 125 },
     { field: "horarioInicio", headerName: "Horário de Início", width: 200 },
     { field: "horarioFim", headerName: "Horário de Término", width: 200 },
-    { field: "dataInicio", headerName: "Data de Início", width: 120 },
+    { field: "dataInicio", headerName: "Data de Início", width: 165 },
     {
       field: "actions",
+      headerName: "Ações",
       type: "actions",
-      width: 80,
+      width: 150,
       getActions: (params: { id: GridRowId }) => [
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
+          icon={<BsFillPersonPlusFill size={20} />}
+          label="MatricularAlunas"
           onClick={() => {
             setId(params.id);
-            handleOpenConfirmation();
+            setOpenMatricula(true);
           }}
         />,
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
+          icon={<FaList size={20} />}
+          label="ListarAlunas"
+          onClick={() => {
+            setId(params.id);
+            setOpenList(true);
+          }}
+        />,
+        <GridActionsCellItem
+        // eslint-disable-next-line react/jsx-key
           icon={<AiFillEdit size={20} />}
           label="Editar"
           onClick={async () => {
             setId(params.id);
             setOpenEdit(true);
+          }}
+        />,
+        <GridActionsCellItem
+        // eslint-disable-next-line react/jsx-key
+          icon={<BsFillTrashFill size={18} />}
+          label="Deletar"
+          onClick={() => {
+            setId(params.id);
+            handleOpenConfirmation();
           }}
         />,
       ],
@@ -245,6 +306,22 @@ export function Turmas() {
         <Dialog
           open={openConfirmation}
           onClose={setOpenConfirmation}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Você tem certeza que deseja excluir?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmation}>Não</Button>
+            <Button onClick={deleteTurmas} autoFocus>
+              Sim
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openRemove}
+          onClose={setOpenRemove}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
@@ -381,6 +458,35 @@ export function Turmas() {
           </Form>
         </Box>
       </Modal>
+      <Modal open={openList} onClose={() => setOpenList(false)}>
+        <Box sx={style} style={{width: 900}}>
+          <FormText style={{textAlign: "center", fontWeight: "bold", fontSize: 30}}>Alunas matriculadas na turma</FormText>
+            <DataGrid
+                rows={rowsAlunas}
+                columns={columnsTableAlunas}
+                pageSize={15}
+                rowsPerPageOptions={[5]}
+            />
+          <div style={{justifyContent: "center", display: "flex", marginTop: 20}}>
+            <PrimaryButton text={"Finalizar"} handleClick={() => setOpenList(false)}/>
+          </div>
+        </Box>
+      </Modal>
+      {/*<Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
+        <Box sx={style}>
+          <FormText style={{textAlign: "center", fontWeight: "bold", fontSize: 30}}>Matricular alunas na turma</FormText>
+          <Form onSubmit={handleSubmit(editTurmas)}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            checkboxSelection
+          />
+            <PrimaryButton text={"Editar"} />
+          </Form>
+        </Box>
+      </Modal>*/}
     </Container>
   );
 }
