@@ -259,6 +259,8 @@ export function Turmas() {
 
   const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
 
+  console.log(dataCheckbox)
+
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 350 },
     { field: "capacidade", headerName: "Número de vagas", width: 180 },
@@ -586,8 +588,17 @@ export function Turmas() {
             columns={columnsTableAlunasMatricular}
             pageSize={5}
             rowsPerPageOptions={[5]}
-            checkboxSelection
+            disableSelectionOnClick={true}
+            checkboxSelection={true}
+            onSelectionModelChange={(ids) => {
+              const selectedIDs = new Set(ids);
+              const selectedRowData = rowsAlunas.filter((row) =>
+                selectedIDs.has(row.id)
+              );
+              console.log(selectedRowData); //selectedRowData contém os dados de cada aluna selecionada no checkbox
+            }}
           />
+          
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
           >
