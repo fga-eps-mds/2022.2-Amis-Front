@@ -22,7 +22,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { AssistentesListarDTO } from "./dtos/AssistentesListarDTO";
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
@@ -109,7 +109,7 @@ export function Assistentes() {
       senha: data.senha,
       obs: data.obs,
       admin: data.admin,
-      dCriacao: dayjs().format("DD/MM/YYYY"),
+      dCriacao: data.dCriação,
     } as unknown as AssistentesCadastrarDTO;
 
     setDataTable([...dataTable, assistente]);

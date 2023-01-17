@@ -14,7 +14,14 @@ import {
   InputLabel,
   MenuItem,
   Modal,
+  Paper,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
@@ -23,7 +30,11 @@ import { useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListarDTO";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrarDTO";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
-import { BsFillTrashFill, BsFillPersonPlusFill, BsFillPersonDashFill } from "react-icons/bs";
+import {
+  BsFillTrashFill,
+  BsFillPersonPlusFill,
+  BsFillPersonDashFill,
+} from "react-icons/bs";
 import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 
@@ -82,7 +93,6 @@ const style = {
   overflowY: "scroll",
 };
 
-
 export function Turmas() {
   // mudar
   const [open, setOpen] = useState(false);
@@ -133,25 +143,24 @@ export function Turmas() {
     //   .catch((err) => console.warn(err));
   };
 
-  // useQuery("listar_Turmas", async () => {
-  //   const response = await axios.get(
-  //     "https://amis-service-stg.azurewebsites.net/turmas/"
-  //   );
-  //   const temp: TurmasListarDTO[] = [];
-  //   response.data.forEach((value: TurmasListarDTO) => {
-  //     temp.push({
-  //       id: Math.random(),
-  //        descricao: value.descricao,
-  //        turno: value.turno,
-  //        capacidade: value.capacidade,
-  //        horarioInicio: value.horarioInicio,
-  //        horarioFim: value.horarioFim,
-  //        dataInicio: value.dataInicio,
-  //        dataFim: value.dataFim
-  //     });
-  //   });
-  //   setDataTable(temp);
-  // });
+  /* useQuery("listar_Turmas", async () => {
+    const response = await axios.get(
+      "https://amis-service-stg.azurewebsites.net/turmas/"
+    );
+    const temp: TurmasListarDTO[] = [];
+    response.data.forEach((value: TurmasListarDTO) => {
+      temp.push({
+        id: Math.random(),
+        descricao: value.descricao,
+        turno: value.turno,
+        capacidade: value.capacidade,
+        horarioInicio: value.horarioInicio,
+        horarioFim: value.horarioFim,
+        dataInicio: value.dataInicio,
+      });
+    });
+    setDataTable(temp);
+  }); */
 
   const deleteTurmas = async () => {
     console.log("Id excluido", id);
@@ -166,7 +175,6 @@ export function Turmas() {
     //     console.warn(err);
     //     handleCloseConfirmation();
     //   });
-
   };
   const removeAluna = async () => {
     console.log("Id excluido", id);
@@ -181,13 +189,11 @@ export function Turmas() {
     //     console.warn(err);
     //     handleCloseConfirmation();
     //   });
-
   };
 
   const editTurmas = async (data: any) => {
     // mudar
     // eslint-disable-next-line array-callback-return
-
     dataTable.find((element: any) => {
       if (element.id === id) {
         const turma = {
@@ -205,8 +211,6 @@ export function Turmas() {
         setOpenEdit(false);
       }
     });
-
-
   };
 
   const columnsTableAlunas = [
@@ -219,28 +223,37 @@ export function Turmas() {
       type: "actions",
       width: 100,
       getActions: (params: { id: GridRowId }) => [
-        <GridActionsCellItem
         // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
           icon={<BsFillPersonDashFill size={18} />}
           label="Remover aluna da turma"
           onClick={() => {
             setId(params.id);
-            //;
+            // ;
           }}
         />,
       ],
     },
   ];
 
-  
-
   const rowsAlunas = [
-    { id: 1, nome: 'Snow', cpf: 'Jon', dNascimento: 35 },
-    { id: 2, nome: 'Snowasd', cpf: 'Jonsdasd', dNascimento: 43 },
+    {
+      id: 1,
+      nome: "João das Neves",
+      cpf: "02568746910",
+      dNascimento: "02/01/2001",
+    },
+    {
+      id: 2,
+      nome: "Maria Joana D'Arc",
+      cpf: "12345678910",
+      dNascimento: "03/12/1700",
+    },
   ];
 
+  const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
+
   const columnsTable = [
-    // mudar
     { field: "descricao", headerName: "Turma", width: 350 },
     { field: "capacidade", headerName: "Número de vagas", width: 180 },
     { field: "turno", headerName: "Turno", width: 125 },
@@ -271,8 +284,8 @@ export function Turmas() {
             setOpenList(true);
           }}
         />,
-        <GridActionsCellItem
         // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
           icon={<AiFillEdit size={20} />}
           label="Editar"
           onClick={async () => {
@@ -280,8 +293,8 @@ export function Turmas() {
             setOpenEdit(true);
           }}
         />,
-        <GridActionsCellItem
         // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
           onClick={() => {
@@ -459,20 +472,66 @@ export function Turmas() {
         </Box>
       </Modal>
       <Modal open={openList} onClose={() => setOpenList(false)}>
-        <Box sx={style} style={{width: 900}}>
-          <FormText style={{textAlign: "center", fontWeight: "bold", fontSize: 30}}>Alunas matriculadas na turma</FormText>
-            <DataGrid
-                rows={rowsAlunas}
-                columns={columnsTableAlunas}
-                pageSize={15}
-                rowsPerPageOptions={[5]}
+        <Box sx={style} style={{ width: 900 }}>
+          <FormText
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
+          >
+            Alunas matriculadas na turma
+          </FormText>
+          <div
+            style={{
+              justifyContent: "center",
+              display: "flex",
+              marginBottom: 50,
+            }}
+          >
+            <TableContainer
+              component={Paper}
+              style={{ width: 280, justifyContent: "center" }}
+            >
+              <Table
+                sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
+                aria-label="simple table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Vagas Totais</TableCell>
+                    <TableCell align="right">Vagas Preenchidas</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rowVagas.map((row) => (
+                    // eslint-disable-next-line react/jsx-key
+                    <TableRow>
+                      <TableCell align="left" style={{ textAlign: "center" }}>
+                        {row.vagasTot}
+                      </TableCell>
+                      <TableCell align="right" style={{ textAlign: "center" }}>
+                        {row.vagasOcup}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+          <DataGrid
+            rows={rowsAlunas}
+            columns={columnsTableAlunas}
+            pageSize={10}
+            rowsPerPageOptions={[5]}
+          />
+          <div
+            style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
+          >
+            <PrimaryButton
+              text={"Fechar"}
+              handleClick={() => setOpenList(false)}
             />
-          <div style={{justifyContent: "center", display: "flex", marginTop: 20}}>
-            <PrimaryButton text={"Finalizar"} handleClick={() => setOpenList(false)}/>
           </div>
         </Box>
       </Modal>
-      {/*<Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
+      {/* <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
         <Box sx={style}>
           <FormText style={{textAlign: "center", fontWeight: "bold", fontSize: 30}}>Matricular alunas na turma</FormText>
           <Form onSubmit={handleSubmit(editTurmas)}>
@@ -486,7 +545,7 @@ export function Turmas() {
             <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
-      </Modal>*/}
+      </Modal> */}
     </Container>
   );
 }
