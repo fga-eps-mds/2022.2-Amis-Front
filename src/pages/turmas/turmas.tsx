@@ -239,7 +239,7 @@ export function Turmas() {
   const columnsTableAlunasMatricular = [
     { field: "nome", headerName: "Nome", width: 420 },
     { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "dNascimento", headerName: "Data de Nascimento", width: 150 }
+    { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
   ];
 
   const rowsAlunas = [
@@ -258,8 +258,6 @@ export function Turmas() {
   ];
 
   const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
-
-  console.log(dataCheckbox)
 
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 350 },
@@ -359,8 +357,11 @@ export function Turmas() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-        <FormText
-            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}>Cadastrar uma nova turma</FormText>
+          <FormText
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
+          >
+            Cadastrar uma nova turma
+          </FormText>
           <Form onSubmit={handleSubmit(registerTurmas)}>
             <TextField
               id="outlined-descricao"
@@ -419,9 +420,10 @@ export function Turmas() {
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
           <FormText
-            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}>
-              Editar dados cadastrais da turma
-            </FormText>
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
+          >
+            Editar dados cadastrais da turma
+          </FormText>
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
               id="outlined-descricao"
@@ -544,8 +546,12 @@ export function Turmas() {
         </Box>
       </Modal>
       <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
-        <Box sx={style} style={{width: 900}}>
-          <FormText style={{textAlign: "center", fontWeight: "bold", fontSize: 30}}>Matricular alunas na turma</FormText>
+        <Box sx={style} style={{ width: 900 }}>
+          <FormText
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
+          >
+            Matricular alunas na turma
+          </FormText>
           <div
             style={{
               justifyContent: "center",
@@ -595,14 +601,18 @@ export function Turmas() {
               const selectedRowData = rowsAlunas.filter((row) =>
                 selectedIDs.has(row.id)
               );
-              console.log(selectedRowData); //selectedRowData contém os dados de cada aluna selecionada no checkbox
+              // selectedRowData contém os dados de cada aluna selecionada no checkbox
+              console.log(selectedRowData);
             }}
           />
-          
+
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
           >
-            <PrimaryButton text={"Matricular"} handleClick={() => setOpenMatricula(false)}/>
+            <PrimaryButton
+              text={"Matricular"}
+              handleClick={() => setOpenMatricula(false)}
+            />
           </div>
         </Box>
       </Modal>
