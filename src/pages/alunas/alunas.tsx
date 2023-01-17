@@ -23,7 +23,7 @@ import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrarDTO";
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background: grey;
+  background: ${(props) => props.theme.colors.grey};
   display: inline-flex;
 `;
 

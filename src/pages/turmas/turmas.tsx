@@ -216,7 +216,7 @@ export function Turmas() {
   const columnsTableAlunas = [
     { field: "nome", headerName: "Nome", width: 350 },
     { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "dNascimento", headerName: "Data Nascimento", width: 150 },
+    { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
     {
       field: "actions",
       headerName: "Remover",
@@ -236,18 +236,24 @@ export function Turmas() {
     },
   ];
 
+  const columnsTableAlunasMatricular = [
+    { field: "nome", headerName: "Nome", width: 420 },
+    { field: "cpf", headerName: "CPF", width: 150 },
+    { field: "dNascimento", headerName: "Data de Nascimento", width: 150 }
+  ];
+
   const rowsAlunas = [
     {
       id: 1,
-      nome: "João das Neves",
-      cpf: "02568746910",
-      dNascimento: "02/01/2001",
+      nome: "Maria das Dores",
+      cpf: "87436298413",
+      dNascimento: "26/12/1957",
     },
     {
       id: 2,
-      nome: "Maria Joana D'Arc",
-      cpf: "12345678910",
-      dNascimento: "03/12/1700",
+      nome: "Renata dos Santos",
+      cpf: "56482862441",
+      dNascimento: "01/08/1990",
     },
   ];
 
@@ -323,7 +329,7 @@ export function Turmas() {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Você tem certeza que deseja excluir?"}
+            {"Você tem certeza que deseja excluir esta turma?"}
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleCloseConfirmation}>Não</Button>
@@ -351,7 +357,8 @@ export function Turmas() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormText>Preencha corretamente os dados cadastrais.</FormText>
+        <FormText
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}>Cadastrar uma nova turma</FormText>
           <Form onSubmit={handleSubmit(registerTurmas)}>
             <TextField
               id="outlined-descricao"
@@ -409,7 +416,10 @@ export function Turmas() {
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
-          <FormText>Altere os dados cadastrais.</FormText>
+          <FormText
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}>
+              Editar dados cadastrais da turma
+            </FormText>
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
               id="outlined-descricao"
@@ -531,21 +541,60 @@ export function Turmas() {
           </div>
         </Box>
       </Modal>
-      {/* <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
-        <Box sx={style}>
+      <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
+        <Box sx={style} style={{width: 900}}>
           <FormText style={{textAlign: "center", fontWeight: "bold", fontSize: 30}}>Matricular alunas na turma</FormText>
-          <Form onSubmit={handleSubmit(editTurmas)}>
+          <div
+            style={{
+              justifyContent: "center",
+              display: "flex",
+              marginBottom: 50,
+            }}
+          >
+            <TableContainer
+              component={Paper}
+              style={{ width: 280, justifyContent: "center" }}
+            >
+              <Table
+                sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
+                aria-label="simple table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Vagas Totais</TableCell>
+                    <TableCell align="right">Vagas Preenchidas</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rowVagas.map((row) => (
+                    // eslint-disable-next-line react/jsx-key
+                    <TableRow>
+                      <TableCell align="left" style={{ textAlign: "center" }}>
+                        {row.vagasTot}
+                      </TableCell>
+                      <TableCell align="right" style={{ textAlign: "center" }}>
+                        {row.vagasOcup}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
           <DataGrid
-            rows={rows}
-            columns={columns}
+            rows={rowsAlunas}
+            columns={columnsTableAlunasMatricular}
             pageSize={5}
             rowsPerPageOptions={[5]}
             checkboxSelection
           />
-            <PrimaryButton text={"Editar"} />
-          </Form>
+          <div
+            style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
+          >
+            <PrimaryButton text={"Matricular"} handleClick={() => setOpenMatricula(false)}/>
+          </div>
         </Box>
-      </Modal> */}
+      </Modal>
     </Container>
   );
 }
