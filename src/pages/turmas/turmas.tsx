@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
@@ -93,8 +93,7 @@ const style = {
   overflowY: "scroll",
 };
 
-export function Turmas() {
-  // mudar
+export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
   const [turma, setTurma] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
@@ -116,83 +115,79 @@ export function Turmas() {
   } = useForm({});
 
   const registerTurmas = async (data: any) => {
-    // mudar
     const turma = {
-      id: Math.random(),
+      // id: 1,
       descricao: data.descricao,
-      turno: data.turno,
-      capacidade: data.capacidade,
-      horarioInicio: data.horarioInicio,
-      horarioFim: data.horarioFim,
-      dataInicio: data.dataInicio,
-      dataFim: data.dataFim,
+      // turno: data.turno,
+      // capacidade: data.capacidade,
+      // horarioInicio: data.horarioInicio,
+      // horarioFim: data.horarioFim,
+      // dataInicio: data.dataInicio,
+      // dataFim: data.dataFim,
     } as unknown as TurmasCadastrarDTO;
 
-    setDataTable([...dataTable, turma]); // mudar
-    setOpen(false);
+    // setDataTable([...dataTable, turma]);
+    // setOpen(false);
 
-    // await axios
-    //   .post(
-    //     "https://amis-service-stg.azurewebsites.net/turmas/",
-    //     turmas
-    //   )
-    //   .then((response) => {
-    //     console.log(response.status);
-    //     handleClose();
-    //   })
-    //   .catch((err) => console.warn(err));
+    await axios
+      .post("http://localhost:8080/turmas/", turma)
+      .then((response) => {
+        console.log(response.status);
+        handleClose();
+      })
+      .catch((err) => console.warn(err));
   };
 
-  /* useQuery("listar_Turmas", async () => {
-    const response = await axios.get(
-      "https://amis-service-stg.azurewebsites.net/turmas/"
-    );
+  useQuery("listar_Turmas", async () => {
+    const response = await axios.get("http://localhost:8080/turmas/");
     const temp: TurmasListarDTO[] = [];
     response.data.forEach((value: TurmasListarDTO) => {
       temp.push({
-        id: Math.random(),
+        id: value.id,
         descricao: value.descricao,
-        turno: value.turno,
-        capacidade: value.capacidade,
-        horarioInicio: value.horarioInicio,
-        horarioFim: value.horarioFim,
-        dataInicio: value.dataInicio,
+        // turno: value.turno,
+        // capacidade: value.capacidade,
+        // horarioInicio: value.horarioInicio,
+        // horarioFim: value.horarioFim,
+        // dataInicio: value.dataInicio,
       });
     });
     setDataTable(temp);
-  }); */
+  });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const deleteTurmas = async () => {
-    console.log("Id excluido", id);
-    setOpenConfirmation(false);
-    // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/turmas/", id)
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     handleCloseConfirmation();
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //     handleCloseConfirmation();
-    //   });
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    console.log("ID: " + id);
+    await axios
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
+      .delete("http://localhost:8080/turmas/" + id)
+      .then((response) => {
+        console.log(response.data);
+        handleCloseConfirmation();
+      })
+      .catch((err) => {
+        console.warn(err);
+        handleCloseConfirmation();
+      });
   };
-  const removeAluna = async () => {
+
+  /* const removeAluna = async () => {
     console.log("Id excluido", id);
     setOpenRemove(false);
-    // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/turmas/", id)
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     handleCloseConfirmation();
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //     handleCloseConfirmation();
-    //   });
-  };
+    await axios
+      .delete("http://localhost:8080/turmas/", id)
+      .then((response) => {
+        console.log(response.data);
+        handleCloseConfirmation();
+      })
+      .catch((err) => {
+        console.warn(err);
+        handleCloseConfirmation();
+      });
+  }; */
 
   const editTurmas = async (data: any) => {
-    // mudar
     // eslint-disable-next-line array-callback-return
     dataTable.find((element: any) => {
       if (element.id === id) {
@@ -338,7 +333,7 @@ export function Turmas() {
             </Button>
           </DialogActions>
         </Dialog>
-        <Dialog
+        {/* <Dialog
           open={openRemove}
           onClose={setOpenRemove}
           aria-labelledby="alert-dialog-title"
@@ -353,7 +348,7 @@ export function Turmas() {
               Sim
             </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
