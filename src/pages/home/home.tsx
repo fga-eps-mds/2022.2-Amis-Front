@@ -108,7 +108,7 @@ export function Home() {
 
   useQuery("listar_dados", async () => {
     const response = await axios.get(
-      "http://localhost:8080/count/{aluna}"
+      "http://localhost:8080/count/{id}"
     );
 
     const temp: DadosDeImpactoDTO[] = [];
