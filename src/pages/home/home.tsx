@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
 import home_image2 from "../../assets/home_image2.png";
 import footer_image1 from "../../assets/footer_image1.png";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { DadosDeImpactoDTO } from "./dtos/DadosDeImpactoDTO";
+import { useQuery } from "react-query";
+import axios from "axios";
+import DataTable from "../../shared/components/TablePagination/tablePagination";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -98,7 +102,29 @@ const FooterText = styled.span`
   font-size: 13px;
 `;
 
+
 export function Home() {
+  const [dataTable, setDataTable] = useState(Array<Object>);
+
+  useQuery("listar_dados", async () => {
+    const response = await axios.get(
+      "http://localhost:8080/count/{aluna}"
+    );
+
+    const temp: DadosDeImpactoDTO[] = [];
+    response.data.forEach((value: DadosDeImpactoDTO) => {
+      temp.push({
+        mulheresAtendidas: value.mulheresAtendidas,
+        formacoesProfissionais: value.formacoesProfissionais,
+      });
+    });
+
+    setDataTable(temp);
+    console.log(temp);
+  });
+
+
+
   return (
     <div>
       <Navbar />
@@ -200,5 +226,6 @@ export function Home() {
         </div>
       </DivFooter>
     </div>
+    
   );
 }
