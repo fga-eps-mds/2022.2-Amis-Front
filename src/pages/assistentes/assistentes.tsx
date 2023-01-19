@@ -28,8 +28,6 @@ import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
 import { toast, ToastContainer } from "react-toastify";
 
-import "react-toastify/dist/ReactToastify.css";
-
 const Container = styled.div`
   width: 100%;
   height: 100vh;

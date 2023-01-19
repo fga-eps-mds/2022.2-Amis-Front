@@ -7,11 +7,13 @@ import {
   getByTestId,
   render,
   screen,
-  waitFor
+  waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React, { Component } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
+import theme from "../../styles/theme";
 
 describe("alunas", () => {
   it("Alunas", async () => {
@@ -20,7 +22,9 @@ describe("alunas", () => {
       render(
         // eslint-disable-next-line react/react-in-jsx-scope
         <Router>
-          <Alunas />
+          <ThemeProvider theme={theme}>
+            <Alunas />
+          </ThemeProvider>
         </Router>
       );
 
