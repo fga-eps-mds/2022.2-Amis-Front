@@ -1,3 +1,14 @@
 node_modules
 .DS_Store
 /build
+
+# .lock files
+yarn.lock
+package-lock.json
+
+# Pastas com cobertura de testes
+coverage/lcov-report
+
+# Arquivo de testes
+coverage/
+jest-report.xml
