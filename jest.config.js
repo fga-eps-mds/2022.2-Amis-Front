@@ -7,6 +7,7 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/**/*.{ts,tsx}",
     "src/**/**/**/*.{ts,tsx}",
+    "!src/styles/globalStyle.ts",
   ],
   collectCoverage: true,
   testEnvironment: 'jest-environment-jsdom',
