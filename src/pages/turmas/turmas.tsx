@@ -116,14 +116,13 @@ export function Turmas(this: any) {
 
   const registerTurmas = async (data: any) => {
     const turma = {
-      // id: 1,
       descricao: data.descricao,
-      // turno: data.turno,
-      // capacidade: data.capacidade,
-      // horarioInicio: data.horarioInicio,
-      // horarioFim: data.horarioFim,
-      // dataInicio: data.dataInicio,
-      // dataFim: data.dataFim,
+      turno: data.turno,
+      capacidade: data.capacidade,
+      horarioInicio: data.horarioInicio,
+      horarioFim: data.horarioFim,
+      dataInicio: data.dataInicio,
+      dataFim: data.dataFim,
     } as unknown as TurmasCadastrarDTO;
 
     // setDataTable([...dataTable, turma]);
@@ -145,22 +144,19 @@ export function Turmas(this: any) {
       temp.push({
         id: value.id,
         descricao: value.descricao,
-        // turno: value.turno,
-        // capacidade: value.capacidade,
-        // horarioInicio: value.horarioInicio,
-        // horarioFim: value.horarioFim,
-        // dataInicio: value.dataInicio,
+        turno: value.turno,
+        capacidade: value.capacidade,
+        horarioInicio: value.horarioInicio,
+        horarioFim: value.horarioFim,
+        dataInicio: value.dataInicio,
+        dataFim: value.dataFim,
       });
     });
     setDataTable(temp);
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const deleteTurmas = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    console.log("ID: " + id);
     await axios
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       .delete("http://localhost:8080/turmas/" + id)
       .then((response) => {
         console.log(response.data);
@@ -172,26 +168,11 @@ export function Turmas(this: any) {
       });
   };
 
-  /* const removeAluna = async () => {
-    console.log("Id excluido", id);
-    setOpenRemove(false);
-    await axios
-      .delete("http://localhost:8080/turmas/", id)
-      .then((response) => {
-        console.log(response.data);
-        handleCloseConfirmation();
-      })
-      .catch((err) => {
-        console.warn(err);
-        handleCloseConfirmation();
-      });
-  }; */
-
   const editTurmas = async (data: any) => {
     // eslint-disable-next-line array-callback-return
     dataTable.find((element: any) => {
       if (element.id === id) {
-        const turma = {
+        const turmaEdit = {
           descricao: data.descricao,
           turno: data.turno,
           capacidade: data.capacidade,
@@ -200,12 +181,35 @@ export function Turmas(this: any) {
           dataInicio: data.dataInicio,
           dataFim: data.dataFim,
         };
-        element = turma;
+        element = turmaEdit;
         console.log("element", element);
-        setTurma(turma);
-        setOpenEdit(false);
+        setTurma(turmaEdit);
       }
     });
+
+    await axios
+      .put("http://localhost:8080/turmas/" + id)
+      .then((response) => {
+        console.log(response.status);
+        setOpenEdit(false);
+      })
+      .catch((err) => {
+        console.warn(err);
+        setOpenEdit(false);
+      });
+  };
+
+  const removeAluna = async () => {
+    await axios
+      .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
+      .then((response) => {
+        console.log(response.data);
+        handleCloseConfirmation();
+      })
+      .catch((err) => {
+        console.warn(err);
+        handleCloseConfirmation();
+      });
   };
 
   const columnsTableAlunas = [
@@ -237,6 +241,7 @@ export function Turmas(this: any) {
     { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
   ];
 
+  // PARA SIMULAR ALUNOS
   const rowsAlunas = [
     {
       id: 1,
@@ -252,15 +257,17 @@ export function Turmas(this: any) {
     },
   ];
 
+  // PARA SIMULAR VAGAS
   const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
 
   const columnsTable = [
-    { field: "descricao", headerName: "Turma", width: 350 },
-    { field: "capacidade", headerName: "Número de vagas", width: 180 },
+    { field: "descricao", headerName: "Turma", width: 250 },
     { field: "turno", headerName: "Turno", width: 125 },
-    { field: "horarioInicio", headerName: "Horário de Início", width: 200 },
-    { field: "horarioFim", headerName: "Horário de Término", width: 200 },
+    { field: "capacidade", headerName: "Número de vagas", width: 180 },
+    { field: "horarioInicio", headerName: "Horário de Início", width: 180 },
+    { field: "horarioFim", headerName: "Horário de Término", width: 180 },
     { field: "dataInicio", headerName: "Data de Início", width: 165 },
+    { field: "dataFim", headerName: "Data de Término", width: 165 },
     {
       field: "actions",
       headerName: "Ações",
@@ -333,22 +340,22 @@ export function Turmas(this: any) {
             </Button>
           </DialogActions>
         </Dialog>
-        {/* <Dialog
+        <Dialog
           open={openRemove}
           onClose={setOpenRemove}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+          aria-labelledby="removeAlert-dialog-title"
+          aria-describedby="removeAlert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-            {"Você tem certeza que deseja excluir?"}
+          <DialogTitle id="removeAlert-dialog-title">
+            {"Você tem certeza que deseja desmatricular a aluna?"}
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleCloseConfirmation}>Não</Button>
-            <Button onClick={deleteTurmas} autoFocus>
+            <Button onClick={removeAluna} autoFocus>
               Sim
             </Button>
           </DialogActions>
-        </Dialog> */}
+        </Dialog>
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
@@ -367,13 +374,6 @@ export function Turmas(this: any) {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-capacidade"
-              label="Número de vagas"
-              required={true}
-              {...register("capacidade")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
               id="outlined-turno"
               label="Turno"
               required={true}
@@ -381,17 +381,10 @@ export function Turmas(this: any) {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-dataInicio"
-              label="Data de Início"
+              id="outlined-capacidade"
+              label="Número de vagas"
               required={true}
-              {...register("dataInicio")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dataFim"
-              label="Data de Término"
-              required={true}
-              {...register("dataFim")}
+              {...register("capacidade")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -406,6 +399,20 @@ export function Turmas(this: any) {
               label="Horário de Término"
               required={true}
               {...register("horarioFim")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dataInicio"
+              label="Data de Início"
+              required={true}
+              {...register("dataInicio")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dataFim"
+              label="Data de Término"
+              required={true}
+              {...register("dataFim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Cadastrar"} />
