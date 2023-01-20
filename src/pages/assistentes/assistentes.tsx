@@ -181,7 +181,7 @@ export function Assistentes() {
     { field: "cpf", headerName: "CPF", width: 150 },
     { field: "observacao", headerName: "Observações", width: 450 },
     {
-      field: "admin",
+      field: "administrador",
       headerName: "Administrador(a)",
       width: 180,
       type: "boolean",
