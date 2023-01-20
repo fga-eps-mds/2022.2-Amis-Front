@@ -159,7 +159,7 @@ export function Turmas(this: any) {
     await axios
       .delete("http://localhost:8080/turmas/" + id)
       .then((response) => {
-        console.log(response.data);
+        console.log(response.status);
         handleCloseConfirmation();
       })
       .catch((err) => {
@@ -169,26 +169,18 @@ export function Turmas(this: any) {
   };
 
   const editTurmas = async (data: any) => {
-    // eslint-disable-next-line array-callback-return
-    dataTable.find((element: any) => {
-      if (element.id === id) {
-        const turmaEdit = {
-          descricao: data.descricao,
-          turno: data.turno,
-          capacidade: data.capacidade,
-          horarioInicio: data.horarioInicio,
-          horarioFim: data.horarioFim,
-          dataInicio: data.dataInicio,
-          dataFim: data.dataFim,
-        };
-        element = turmaEdit;
-        console.log("element", element);
-        setTurma(turmaEdit);
-      }
-    });
+    const turmaEdit = {
+      descricao: data.descricao,
+      turno: data.turno,
+      capacidade: data.capacidade,
+      horarioInicio: data.horarioInicio,
+      horarioFim: data.horarioFim,
+      dataInicio: data.dataInicio,
+      dataFim: data.dataFim,
+    } as unknown as TurmasCadastrarDTO;
 
     await axios
-      .put("http://localhost:8080/turmas/" + id)
+      .put("http://localhost:8080/turmas/" + id + "/", turmaEdit)
       .then((response) => {
         console.log(response.status);
         setOpenEdit(false);
@@ -197,11 +189,41 @@ export function Turmas(this: any) {
         console.warn(err);
         setOpenEdit(false);
       });
+
+    //   dataTable.find((element: any) => {
+    //   if (element.id === id) {
+    //     const turmaEdit = {
+    //       descricao: data.descricao,
+    //       turno: data.turno,
+    //       capacidade: data.capacidade,
+    //       horarioInicio: data.horarioInicio,
+    //       horarioFim: data.horarioFim,
+    //       dataInicio: data.dataInicio,
+    //       dataFim: data.dataFim,
+    //     } as unknown as TurmasCadastrarDTO;
+    //     // element = turmaEdit;
+    //     // console.log("element", element);
+    //     // setTurma(turmaEdit);
+    //   }
+    // });
+  };
+
+  const matriculaAluna = async (idTurma: number, idAluna: number) => {
+    await axios
+      .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
+      .then((response) => {
+        console.log(response.data);
+        handleCloseConfirmation();
+      })
+      .catch((err) => {
+        console.warn(err);
+        handleCloseConfirmation();
+      });
   };
 
   const removeAluna = async () => {
     await axios
-      .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
+      .delete("http://localhost:8080/matricula/" + idTurma + "/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
@@ -228,7 +250,6 @@ export function Turmas(this: any) {
           label="Remover aluna da turma"
           onClick={() => {
             setId(params.id);
-            // ;
           }}
         />,
       ],
@@ -258,7 +279,7 @@ export function Turmas(this: any) {
   ];
 
   // PARA SIMULAR VAGAS
-  const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
+  const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }]; // Alterar de Mocado para API
 
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 250 },
