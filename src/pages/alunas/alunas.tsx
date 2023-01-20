@@ -3,7 +3,10 @@ import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
+import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { BsFillTrashFill } from "react-icons/bs";
+import { AiFillEdit } from "react-icons/ai";
 
 import {
   Box,
@@ -77,6 +80,11 @@ export function Alunas() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  const [id, setId] = useState<GridRowId>(0);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleOpenConfirmation = () => setOpenConfirmation(true);
+  const handleCloseConfirmation = () => setOpenConfirmation(false);
   const {
     register,
     handleSubmit,
@@ -108,26 +116,52 @@ export function Alunas() {
       .catch((err) => console.warn(err));
   };
 
-  // useQuery("listar_alunas", async () => {
-  //   const response = await axios.get("http://localhost:8080/alunas");
+  useQuery("listar_alunas", async () => {
+    const response = await axios.get("http://localhost:8080/alunas");
 
-  //   const temp: AlunasListarDTO[] = [];
-  //   response.data.forEach((value: AlunasListarDTO) => {
-  //     temp.push({
-  //       id: value.id,
-  //       nome: value.nome,
-  //       cpf: value.cpf,
-  //       dNascimento: value.dNascimento,
-  //     });
-  //   });
+    const temp: AlunasListarDTO[] = [];
+    response.data.forEach((value: AlunasListarDTO) => {
+      temp.push({
+        id: value.id,
+        nome: value.nome,
+        cpf: value.cpf,
+        dNascimento: value.dNascimento,
+      });
+    });
 
-  //   setDataTable(temp);
-  // });
+    setDataTable(temp);
+  });
 
   const columnsTable = [
     { field: "nome", headerName: "Nome", width: 150 },
     { field: "cpf", headerName: "CPF", width: 150 },
     { field: "dNascimento", headerName: "Data Nascimento", width: 150 },
+    {
+      field: "actions",
+      headerName: "Ações",
+      type: "actions",
+      width: 80,
+      getActions: (params: { id: GridRowId }) => [
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<BsFillTrashFill size={18} />}
+          label="Deletar"
+          onClick={() => {
+            setId(params.id);
+            handleOpenConfirmation();
+          }}
+        />,
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<AiFillEdit size={20} />}
+          label="Editar"
+          onClick={async () => {
+            setId(params.id);
+            setOpenEdit(true);
+          }}
+        />,
+      ],
+    },
   ];
 
   return (
