@@ -108,7 +108,7 @@ export function Turmas(this: any) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
-  const [vagasData, setVagasData] = useState(Array<Object>);
+  const [vagas, setVagas] = useState<VagasListarDTO>();
   const {
     register,
     handleSubmit,
@@ -280,16 +280,15 @@ export function Turmas(this: any) {
     },
   ];
 
-  useQuery("listar_Vagas", async () => {
-    const responseVagas = await axios.get("http://localhost:8080/turmas/");
-    const tempVagas: VagasListarDTO[] = [];
-    responseVagas.data.forEach((value: VagasListarDTO) => {
-      tempVagas.push({
-        capacidade: value.capacidade,
-      });
+  const listarVagasTurmas = async (id: number) => {
+    const vagas = dataTable.filter((value: any) => {
+      console.log(value.id);
+      console.log(id);
+      return value.id === id;
     });
-    setVagasData(tempVagas);
-  });
+    console.log(vagas);
+    // setVagas(vagas);
+  };
 
   const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
 
@@ -354,7 +353,10 @@ export function Turmas(this: any) {
       <Content>
         <Navbarlog text={"Turmas"} />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          <PrimaryButton
+            text={"Cadastrar"}
+            handleClick={async () => await listarVagasTurmas(Number(id))}
+          />
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
         <Dialog
@@ -549,17 +551,17 @@ export function Turmas(this: any) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rowVagas.map((row) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <TableRow>
-                      <TableCell align="left" style={{ textAlign: "center" }}>
-                        {row.vagasTot}
-                      </TableCell>
-                      <TableCell align="right" style={{ textAlign: "center" }}>
-                        {row.vagasOcup}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {/* {rowVagas.find((element) => ( */}
+                  {/* // eslint-disable-next-line react/jsx-key */}
+                  <TableRow>
+                    <TableCell align="left" style={{ textAlign: "center" }}>
+                      {vagas?.capacidade}
+                    </TableCell>
+                    <TableCell align="right" style={{ textAlign: "center" }}>
+                      {/* {row.vagasOcup} */}
+                    </TableCell>
+                  </TableRow>
+                  {/* ))} */}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -568,7 +570,7 @@ export function Turmas(this: any) {
             rows={rowsAlunas}
             columns={columnsTableAlunas}
             pageSize={10}
-            rowsPerPageOptions={[5]}
+            rowsPerPageOptions={[10]}
           />
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
@@ -609,14 +611,14 @@ export function Turmas(this: any) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rowVagas.map((row) => (
+                  {vagas?.map((row) => (
                     // eslint-disable-next-line react/jsx-key
                     <TableRow>
                       <TableCell align="left" style={{ textAlign: "center" }}>
-                        {row.vagasTot}
+                        {row.capacidade}
                       </TableCell>
                       <TableCell align="right" style={{ textAlign: "center" }}>
-                        {row.vagasOcup}
+                        {row.vagasOcupadas}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -628,7 +630,7 @@ export function Turmas(this: any) {
             rows={rowsAlunas}
             columns={columnsTableAlunasMatricular}
             pageSize={5}
-            rowsPerPageOptions={[5]}
+            rowsPerPageOptions={[10]}
             disableSelectionOnClick={true}
             checkboxSelection={true}
             onSelectionModelChange={(ids) => {
