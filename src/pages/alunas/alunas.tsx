@@ -108,21 +108,21 @@ export function Alunas() {
       .catch((err) => console.warn(err));
   };
 
-  // useQuery("listar_alunas", async () => {
-  //   const response = await axios.get("http://localhost:8080/alunas");
+  useQuery("listar_alunas", async () => {
+    const response = await axios.get("http://localhost:8080/alunas");
 
-  //   const temp: AlunasListarDTO[] = [];
-  //   response.data.forEach((value: AlunasListarDTO) => {
-  //     temp.push({
-  //       id: value.id,
-  //       nome: value.nome,
-  //       cpf: value.cpf,
-  //       dNascimento: value.dNascimento,
-  //     });
-  //   });
+    const temp: AlunasListarDTO[] = [];
+    response.data.forEach((value: AlunasListarDTO) => {
+      temp.push({
+        id: value.id,
+        nome: value.nome,
+        cpf: value.cpf,
+        dNascimento: value.dNascimento,
+      });
+    });
 
-  //   setDataTable(temp);
-  // });
+    setDataTable(temp);
+  });
 
   const columnsTable = [
     { field: "nome", headerName: "Nome", width: 150 },

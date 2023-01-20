@@ -26,6 +26,7 @@ import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
+import { getValueOrTextContent } from "@testing-library/user-event/dist/types/document";
 
 const Container = styled.div`
   width: 100%;
@@ -98,62 +99,59 @@ export function Assistentes() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({});
+  } = useForm();
 
   const registerAssistentes = async (data: any) => {
     const assistente = {
-      id: Math.random(),
       nome: data.nome,
       cpf: data.cpf,
       login: data.login,
-      senha: data.senha,
-      obs: data.obs,
-      admin: data.admin,
-      dCriacao: data.dCriação,
-    } as unknown as AssistentesCadastrarDTO;
+      //senha: data.senha,
+      observacao: data.observacao,
+      administrador: data.administrador,
+    } as AssistentesCadastrarDTO;
 
-    setDataTable([...dataTable, assistente]);
+    //console.log(data.administrador)
 
-    // await axios
-    //   .post(
-    //     "https://amis-service-stg.azurewebsites.net/assistentes/",
-    //     assistente
-    //   )
-    //   .then((response) => {
-    //     console.log(response.status);
-    //     handleClose();
-    //   })
-    //   .catch((err) => console.warn(err));
+    await axios
+      .post("http://localhost:8080/assistentes", assistente)
+      .then((response) => {
+        console.log(response.status);
+        handleClose();
+      })
+      .catch((err) => console.warn(err));
   };
 
-  // useQuery("listar_assistentes", async () => {
-  //   const response = await axios.get(
-  //     "https://amis-service-stg.azurewebsites.net/assistentes/"
-  //   );
-  //   const temp: AssistentesListarDTO[] = [];
-  //   response.data.forEach((value: AssistentesListarDTO) => {
-  //     temp.push({
-  //       id: value.id,
-  //       nome: value.nome,
-  //       obs: value.obs,
-  //       admin: value.admin,
-  //     });
-  //   });
-  //   setDataTable(temp);
-  // });
+  useQuery("listar_assistentes", async () => {
+    const response = await axios.get("http://localhost:8080/assistentes");
+    const temp: AssistentesListarDTO[] = [];
+    response.data.forEach((value: AssistentesListarDTO) => {
+      temp.push({
+        id: value.id,
+        nome: value.nome,
+        cpf: value.cpf,
+        login: value.login,
+        //senha: value.senha,
+        observacao: value.observacao,
+        administrador: value.administrador,
+      });
+    });
+    setDataTable(temp);
+  });
+  
+  
 
   const deleteAssistentes = async () => {
-    console.log("Id excluido", id);
-    // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     handleCloseConfirmation();
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //     handleCloseConfirmation();
-    //   });
+    await axios
+      .delete("http://localhost:8080/assistentes/" + id, id)
+      .then((response) => {
+        console.log(response.data);
+        handleCloseConfirmation();
+      })
+      .catch((err) => {
+        console.warn(err);
+        handleCloseConfirmation();
+      });
   };
 
   const editAssistentes = async () => {
@@ -182,15 +180,9 @@ export function Assistentes() {
   };
 
   const columnsTable = [
-    { field: "nome", headerName: "Nome", width: 150 },
+    { field: "nome", headerName: "Nome", width: 350 },
     { field: "cpf", headerName: "CPF", width: 150 },
-    {
-      field: "dCriacao",
-      headerName: "Data de criação",
-      width: 150,
-      type: "date",
-    },
-    { field: "obs", headerName: "Observações", width: 150 },
+    { field: "obs", headerName: "Observações", width: 450 },
     {
       field: "admin",
       headerName: "Administrador(a)",
@@ -199,6 +191,7 @@ export function Assistentes() {
     },
     {
       field: "actions",
+      headerName: "Ações",
       type: "actions",
       width: 80,
       getActions: (params: { id: GridRowId }) => [
@@ -277,18 +270,18 @@ export function Assistentes() {
               {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
+            {/* <TextField
               id="outlined-senha"
               label="Senha"
               type="password"
               required={true}
               {...register("senha")}
               sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            /> */}
             <TextField
               id="outlined-Observações"
               label="Observações"
-              {...register("obs")}
+              {...register("observacao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
@@ -300,7 +293,7 @@ export function Assistentes() {
                 labelId="simple-select-admin"
                 required={true}
                 label="Administrador(a)?"
-                {...register("admin")}
+                {...register("administrador")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
                 <MenuItem value={false as any}>Não</MenuItem>
@@ -340,9 +333,9 @@ export function Assistentes() {
                 id="simple-select-label-admin"
                 labelId="simple-select-admin"
                 required={true}
-                defaultValue={assistente.admin}
+                defaultValue={assistente.administrador}
                 label="Administrador(a)?"
-                {...register("admin")}
+                {...register("administrador")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
                 <MenuItem value={false as any}>Não</MenuItem>
