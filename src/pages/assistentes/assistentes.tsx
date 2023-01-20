@@ -182,7 +182,7 @@ export function Assistentes() {
   const columnsTable = [
     { field: "nome", headerName: "Nome", width: 350 },
     { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "obs", headerName: "Observações", width: 450 },
+    { field: "observacao", headerName: "Observações", width: 450 },
     {
       field: "admin",
       headerName: "Administrador(a)",
