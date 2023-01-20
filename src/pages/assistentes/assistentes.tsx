@@ -154,29 +154,26 @@ export function Assistentes() {
       });
   };
 
-  const editAssistentes = async () => {
+  const editAssistentes = async (data: any) => {
     // eslint-disable-next-line array-callback-return
-    dataTable.find((element: any) => {
-      if (element.id === id) {
-        const assistente = {
-          nome: element.nome,
-          cpf: element.cpf,
-          admin: element.admin,
-        };
-        console.log(assistente);
-        setAssistente(assistente);
-      }
-    });
-    // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     handleCloseConfirmation();
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //     handleCloseConfirmation();
-    //   });
+    const assistente = {
+      nome: data.nome,
+      cpf: data.cpf,
+      administrador: data.administrador,
+      login: data.login,
+      observacao: data.observacao
+    } as AssistentesCadastrarDTO;
+
+    await axios
+      .put("http://localhost:8080/assistentes/" + id, assistente)
+      .then((response) => {
+        console.log(response.data);
+        setOpenEdit(false);
+      })
+      .catch((err) => {
+        console.warn(err);
+        setOpenEdit(false);
+      });
   };
 
   const columnsTable = [
@@ -323,6 +320,23 @@ export function Assistentes() {
               inputProps={{ maxLength: 12 }}
               defaultValue={assistente.cpf}
               {...register("cpf")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-login"
+              label="Login"
+              required={true}
+              inputProps={{ maxLength: 120 }}
+              defaultValue={assistente.login}
+              {...register("login")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-observacao"
+              label="Observações"
+              defaultValue={assistente.observacao}
+              required={true}
+              {...register("observacao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
