@@ -29,6 +29,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListarDTO";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrarDTO";
+import { VagasListarDTO } from "./dtos/VagasListarDTO";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
 import {
   BsFillTrashFill,
@@ -107,6 +108,7 @@ export function Turmas(this: any) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  const [vagasData, setVagasData] = useState(Array<Object>);
   const {
     register,
     handleSubmit,
@@ -223,7 +225,7 @@ export function Turmas(this: any) {
 
   const removeAluna = async () => {
     await axios
-      .delete("http://localhost:8080/matricula/" + idTurma + "/" + id)
+      .delete("http://localhost:8080/matricula/" /* + idTurma */ + "/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
@@ -278,8 +280,18 @@ export function Turmas(this: any) {
     },
   ];
 
-  // PARA SIMULAR VAGAS
-  const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }]; // Alterar de Mocado para API
+  useQuery("listar_Vagas", async () => {
+    const responseVagas = await axios.get("http://localhost:8080/turmas/");
+    const tempVagas: VagasListarDTO[] = [];
+    responseVagas.data.forEach((value: VagasListarDTO) => {
+      tempVagas.push({
+        capacidade: value.capacidade,
+      });
+    });
+    setVagasData(tempVagas);
+  });
+
+  const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
 
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 250 },
