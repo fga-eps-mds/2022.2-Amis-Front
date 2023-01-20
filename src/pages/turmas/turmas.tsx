@@ -180,7 +180,7 @@ export function Turmas(this: any) {
     } as unknown as TurmasCadastrarDTO;
 
     await axios
-      .put("http://localhost:8080/turmas/" + id + "/", turmaEdit)
+      .put("http://localhost:8080/turmas/" + id, turmaEdit)
       .then((response) => {
         console.log(response.status);
         setOpenEdit(false);
