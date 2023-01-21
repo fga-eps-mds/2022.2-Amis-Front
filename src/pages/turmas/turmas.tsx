@@ -38,6 +38,7 @@ import {
 } from "react-icons/bs";
 import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
+import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
 
 const Container = styled.div`
   width: 100%;
@@ -108,7 +109,8 @@ export function Turmas(this: any) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
-  const [vagas, setVagas] = useState<VagasListarDTO>();
+  const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
+  const [vagas, setVagas] = useState(Array<Object>);
   const {
     register,
     handleSubmit,
@@ -280,17 +282,41 @@ export function Turmas(this: any) {
     },
   ];
 
-  const listarVagasTurmas = async (id: number) => {
-    const vagas = dataTable.filter((value: any) => {
+  useQuery("listar_alunas", async () => {
+    const response = await axios.get("http://localhost:8080/alunas");
+
+    const temp: AlunasListarDTO[] = [];
+    response.data.forEach((value: AlunasListarDTO) => {
+      temp.push({
+        id: value.id,
+        nome: value.nome,
+        cpf: value.cpf,
+        dNascimento: value.dNascimento,
+      });
+    });
+    setDataTableAlunas(temp);
+  });
+
+  const listarIDTurmas = async () => {
+    dataTable.find((value: any) => {
       console.log(value.id);
-      console.log(id);
+
+      // console.log("PRINT:", );
       return value.id === id;
     });
-    console.log(vagas);
-    // setVagas(vagas);
   };
 
-  const rowVagas = [{ vagasTot: 30, vagasOcup: 20 }];
+  const listarVagas = async () => {
+    const response = await axios.get("http://localhost:8080/turmas/");
+    const temp: VagasListarDTO[] = [];
+    response.data.forEach((value: VagasListarDTO) => {
+      temp.push({
+        capacidade: value.capacidade,
+      });
+      setVagas(temp);
+      console.log(temp);
+    });
+  };
 
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 250 },
@@ -352,10 +378,14 @@ export function Turmas(this: any) {
       <Sidebar />
       <Content>
         <Navbarlog text={"Turmas"} />
+        <PrimaryButton
+          text={"DEBUGADOR"}
+          handleClick={async () => await listarVagas()} // DEBUGA AÍ TUA FUNÇÃO
+        />
         <DivButtons>
           <PrimaryButton
             text={"Cadastrar"}
-            handleClick={async () => await listarVagasTurmas(Number(id))}
+            handleClick={async () => await listarIDTurmas()}
           />
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
@@ -551,17 +581,14 @@ export function Turmas(this: any) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {/* {rowVagas.find((element) => ( */}
-                  {/* // eslint-disable-next-line react/jsx-key */}
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {vagas?.capacidade}
+                      {30}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
-                      {/* {row.vagasOcup} */}
+                      {666}
                     </TableCell>
                   </TableRow>
-                  {/* ))} */}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -611,23 +638,20 @@ export function Turmas(this: any) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {vagas?.map((row) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <TableRow>
-                      <TableCell align="left" style={{ textAlign: "center" }}>
-                        {row.capacidade}
-                      </TableCell>
-                      <TableCell align="right" style={{ textAlign: "center" }}>
-                        {row.vagasOcupadas}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  <TableRow>
+                    <TableCell align="left" style={{ textAlign: "center" }}>
+                      {45}
+                    </TableCell>
+                    <TableCell align="right" style={{ textAlign: "center" }}>
+                      {777}
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
           </div>
           <DataGrid
-            rows={rowsAlunas}
+            rows={dataTableAlunas}
             columns={columnsTableAlunasMatricular}
             pageSize={5}
             rowsPerPageOptions={[10]}
