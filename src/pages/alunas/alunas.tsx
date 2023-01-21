@@ -11,6 +11,10 @@ import { AiFillEdit } from "react-icons/ai";
 import {
   Box,
   FormControl,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   InputLabel,
   MenuItem,
   Modal,
@@ -77,6 +81,7 @@ const style = {
 
 export function Alunas() {
   const [open, setOpen] = useState(false);
+  const [aluna, setAluna] = useState(Object);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
@@ -132,6 +137,45 @@ export function Alunas() {
     setDataTable(temp);
   });
 
+  const deleteAlunas = async () => {
+    await axios
+      .delete("http://localhost:8080/alunas/" + id, id)
+      .then((response) => {
+        console.log(response.data);
+        handleCloseConfirmation();
+      })
+      .catch((err) => {
+        console.warn(err);
+        handleCloseConfirmation();
+      });
+  };
+
+  const editAlunas = async (data: any) => {
+    // eslint-disable-next-line array-callback-return
+    const aluna = {
+      nome: data.nome,
+      nomeSocial: data.nomeSocial,
+      cpf: data.cpf,
+      rg: data.rg,
+      dNascimento: data.dNascimento,
+      nomePai: data.nomePai,
+      nomeMae: data.nomeMae,
+      deficiencia: data.deficiencia,
+      idEndereco: 1,
+    } as AlunasCadastrarDTO;
+
+    await axios
+      .put("http://localhost:8080/alunas/" + id, aluna)
+      .then((response) => {
+        console.log(response.data);
+        setOpenEdit(false);
+      })
+      .catch((err) => {
+        console.warn(err);
+        setOpenEdit(false);
+      });
+  };
+
   const columnsTable = [
     { field: "nome", headerName: "Nome", width: 150 },
     { field: "cpf", headerName: "CPF", width: 150 },
@@ -174,6 +218,22 @@ export function Alunas() {
           {/* <PrimaryButton text={"Editar"} /> */}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
+        <Dialog
+          open={openConfirmation}
+          onClose={setOpenConfirmation}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Você tem certeza que deseja excluir?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmation}>Não</Button>
+            <Button onClick={deleteAlunas} autoFocus>
+              Sim
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
@@ -233,6 +293,89 @@ export function Alunas() {
               </Select>
             </FormControl>
             <PrimaryButton text={"Cadastrar"} />
+          </Form>
+        </Box>
+      </Modal>
+      <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+        <Box sx={style}>
+          <FormText>Altere os dados da aluna.</FormText>
+          <Form onSubmit={handleSubmit(editAlunas)}>
+            <TextField
+              id="outlined-nome"
+              label="Nome"
+              defaultValue={aluna.nome}
+              required={true}
+              {...register("nome")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nomeSocial"
+              label="Nome Social"
+              required={true}
+              inputProps={{ maxLength: 120 }}
+              defaultValue={aluna.nomeSocial}
+              {...register("nomeSocial")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-cpf"
+              label="CPF"
+              required={true}
+              inputProps={{ maxLength: 12 }}
+              defaultValue={aluna.cpf}
+              {...register("cpf")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-rg"
+              label="RG"
+              defaultValue={aluna.rg}
+              required={true}
+              {...register("rg")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dNascimento"
+              label="Data de Nascimento"
+              defaultValue={aluna.dNascimento}
+              required={true}
+              {...register("dNascimento")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nomePai"
+              label="Nome do Pai"
+              defaultValue={aluna.nomePai}
+              required={true}
+              {...register("nomePai")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nomeMae"
+              label="Nome da Mãe"
+              defaultValue={aluna.nomeMae}
+              required={true}
+              {...register("nomeMae")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                Deficiência?
+              </InputLabel>
+              <Select
+                id="simple-select-label-deficiencia"
+                labelId="simple-select-deficiencia"
+                required={true}
+                defaultValue={aluna.deficiencia}
+                label="Possui deficiência?"
+                {...register("deficiencia")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={false as any}>Não</MenuItem>
+                <MenuItem value={true as any}>Sim</MenuItem>
+              </Select>
+            </FormControl>
+            <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
       </Modal>
