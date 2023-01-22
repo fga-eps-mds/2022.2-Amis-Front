@@ -117,6 +117,7 @@ export function Turmas(this: any) {
     watch,
     formState: { errors },
   } = useForm({});
+  const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
 
   const registerTurmas = async (data: any) => {
     const turma = {
@@ -266,7 +267,14 @@ export function Turmas(this: any) {
     { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
   ];
 
-  // PARA SIMULAR ALUNOS
+  const consultaAlunasNaTurma = async (idTurma: number) => {
+    await axios
+      .get("http://localhost:8080/matricula/" + idTurma)
+      .then((response) => {
+        setAlunasTurma(response.data);
+      });
+  };
+
   const rowsAlunas = [
     {
       id: 1,
@@ -345,7 +353,8 @@ export function Turmas(this: any) {
         <GridActionsCellItem
           icon={<FaList size={20} />}
           label="ListarAlunas"
-          onClick={() => {
+          onClick={async () => {
+            await consultaAlunasNaTurma(Number(params.id));
             setId(params.id);
             setOpenList(true);
           }}
@@ -594,7 +603,7 @@ export function Turmas(this: any) {
             </TableContainer>
           </div>
           <DataGrid
-            rows={rowsAlunas}
+            rows={alunasTurma}
             columns={columnsTableAlunas}
             pageSize={10}
             rowsPerPageOptions={[10]}
