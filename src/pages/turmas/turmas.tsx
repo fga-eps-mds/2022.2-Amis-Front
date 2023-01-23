@@ -99,18 +99,22 @@ export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
   const [turma, setTurma] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
+  const [idTurma, setIdTurma] = useState<GridRowId>(0);
+  const [idAluna, setIdAluna] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openMatricula, setOpenMatricula] = useState(false);
   const [openList, setOpenList] = useState(false);
-  const [openRemove, setOpenRemove] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
+  const [openDesmat, setOpenDesmat] = useState(false);
+  const handleDesmatOpenConfirmation = () => setOpenDesmat(true);
+  const handleDesmatCloseConfirmation = () => setOpenDesmat(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
-  const [vagas, setVagas] = useState(Array<Object>);
+  const [vagas, setVagas] = useState(Array);
   const {
     register,
     handleSubmit,
@@ -218,43 +222,43 @@ export function Turmas(this: any) {
       .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
       .then((response) => {
         console.log(response.data);
-        handleCloseConfirmation();
       })
       .catch((err) => {
         console.warn(err);
-        handleCloseConfirmation();
       });
   };
 
-  const removeAluna = async () => {
+  const desmatAluna = async (idTurma: number, idAluna: number) => {
     await axios
-      .delete("http://localhost:8080/matricula/" /* + idTurma */ + "/" + id)
+      .delete("http://localhost:8080/matricula/" + idTurma + "/" + id)
       .then((response) => {
         console.log(response.data);
-        handleCloseConfirmation();
+        handleDesmatCloseConfirmation();
       })
       .catch((err) => {
         console.warn(err);
-        handleCloseConfirmation();
+        handleDesmatCloseConfirmation();
       });
   };
 
   const columnsTableAlunas = [
-    { field: "nome", headerName: "Nome", width: 350 },
+    { field: "nome", headerName: "Nome", width: 330 },
     { field: "cpf", headerName: "CPF", width: 150 },
     { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
     {
       field: "actions",
-      headerName: "Remover",
+      headerName: "Desmatricular",
       type: "actions",
-      width: 100,
+      width: 120,
       getActions: (params: { id: GridRowId }) => [
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
           icon={<BsFillPersonDashFill size={18} />}
-          label="Remover aluna da turma"
-          onClick={() => {
+          label="Desmatricular aluna da turma"
+          onClick={async () => {
+            await listarIDAluna(Number(params.id));
             setId(params.id);
+            handleDesmatOpenConfirmation();
           }}
         />,
       ],
@@ -272,23 +276,13 @@ export function Turmas(this: any) {
       .get("http://localhost:8080/matricula/" + idTurma)
       .then((response) => {
         setAlunasTurma(response.data);
+      })
+      .catch((err) => {
+        setAlunasTurma([]);
+        console.warn(err);
+        alert("Turma sem alunos matriculados");
       });
   };
-
-  const rowsAlunas = [
-    {
-      id: 1,
-      nome: "Maria das Dores",
-      cpf: "87436298413",
-      dNascimento: "26/12/1957",
-    },
-    {
-      id: 2,
-      nome: "Renata dos Santos",
-      cpf: "56482862441",
-      dNascimento: "01/08/1990",
-    },
-  ];
 
   useQuery("listar_alunas", async () => {
     const response = await axios.get("http://localhost:8080/alunas");
@@ -305,13 +299,16 @@ export function Turmas(this: any) {
     setDataTableAlunas(temp);
   });
 
-  const listarIDTurmas = async () => {
-    dataTable.find((value: any) => {
-      console.log(value.id);
+  const listarIDTurma = async (idDaTurma: number) => {
+    console.log(idDaTurma);
 
-      // console.log("PRINT:", );
-      return value.id === id;
-    });
+    setIdTurma(idDaTurma);
+  };
+
+  const listarIDAluna = async (idDaAluna: number) => {
+    console.log(idDaAluna);
+
+    setIdAluna(idDaAluna);
   };
 
   const listarVagas = async () => {
@@ -322,9 +319,13 @@ export function Turmas(this: any) {
         capacidade: value.capacidade,
       });
       setVagas(temp);
-      console.log(temp);
+      console.log(vagas);
     });
   };
+
+  const vaga = vagas.map(function (item: any) {
+    return item.capacidade;
+  });
 
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 250 },
@@ -355,6 +356,7 @@ export function Turmas(this: any) {
           label="ListarAlunas"
           onClick={async () => {
             await consultaAlunasNaTurma(Number(params.id));
+            await listarIDTurma(Number(params.id));
             setId(params.id);
             setOpenList(true);
           }}
@@ -387,14 +389,11 @@ export function Turmas(this: any) {
       <Sidebar />
       <Content>
         <Navbarlog text={"Turmas"} />
-        <PrimaryButton
-          text={"DEBUGADOR"}
-          handleClick={async () => await listarVagas()} // DEBUGA AÍ TUA FUNÇÃO
-        />
         <DivButtons>
+          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
           <PrimaryButton
-            text={"Cadastrar"}
-            handleClick={async () => await listarIDTurmas()}
+            text={"DEBUGADOR"}
+            handleClick={async () => await listarVagas()} // DEBUGA AÍ TUA FUNÇÃO
           />
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
@@ -415,8 +414,8 @@ export function Turmas(this: any) {
           </DialogActions>
         </Dialog>
         <Dialog
-          open={openRemove}
-          onClose={setOpenRemove}
+          open={openDesmat}
+          onClose={setOpenDesmat}
           aria-labelledby="removeAlert-dialog-title"
           aria-describedby="removeAlert-dialog-description"
         >
@@ -424,8 +423,13 @@ export function Turmas(this: any) {
             {"Você tem certeza que deseja desmatricular a aluna?"}
           </DialogTitle>
           <DialogActions>
-            <Button onClick={handleCloseConfirmation}>Não</Button>
-            <Button onClick={removeAluna} autoFocus>
+            <Button onClick={handleDesmatCloseConfirmation}>Não</Button>
+            <Button
+              onClick={async () => {
+                await desmatAluna(Number(idTurma), Number(idAluna));
+              }}
+              autoFocus
+            >
               Sim
             </Button>
           </DialogActions>
@@ -592,7 +596,7 @@ export function Turmas(this: any) {
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {30}
+                      {vaga}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
                       {666}
@@ -602,6 +606,7 @@ export function Turmas(this: any) {
               </Table>
             </TableContainer>
           </div>
+          {/* TABELA DE ALUNAS NA TURMA */}
           <DataGrid
             rows={alunasTurma}
             columns={columnsTableAlunas}
@@ -666,10 +671,10 @@ export function Turmas(this: any) {
             rowsPerPageOptions={[10]}
             disableSelectionOnClick={true}
             checkboxSelection={true}
-            onSelectionModelChange={(ids) => {
-              const selectedIDs = new Set(ids);
-              const selectedRowData = rowsAlunas.filter((row) =>
-                selectedIDs.has(row.id)
+            onSelectionModelChange={(dataTableAlunas) => {
+              const selectedIDs = new Set(dataTableAlunas);
+              const selectedRowData = dataTableAlunas.filter(() =>
+                selectedIDs.has(id)
               );
               // selectedRowData contém os dados de cada aluna selecionada no checkbox
               console.log(selectedRowData);
