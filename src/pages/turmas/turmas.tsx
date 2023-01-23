@@ -230,13 +230,20 @@ export function Turmas(this: any) {
 
   const desmatAluna = async (idTurma: number, idAluna: number) => {
     await axios
-      .delete("http://localhost:8080/matricula/" + idTurma + "/" + id)
+      .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
       .then((response) => {
         console.log(response.data);
+        console.log(
+          "Aluna de ID: " +
+            idAluna +
+            " desmatriculada da turma de ID: " +
+            idTurma
+        );
         handleDesmatCloseConfirmation();
       })
       .catch((err) => {
         console.warn(err);
+        alert("Erro ao desmatricular aluna");
         handleDesmatCloseConfirmation();
       });
   };
@@ -300,13 +307,13 @@ export function Turmas(this: any) {
   });
 
   const listarIDTurma = async (idDaTurma: number) => {
-    console.log(idDaTurma);
+    console.log("ID Turma:", idDaTurma);
 
     setIdTurma(idDaTurma);
   };
 
   const listarIDAluna = async (idDaAluna: number) => {
-    console.log(idDaAluna);
+    console.log("ID Aluna:", idDaAluna);
 
     setIdAluna(idDaAluna);
   };
@@ -316,16 +323,13 @@ export function Turmas(this: any) {
     const temp: VagasListarDTO[] = [];
     response.data.forEach((value: VagasListarDTO) => {
       temp.push({
+        id: value.id,
         capacidade: value.capacidade,
       });
       setVagas(temp);
       console.log(vagas);
     });
   };
-
-  const vaga = vagas.map(function (item: any) {
-    return item.capacidade;
-  });
 
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 250 },
@@ -345,7 +349,8 @@ export function Turmas(this: any) {
         <GridActionsCellItem
           icon={<BsFillPersonPlusFill size={20} />}
           label="MatricularAlunas"
-          onClick={() => {
+          onClick={async () => {
+            await listarVagas();
             setId(params.id);
             setOpenMatricula(true);
           }}
@@ -355,6 +360,7 @@ export function Turmas(this: any) {
           icon={<FaList size={20} />}
           label="ListarAlunas"
           onClick={async () => {
+            await listarVagas();
             await consultaAlunasNaTurma(Number(params.id));
             await listarIDTurma(Number(params.id));
             setId(params.id);
@@ -596,7 +602,7 @@ export function Turmas(this: any) {
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {vaga}
+                      {}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
                       {666}
