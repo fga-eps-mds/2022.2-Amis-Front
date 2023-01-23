@@ -115,7 +115,8 @@ export function Turmas(this: any) {
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
-  const [vagas, setVagas] = useState(Array);
+  const [vagas, setVagas] = useState(Array<VagasListarDTO>);
+
   const [matriculas, setMatriculas] = useState(Array);
   const {
     register,
@@ -332,17 +333,17 @@ export function Turmas(this: any) {
     setIdAluna(idDaAluna);
   };
 
-  const listarVagas = async () => {
-    const response = await axios.get("http://localhost:8080/turmas/");
-    const temp: VagasListarDTO[] = [];
-    response.data.forEach((value: VagasListarDTO) => {
-      temp.push({
-        id: value.id,
-        capacidade: value.capacidade,
-      });
-      setVagas(temp);
-      console.log(vagas);
+  const listarVagas = async (idTurmaVagas: number) => {
+    const response = await axios.get(
+      "http://localhost:8080/matricula/turma/" + idTurmaVagas
+    );
+    const vagasTurma: VagasListarDTO[] = [];
+    vagasTurma.push({
+      vagasTotais: response.data.vagasTotais,
+      vagasDisponiveis: response.data.vagasDisponiveis,
     });
+    setVagas(vagasTurma);
+    console.log(vagas);
   };
 
   const columnsTable = [
@@ -365,7 +366,8 @@ export function Turmas(this: any) {
           label="MatricularAlunas"
           onClick={async () => {
             await listarIDTurma(Number(params.id));
-            setId(params.id);
+            const idTurma = params.id;
+            await listarVagas(Number(idTurma));
             setOpenMatricula(true);
           }}
         />,
@@ -673,10 +675,12 @@ export function Turmas(this: any) {
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {45}
+                      {/* {vagas[0].vagasTotais} */}
+                      {2}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
-                      {777}
+                      {/* {vagas[0].vagasDisponiveis} */}
+                      {2}
                     </TableCell>
                   </TableRow>
                 </TableBody>

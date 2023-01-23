@@ -1,4 +1,4 @@
 export interface VagasListarDTO {
-  id: number;
-  capacidade: number;
+  vagasTotais: number;
+  vagasDisponiveis: number;
 }
