@@ -249,7 +249,8 @@ export function Alunas() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
+              inputProps={{ maxLength: 11 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
@@ -319,9 +320,9 @@ export function Alunas() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
               required={true}
-              inputProps={{ maxLength: 12 }}
+              inputProps={{ maxLength: 11 }}
               defaultValue={aluna.cpf}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}

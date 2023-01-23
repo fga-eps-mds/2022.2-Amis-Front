@@ -181,7 +181,7 @@ export function Assistentes() {
     { field: "cpf", headerName: "CPF", width: 150 },
     { field: "observacao", headerName: "Observações", width: 450 },
     {
-      field: "admin",
+      field: "administrador",
       headerName: "Administrador(a)",
       width: 180,
       type: "boolean",
@@ -254,7 +254,7 @@ export function Assistentes() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
               required={true}
               inputProps={{ maxLength: 12 }}
               {...register("cpf")}
@@ -315,9 +315,9 @@ export function Assistentes() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
               required={true}
-              inputProps={{ maxLength: 12 }}
+              inputProps={{ maxLength: 11 }}
               defaultValue={assistente.cpf}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}

@@ -23,6 +23,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  toggleButtonGroupClasses,
 } from "@mui/material";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -135,10 +136,8 @@ export function Turmas(this: any) {
       horarioFim: data.horarioFim,
       dataInicio: data.dataInicio,
       dataFim: data.dataFim,
-    } as unknown as TurmasCadastrarDTO;
+    } as TurmasCadastrarDTO;
 
-    // setDataTable([...dataTable, turma]);
-    // setOpen(false);
 
     await axios
       .post("http://localhost:8080/turmas/", turma)
@@ -153,16 +152,52 @@ export function Turmas(this: any) {
     const response = await axios.get("http://localhost:8080/turmas/");
     const temp: TurmasListarDTO[] = [];
     response.data.forEach((value: TurmasListarDTO) => {
-      temp.push({
-        id: value.id,
-        descricao: value.descricao,
-        turno: value.turno,
-        capacidade: value.capacidade,
-        horarioInicio: value.horarioInicio,
-        horarioFim: value.horarioFim,
-        dataInicio: value.dataInicio,
-        dataFim: value.dataFim,
-      });
+      if (value.turno == "1") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Matutino"
+        })
+      };
+      if (value.turno == "2") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Vespertino"
+        })
+      };
+      if (value.turno == "3") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Noturno"
+        })
+      };
+      // temp.push({
+      //   id: value.id,
+      //   descricao: value.descricao,
+      //   turno: value.turno,
+      //   capacidade: value.capacidade,
+      //   horarioInicio: value.horarioInicio,
+      //   horarioFim: value.horarioFim,
+      //   dataInicio: value.dataInicio,
+      //   dataFim: value.dataFim,
+      // });
     });
     setDataTable(temp);
   });
@@ -189,7 +224,7 @@ export function Turmas(this: any) {
       horarioFim: data.horarioFim,
       dataInicio: data.dataInicio,
       dataFim: data.dataFim,
-    } as unknown as TurmasCadastrarDTO;
+    } as TurmasCadastrarDTO;
 
     await axios
       .put("http://localhost:8080/turmas/" + id, turmaEdit)
@@ -412,10 +447,6 @@ export function Turmas(this: any) {
         <Navbarlog text={"Turmas"} />
         <DivButtons>
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-          <PrimaryButton
-            text={"DEBUGADOR"}
-            handleClick={async () => await listarVagas()} // DEBUGA AÍ TUA FUNÇÃO
-          />
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
         <Dialog
@@ -472,13 +503,22 @@ export function Turmas(this: any) {
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-turno"
-              label="Turno"
-              required={true}
-              {...register("turno")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                Turno
+              </InputLabel>
+              <Select
+                id="simple-select-label-turno"
+                labelId="simple-select-turno"
+                label="Informe o turno"
+                {...register("turno")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={1 as any}>Matutino</MenuItem>
+                <MenuItem value={2 as any}>Vespertino</MenuItem>
+                <MenuItem value={3 as any}>Noturno</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               id="outlined-capacidade"
               label="Número de vagas"
@@ -542,14 +582,22 @@ export function Turmas(this: any) {
               {...register("capacidade")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-turno"
-              label="Turno"
-              defaultValue={turma.label}
-              required={true}
-              {...register("turno")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                Turno
+              </InputLabel>
+              <Select
+                id="simple-select-label-turno"
+                labelId="simple-select-turno"
+                label="Informe o turno"
+                {...register("turno")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={1 as any}>Matutino</MenuItem>
+                <MenuItem value={2 as any}>Vespertino</MenuItem>
+                <MenuItem value={3 as any}>Noturno</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               id="outlined-dataInicio"
               label="Data de Início"
