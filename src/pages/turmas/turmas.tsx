@@ -39,6 +39,7 @@ import {
 import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
+import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
 
 const Container = styled.div`
   width: 100%;
@@ -115,6 +116,7 @@ export function Turmas(this: any) {
   const [dataTable, setDataTable] = useState(Array<Object>);
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
   const [vagas, setVagas] = useState(Array);
+  const [matriculas, setMatriculas] = useState(Array);
   const {
     register,
     handleSubmit,
@@ -217,14 +219,28 @@ export function Turmas(this: any) {
     // });
   };
 
-  const matriculaAluna = async (idTurma: number, idAluna: number) => {
+  const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
+    const turmaMatricula = {
+      idTurma: idDaTurma,
+      idAluna: String(idDaAluna),
+    } as unknown as TurmasMatricularDTO;
+
     await axios
-      .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
+      .post("http://localhost:8080/matricula/", turmaMatricula)
       .then((response) => {
         console.log(response.data);
+        console.log(
+          "Aluna(s) de ID: " +
+            turmaMatricula.idAluna +
+            " matriculada(s) na turma de ID: " +
+            idTurma
+        );
+        setOpenMatricula(false);
       })
       .catch((err) => {
         console.warn(err);
+        alert("Erro ao matricular aluna(s)");
+        setOpenMatricula(false);
       });
   };
 
@@ -313,8 +329,6 @@ export function Turmas(this: any) {
   };
 
   const listarIDAluna = async (idDaAluna: number) => {
-    console.log("ID Aluna:", idDaAluna);
-
     setIdAluna(idDaAluna);
   };
 
@@ -350,7 +364,7 @@ export function Turmas(this: any) {
           icon={<BsFillPersonPlusFill size={20} />}
           label="MatricularAlunas"
           onClick={async () => {
-            await listarVagas();
+            await listarIDTurma(Number(params.id));
             setId(params.id);
             setOpenMatricula(true);
           }}
@@ -360,7 +374,6 @@ export function Turmas(this: any) {
           icon={<FaList size={20} />}
           label="ListarAlunas"
           onClick={async () => {
-            await listarVagas();
             await consultaAlunasNaTurma(Number(params.id));
             await listarIDTurma(Number(params.id));
             setId(params.id);
@@ -630,7 +643,7 @@ export function Turmas(this: any) {
         </Box>
       </Modal>
       <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
-        <Box sx={style} style={{ width: 900 }}>
+        <Box sx={style} style={{ width: 920 }}>
           <FormText
             style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
           >
@@ -673,17 +686,21 @@ export function Turmas(this: any) {
           <DataGrid
             rows={dataTableAlunas}
             columns={columnsTableAlunasMatricular}
-            pageSize={5}
-            rowsPerPageOptions={[10]}
+            pageSize={8}
+            rowsPerPageOptions={[8]}
             disableSelectionOnClick={true}
             checkboxSelection={true}
             onSelectionModelChange={(dataTableAlunas) => {
               const selectedIDs = new Set(dataTableAlunas);
-              const selectedRowData = dataTableAlunas.filter(() =>
-                selectedIDs.has(id)
+              const selectedRowData = dataTableAlunas.filter(
+                async () => await listarIDAluna(Number(selectedIDs.has(id)))
               );
-              // selectedRowData contém os dados de cada aluna selecionada no checkbox
-              console.log(selectedRowData);
+              setMatriculas(
+                selectedRowData.map(function (idTal) {
+                  return idTal.toString();
+                })
+              );
+              console.log(matriculas);
             }}
           />
 
@@ -692,7 +709,9 @@ export function Turmas(this: any) {
           >
             <PrimaryButton
               text={"Matricular"}
-              handleClick={() => setOpenMatricula(false)}
+              handleClick={async () =>
+                await matriculaAluna(Number(idTurma), String(matriculas))
+              }
             />
           </div>
         </Box>
