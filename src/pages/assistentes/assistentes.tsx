@@ -26,7 +26,6 @@ import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
-import { getValueOrTextContent } from "@testing-library/user-event/dist/types/document";
 
 const Container = styled.div`
   width: 100%;
@@ -106,12 +105,12 @@ export function Assistentes() {
       nome: data.nome,
       cpf: data.cpf,
       login: data.login,
-      //senha: data.senha,
+      // senha: data.senha,
       observacao: data.observacao,
       administrador: data.administrador,
     } as AssistentesCadastrarDTO;
 
-    //console.log(data.administrador)
+    // console.log(data.administrador)
 
     await axios
       .post("http://localhost:8080/assistentes", assistente)
@@ -131,19 +130,17 @@ export function Assistentes() {
         nome: value.nome,
         cpf: value.cpf,
         login: value.login,
-        //senha: value.senha,
+        // senha: value.senha,
         observacao: value.observacao,
         administrador: value.administrador,
       });
     });
     setDataTable(temp);
   });
-  
-  
 
   const deleteAssistentes = async () => {
     await axios
-      .delete("http://localhost:8080/assistentes/" + id, id)
+      .delete("http://localhost:8080/assistentes/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
@@ -161,7 +158,7 @@ export function Assistentes() {
       cpf: data.cpf,
       administrador: data.administrador,
       login: data.login,
-      observacao: data.observacao
+      observacao: data.observacao,
     } as AssistentesCadastrarDTO;
 
     await axios

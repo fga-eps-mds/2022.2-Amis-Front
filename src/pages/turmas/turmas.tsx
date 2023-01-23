@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import React, { SyntheticEvent, useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
@@ -15,6 +17,7 @@ import {
   MenuItem,
   Modal,
   Paper,
+  responsiveFontSizes,
   Select,
   Table,
   TableBody,
@@ -41,6 +44,8 @@ import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
+import { toast } from "react-toastify";
+import { queryClient } from "../../services/queryClient";
 
 const Container = styled.div`
   width: 100%;
@@ -116,9 +121,7 @@ export function Turmas(this: any) {
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
-  const [vagas, setVagas] = useState(Array<VagasListarDTO>);
-  const [vagasTotais, setVagasTotais] = useState<GridRowId>(0);
-  const [vagasDisponiveis, setVagasDisponiveis] = useState<GridRowId>(0);
+  const [vagas, setVagas] = useState<VagasListarDTO>();
   const [matriculas, setMatriculas] = useState(Array);
   const {
     register,
@@ -143,6 +146,7 @@ export function Turmas(this: any) {
       .post("http://localhost:8080/turmas/", turma)
       .then((response) => {
         console.log(response.status);
+        toast.success("Turma criada com sucesso!");
         handleClose();
       })
       .catch((err) => console.warn(err));
@@ -207,6 +211,7 @@ export function Turmas(this: any) {
       .delete("http://localhost:8080/turmas/" + id)
       .then((response) => {
         console.log(response.status);
+        toast.success("Turma excluida com sucesso!");
         handleCloseConfirmation();
       })
       .catch((err) => {
@@ -230,6 +235,7 @@ export function Turmas(this: any) {
       .put("http://localhost:8080/turmas/" + id, turmaEdit)
       .then((response) => {
         console.log(response.status);
+        toast.success("Turma atualizada com sucesso!");
         setOpenEdit(false);
       })
       .catch((err) => {
@@ -244,23 +250,29 @@ export function Turmas(this: any) {
       idAluna: String(idDaAluna),
     } as unknown as TurmasMatricularDTO;
 
-    await axios
-      .post("http://localhost:8080/matricula/", turmaMatricula)
-      .then((response) => {
-        console.log(response.data);
-        console.log(
-          "Aluna(s) de ID: " +
-            turmaMatricula.idAluna +
-            " matriculada(s) na turma de ID: " +
-            idTurma
-        );
-        setOpenMatricula(false);
-      })
-      .catch((err) => {
-        console.warn(err);
-        alert("Erro ao matricular aluna(s)");
-        setOpenMatricula(false);
-      });
+    if (matriculas.length > vagas?.vagasDisponiveis!) {
+      toast.error("Quantidade de vagas excedida");
+    } else {
+      await axios
+        .post("http://localhost:8080/matricula/", turmaMatricula)
+        .then((response) => {
+          console.log(response.data);
+          console.log(
+            "Aluna(s) de ID: " +
+              turmaMatricula.idAluna +
+              " matriculada(s) na turma de ID: " +
+              idTurma
+          );
+          toast.success("Alunas matriculadas com sucesso!");
+          queryClient.invalidateQueries("listar_alunas");
+          setOpenMatricula(false);
+        })
+        .catch((err) => {
+          console.warn(err);
+          alert("Erro ao matricular aluna(s)");
+          setOpenMatricula(false);
+        });
+    }
   };
 
   const desmatAluna = async (idTurma: number, idAluna: number) => {
@@ -274,6 +286,8 @@ export function Turmas(this: any) {
             " desmatriculada da turma de ID: " +
             idTurma
         );
+        toast.success("Aluna(s) removida(s) da turma com sucesso!");
+        queryClient.invalidateQueries("listar_alunas");
         handleDesmatCloseConfirmation();
       })
       .catch((err) => {
@@ -354,24 +368,7 @@ export function Turmas(this: any) {
     const response = await axios.get(
       "http://localhost:8080/matricula/turma/" + idTurmaVagas
     );
-    const vagasTurma: VagasListarDTO[] = [];
-    vagasTurma.push({
-      vagasTotais: response.data.vagasTotais,
-      vagasDisponiveis: response.data.vagasDisponiveis,
-    });
-
-    setVagas(vagasTurma);
-
-    const vagasTotais = vagas.map(function (item) {
-      return item.vagasTotais;
-    });
-
-    const vagasDisponiveis = vagas.map(function (item) {
-      return item.vagasDisponiveis;
-    });
-
-    setVagasTotais(vagasTotais[0]);
-    setVagasDisponiveis(vagasDisponiveis[0]);
+    setVagas(response.data as VagasListarDTO);
   };
 
   const columnsTable = [
@@ -657,10 +654,10 @@ export function Turmas(this: any) {
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {vagasTotais}
+                      {vagas?.vagasTotais}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
-                      {vagasDisponiveis}
+                      {vagas?.vagasDisponiveis}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -715,10 +712,10 @@ export function Turmas(this: any) {
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {vagasTotais}
+                      {vagas?.vagasTotais}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
-                      {vagasDisponiveis}
+                      {vagas?.vagasDisponiveis}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -749,12 +746,14 @@ export function Turmas(this: any) {
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
           >
-            <PrimaryButton
-              text={"Matricular"}
-              handleClick={async () =>
-                await matriculaAluna(Number(idTurma), String(matriculas))
-              }
-            />
+            {vagas?.vagasDisponiveis! >= 1 && (
+              <PrimaryButton
+                text={"Matricular"}
+                handleClick={async () =>
+                  await matriculaAluna(Number(idTurma), String(matriculas))
+                }
+              />
+            )}
           </div>
         </Box>
       </Modal>

@@ -139,7 +139,7 @@ export function Alunas() {
 
   const deleteAlunas = async () => {
     await axios
-      .delete("http://localhost:8080/alunas/" + id, id)
+      .delete("http://localhost:8080/alunas/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
