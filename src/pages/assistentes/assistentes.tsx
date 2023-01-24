@@ -21,19 +21,20 @@ import {
 } from "@mui/material";
 import { useQuery } from "react-query";
 import { useForm } from "react-hook-form";
-import { AssistentesListarDTO } from "./dtos/AssistentesListarDTO";
-import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
+
 import dayjs from "dayjs";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import {
   cadastrarAssistente,
   editarAssistente,
   excluirAssistente,
   listarAssistentes,
 } from "../../services/assistentes";
+import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
+import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 
 const Container = styled.div`
   width: 100%;
@@ -153,16 +154,10 @@ export function Assistentes() {
     // eslint-disable-next-line array-callback-return
     dataTable.find((element: any) => {
       if (element.id === id) {
-        const assistente = {
-          nome: data.nome,
-          cpf: data.cpf,
-          admin: data.admin,
-        };
-        element = assistente;
-        console.log("assistente", assistente);
-        setAssistente(assistente);
-        setOpenEdit(false);
+        return element;
       }
+      setAssistente(assistente);
+      setOpenEdit(false);
     });
     const response = await editarAssistente(id.toString(), assistente);
     if (response.status === 200) {

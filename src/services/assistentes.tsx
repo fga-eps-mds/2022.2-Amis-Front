@@ -1,4 +1,4 @@
-import { AssistentesCadastrarDTO } from "../pages/assistentes/dtos/AssistentesCadastrarDTO";
+import { AssistentesCadastrarDTO } from "../pages/assistentes/dtos/AssistentesCadastrar.dto";
 import api from "./api";
 
 export const cadastrarAssistente = async (payload: AssistentesCadastrarDTO) => {
