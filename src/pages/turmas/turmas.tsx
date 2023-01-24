@@ -41,6 +41,8 @@ import {
   BsFillPersonDashFill,
 } from "react-icons/bs";
 import { FaList } from "react-icons/fa";
+// import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
+// import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
@@ -543,6 +545,20 @@ export function Turmas(this: any) {
               label="Data de Término"
               required={true}
               {...register("dataFim")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horarioInicio"
+              label="Horário de Inicio"
+              required={true}
+              {...register("horarioInicio")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-horarioFim"
+              label="Horário de Término"
+              required={true}
+              {...register("horarioFim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Cadastrar"} />
