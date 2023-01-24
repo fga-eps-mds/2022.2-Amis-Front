@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import React, { SyntheticEvent, useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
@@ -15,6 +17,7 @@ import {
   MenuItem,
   Modal,
   Paper,
+  responsiveFontSizes,
   Select,
   Table,
   TableBody,
@@ -23,6 +26,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  toggleButtonGroupClasses,
 } from "@mui/material";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -40,6 +44,8 @@ import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
+import { toast } from "react-toastify";
+import { queryClient } from "../../services/queryClient";
 
 const Container = styled.div`
   width: 100%;
@@ -115,8 +121,7 @@ export function Turmas(this: any) {
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
-  const [vagas, setVagas] = useState(Array<VagasListarDTO>);
-
+  const [vagas, setVagas] = useState<VagasListarDTO>();
   const [matriculas, setMatriculas] = useState(Array);
   const {
     register,
@@ -135,15 +140,13 @@ export function Turmas(this: any) {
       horarioFim: data.horarioFim,
       dataInicio: data.dataInicio,
       dataFim: data.dataFim,
-    } as unknown as TurmasCadastrarDTO;
-
-    // setDataTable([...dataTable, turma]);
-    // setOpen(false);
+    } as TurmasCadastrarDTO;
 
     await axios
       .post("http://localhost:8080/turmas/", turma)
       .then((response) => {
         console.log(response.status);
+        toast.success("Turma criada com sucesso!");
         handleClose();
       })
       .catch((err) => console.warn(err));
@@ -153,16 +156,52 @@ export function Turmas(this: any) {
     const response = await axios.get("http://localhost:8080/turmas/");
     const temp: TurmasListarDTO[] = [];
     response.data.forEach((value: TurmasListarDTO) => {
-      temp.push({
-        id: value.id,
-        descricao: value.descricao,
-        turno: value.turno,
-        capacidade: value.capacidade,
-        horarioInicio: value.horarioInicio,
-        horarioFim: value.horarioFim,
-        dataInicio: value.dataInicio,
-        dataFim: value.dataFim,
-      });
+      if (value.turno === "1") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Matutino",
+        });
+      }
+      if (value.turno === "2") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Vespertino",
+        });
+      }
+      if (value.turno === "3") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Noturno",
+        });
+      }
+      // temp.push({
+      //   id: value.id,
+      //   descricao: value.descricao,
+      //   turno: value.turno,
+      //   capacidade: value.capacidade,
+      //   horarioInicio: value.horarioInicio,
+      //   horarioFim: value.horarioFim,
+      //   dataInicio: value.dataInicio,
+      //   dataFim: value.dataFim,
+      // });
     });
     setDataTable(temp);
   });
@@ -172,6 +211,7 @@ export function Turmas(this: any) {
       .delete("http://localhost:8080/turmas/" + id)
       .then((response) => {
         console.log(response.status);
+        toast.success("Turma excluida com sucesso!");
         handleCloseConfirmation();
       })
       .catch((err) => {
@@ -189,35 +229,19 @@ export function Turmas(this: any) {
       horarioFim: data.horarioFim,
       dataInicio: data.dataInicio,
       dataFim: data.dataFim,
-    } as unknown as TurmasCadastrarDTO;
+    } as TurmasCadastrarDTO;
 
     await axios
       .put("http://localhost:8080/turmas/" + id, turmaEdit)
       .then((response) => {
         console.log(response.status);
+        toast.success("Turma atualizada com sucesso!");
         setOpenEdit(false);
       })
       .catch((err) => {
         console.warn(err);
         setOpenEdit(false);
       });
-
-    //   dataTable.find((element: any) => {
-    //   if (element.id === id) {
-    //     const turmaEdit = {
-    //       descricao: data.descricao,
-    //       turno: data.turno,
-    //       capacidade: data.capacidade,
-    //       horarioInicio: data.horarioInicio,
-    //       horarioFim: data.horarioFim,
-    //       dataInicio: data.dataInicio,
-    //       dataFim: data.dataFim,
-    //     } as unknown as TurmasCadastrarDTO;
-    //     // element = turmaEdit;
-    //     // console.log("element", element);
-    //     // setTurma(turmaEdit);
-    //   }
-    // });
   };
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
@@ -226,23 +250,29 @@ export function Turmas(this: any) {
       idAluna: String(idDaAluna),
     } as unknown as TurmasMatricularDTO;
 
-    await axios
-      .post("http://localhost:8080/matricula/", turmaMatricula)
-      .then((response) => {
-        console.log(response.data);
-        console.log(
-          "Aluna(s) de ID: " +
-            turmaMatricula.idAluna +
-            " matriculada(s) na turma de ID: " +
-            idTurma
-        );
-        setOpenMatricula(false);
-      })
-      .catch((err) => {
-        console.warn(err);
-        alert("Erro ao matricular aluna(s)");
-        setOpenMatricula(false);
-      });
+    if (matriculas.length > vagas?.vagasDisponiveis!) {
+      toast.error("Quantidade de vagas excedida");
+    } else {
+      await axios
+        .post("http://localhost:8080/matricula/", turmaMatricula)
+        .then((response) => {
+          console.log(response.data);
+          console.log(
+            "Aluna(s) de ID: " +
+              turmaMatricula.idAluna +
+              " matriculada(s) na turma de ID: " +
+              idTurma
+          );
+          toast.success("Alunas matriculadas com sucesso!");
+          queryClient.invalidateQueries("listar_alunas");
+          setOpenMatricula(false);
+        })
+        .catch((err) => {
+          console.warn(err);
+          alert("Erro ao matricular aluna(s)");
+          setOpenMatricula(false);
+        });
+    }
   };
 
   const desmatAluna = async (idTurma: number, idAluna: number) => {
@@ -256,6 +286,8 @@ export function Turmas(this: any) {
             " desmatriculada da turma de ID: " +
             idTurma
         );
+        toast.success("Aluna(s) removida(s) da turma com sucesso!");
+        queryClient.invalidateQueries("listar_alunas");
         handleDesmatCloseConfirmation();
       })
       .catch((err) => {
@@ -304,7 +336,6 @@ export function Turmas(this: any) {
       .catch((err) => {
         setAlunasTurma([]);
         console.warn(err);
-        alert("Turma sem alunos matriculados");
       });
   };
 
@@ -337,13 +368,7 @@ export function Turmas(this: any) {
     const response = await axios.get(
       "http://localhost:8080/matricula/turma/" + idTurmaVagas
     );
-    const vagasTurma: VagasListarDTO[] = [];
-    vagasTurma.push({
-      vagasTotais: response.data.vagasTotais,
-      vagasDisponiveis: response.data.vagasDisponiveis,
-    });
-    setVagas(vagasTurma);
-    console.log(vagas);
+    setVagas(response.data as VagasListarDTO);
   };
 
   const columnsTable = [
@@ -368,6 +393,7 @@ export function Turmas(this: any) {
             await listarIDTurma(Number(params.id));
             const idTurma = params.id;
             await listarVagas(Number(idTurma));
+
             setOpenMatricula(true);
           }}
         />,
@@ -379,6 +405,8 @@ export function Turmas(this: any) {
             await consultaAlunasNaTurma(Number(params.id));
             await listarIDTurma(Number(params.id));
             setId(params.id);
+            const idTurma = params.id;
+            await listarVagas(Number(idTurma));
             setOpenList(true);
           }}
         />,
@@ -412,10 +440,6 @@ export function Turmas(this: any) {
         <Navbarlog text={"Turmas"} />
         <DivButtons>
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-          {/* <PrimaryButton
-            text={"DEBUGADOR"}
-            handleClick={async () => await listarVagas()} // DEBUGA AÍ TUA FUNÇÃO
-          /> */}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
         <Dialog
@@ -472,13 +496,20 @@ export function Turmas(this: any) {
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-turno"
-              label="Turno"
-              required={true}
-              {...register("turno")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Turno</InputLabel>
+              <Select
+                id="simple-select-label-turno"
+                labelId="simple-select-turno"
+                label="Informe o turno"
+                {...register("turno")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={1 as any}>Matutino</MenuItem>
+                <MenuItem value={2 as any}>Vespertino</MenuItem>
+                <MenuItem value={3 as any}>Noturno</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               id="outlined-capacidade"
               label="Número de vagas"
@@ -542,14 +573,20 @@ export function Turmas(this: any) {
               {...register("capacidade")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-turno"
-              label="Turno"
-              defaultValue={turma.label}
-              required={true}
-              {...register("turno")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Turno</InputLabel>
+              <Select
+                id="simple-select-label-turno"
+                labelId="simple-select-turno"
+                label="Informe o turno"
+                {...register("turno")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              >
+                <MenuItem value={1 as any}>Matutino</MenuItem>
+                <MenuItem value={2 as any}>Vespertino</MenuItem>
+                <MenuItem value={3 as any}>Noturno</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               id="outlined-dataInicio"
               label="Data de Início"
@@ -611,16 +648,16 @@ export function Turmas(this: any) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Vagas Totais</TableCell>
-                    <TableCell align="right">Vagas Preenchidas</TableCell>
+                    <TableCell align="right">Vagas Disponíveis</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {}
+                      {vagas?.vagasTotais}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
-                      {666}
+                      {vagas?.vagasDisponiveis}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -669,18 +706,16 @@ export function Turmas(this: any) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Vagas Totais</TableCell>
-                    <TableCell align="right">Vagas Preenchidas</TableCell>
+                    <TableCell align="right">Vagas Disponíveis</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {/* {vagas[0].vagasTotais} */}
-                      {2}
+                      {vagas?.vagasTotais}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
-                      {/* {vagas[0].vagasDisponiveis} */}
-                      {2}
+                      {vagas?.vagasDisponiveis}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -711,12 +746,14 @@ export function Turmas(this: any) {
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
           >
-            <PrimaryButton
-              text={"Matricular"}
-              handleClick={async () =>
-                await matriculaAluna(Number(idTurma), String(matriculas))
-              }
-            />
+            {vagas?.vagasDisponiveis! >= 1 && (
+              <PrimaryButton
+                text={"Matricular"}
+                handleClick={async () =>
+                  await matriculaAluna(Number(idTurma), String(matriculas))
+                }
+              />
+            )}
           </div>
         </Box>
       </Modal>

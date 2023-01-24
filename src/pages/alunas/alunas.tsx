@@ -139,7 +139,7 @@ export function Alunas() {
 
   const deleteAlunas = async () => {
     await axios
-      .delete("http://localhost:8080/alunas/" + id, id)
+      .delete("http://localhost:8080/alunas/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
@@ -249,7 +249,8 @@ export function Alunas() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
+              inputProps={{ maxLength: 11 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
@@ -319,9 +320,9 @@ export function Alunas() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
               required={true}
-              inputProps={{ maxLength: 12 }}
+              inputProps={{ maxLength: 11 }}
               defaultValue={aluna.cpf}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}

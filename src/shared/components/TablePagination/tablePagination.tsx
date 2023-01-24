@@ -21,6 +21,7 @@ export default function TablePagination(props: TableProps) {
       <DataGrid
         rows={props.data}
         columns={props.columns}
+        disableSelectionOnClick={true}
         pageSize={5}
         rowsPerPageOptions={[5]}
         sx={{ border: "none", borderBottom: "none" }}
