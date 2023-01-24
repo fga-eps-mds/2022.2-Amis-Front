@@ -59,10 +59,10 @@ const UserImage = styled.div`
   background-color: #525252;
 `;
 
-export function Navbarlog() {
+export function Navbarlog({ text }: TitleProps) {
   return (
     <DivNavbar>
-      <Title> Alunas </Title>
+      <Title> {text} </Title>
       <DivUser>
         <DivUserName>
           <UserName>JOSÉ MARIA</UserName>
