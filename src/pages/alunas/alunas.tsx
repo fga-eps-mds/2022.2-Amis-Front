@@ -4,6 +4,7 @@ import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+
 import {
   Box,
   FormControl,
@@ -22,7 +23,7 @@ import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrarDTO";
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background: ${(props) => props.theme.colors.grey};
+  background: grey;
   display: inline-flex;
 `;
 
@@ -99,7 +100,7 @@ export function Alunas() {
     console.log(aluna);
 
     await axios
-      .post("https://amis-service-stg.azurewebsites.net/alunas/", aluna)
+      .post("http://localhost:8080/alunas", aluna)
       .then((response) => {
         console.log(response.status);
         handleClose();
@@ -107,23 +108,21 @@ export function Alunas() {
       .catch((err) => console.warn(err));
   };
 
-  useQuery("listar_alunas", async () => {
-    const response = await axios.get(
-      "https://amis-service-stg.azurewebsites.net/alunas/"
-    );
+  // useQuery("listar_alunas", async () => {
+  //   const response = await axios.get("http://localhost:8080/alunas");
 
-    const temp: AlunasListarDTO[] = [];
-    response.data.forEach((value: AlunasListarDTO) => {
-      temp.push({
-        id: value.id,
-        nome: value.nome,
-        cpf: value.cpf,
-        dNascimento: value.dNascimento,
-      });
-    });
+  //   const temp: AlunasListarDTO[] = [];
+  //   response.data.forEach((value: AlunasListarDTO) => {
+  //     temp.push({
+  //       id: value.id,
+  //       nome: value.nome,
+  //       cpf: value.cpf,
+  //       dNascimento: value.dNascimento,
+  //     });
+  //   });
 
-    setDataTable(temp);
-  });
+  //   setDataTable(temp);
+  // });
 
   const columnsTable = [
     { field: "nome", headerName: "Nome", width: 150 },
@@ -137,14 +136,16 @@ export function Alunas() {
       <Content>
         <Navbarlog text={"Alunas"} />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          <PrimaryButton text={"Cadastrar Aluno(a)"} handleClick={handleOpen} />
           {/* <PrimaryButton text={"Editar"} /> */}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormText>Preencha corretamente os dados cadastrais.</FormText>
+          <FormText id="cabecalho">
+            Preencha corretamente os dados cadastrais.
+          </FormText>
           <Form onSubmit={handleSubmit(cadastrarAlunas)}>
             <TextField
               id="outlined-nome"

@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import { grey } from "@mui/material/colors";
 
 const DivNavbar = styled.div`
   width: 85%;
   height: 100px;
-  background: ${(props) => props.theme.colors.grey};
+  background: ${(props) => grey};
   padding: 20px 0px;
   display: flex;
   align-items: center;
@@ -39,7 +40,7 @@ const DivUserName = styled.div`
 `;
 
 const UserName = styled.h1`
-  color: ${(props) => props.theme.colors.black};
+  color: ${(props) => "black"};
   font-size: 15px;
   font-weight: 350;
   display: flex;
@@ -47,7 +48,7 @@ const UserName = styled.h1`
 `;
 
 const UserFunction = styled.h1`
-  color: ${(props) => props.theme.colors.black};
+  color: ${(props) => "black"};
   font-size: 11px;
   font-weight: 350;
   display: flex;

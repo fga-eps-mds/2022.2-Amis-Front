@@ -1,7 +1,9 @@
 export interface TurmasListarDTO {
-  id: string;
-  nome: string;
+  id: number;
   descricao: string;
-  dCriacao?: string;
-  numeroVagas: number;
+  capacidade: number;
+  horarioInicio: string;
+  horarioFim: string;
+  dataInicio: string;
+  turno: string;
 }
