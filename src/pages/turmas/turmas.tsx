@@ -29,7 +29,6 @@ import {
   toggleButtonGroupClasses,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListarDTO";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrarDTO";
@@ -46,6 +45,17 @@ import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
 import { toast } from "react-toastify";
 import { queryClient } from "../../services/queryClient";
+import {
+  cadastrarTurmas,
+  listarTurmas,
+  apagarTurmas,
+  editarTurmas,
+  cadastrarAluna,
+  desmatricularAluna,
+  listaAlunasNaTurma,
+  listarAlunas,
+  listarVagasTurma
+} from "../../services/turmas";
 
 const Container = styled.div`
   width: 100%;
@@ -142,18 +152,17 @@ export function Turmas(this: any) {
       dataFim: data.dataFim,
     } as TurmasCadastrarDTO;
 
-    await axios
-      .post("http://localhost:8080/turmas/", turma)
-      .then((response) => {
-        console.log(response.status);
-        toast.success("Turma criada com sucesso!");
-        handleClose();
-      })
-      .catch((err) => console.warn(err));
+    const response = await cadastrarTurmas(turma);
+    if (response.status === 200) {
+      setOpen(false);
+      toast.success("Turma criada com sucesso!");
+    } else {
+      toast.error("Erro ao criar a turma.");
+    }
   };
 
   useQuery("listar_Turmas", async () => {
-    const response = await axios.get("http://localhost:8080/turmas/");
+    const response = await listarTurmas();
     const temp: TurmasListarDTO[] = [];
     response.data.forEach((value: TurmasListarDTO) => {
       if (value.turno === "1") {
@@ -207,17 +216,13 @@ export function Turmas(this: any) {
   });
 
   const deleteTurmas = async () => {
-    await axios
-      .delete("http://localhost:8080/turmas/" + id)
-      .then((response) => {
-        console.log(response.status);
-        toast.success("Turma excluida com sucesso!");
-        handleCloseConfirmation();
-      })
-      .catch((err) => {
-        console.warn(err);
-        handleCloseConfirmation();
-      });
+    const response = await apagarTurmas(id.toString());
+    if (response === 200) {
+      toast.success("Turma excluída com sucesso!");
+    } else {
+      toast.error("Erro ao excluir a turma.");
+    }
+    handleCloseConfirmation();
   };
 
   const editTurmas = async (data: any) => {
@@ -231,17 +236,13 @@ export function Turmas(this: any) {
       dataFim: data.dataFim,
     } as TurmasCadastrarDTO;
 
-    await axios
-      .put("http://localhost:8080/turmas/" + id, turmaEdit)
-      .then((response) => {
-        console.log(response.status);
-        toast.success("Turma atualizada com sucesso!");
-        setOpenEdit(false);
-      })
-      .catch((err) => {
-        console.warn(err);
-        setOpenEdit(false);
-      });
+    const response = await editarTurmas(id.toString(), turmaEdit);
+    if (response.status === 200) {
+      toast.success("Turma atualizada com sucesso!");
+    } else {
+      toast.error("Erro na atualização da turma.");
+    }
+    setOpenEdit(false);
   };
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
@@ -253,48 +254,24 @@ export function Turmas(this: any) {
     if (matriculas.length > vagas?.vagasDisponiveis!) {
       toast.error("Quantidade de vagas excedida");
     } else {
-      await axios
-        .post("http://localhost:8080/matricula/", turmaMatricula)
-        .then((response) => {
-          console.log(response.data);
-          console.log(
-            "Aluna(s) de ID: " +
-              turmaMatricula.idAluna +
-              " matriculada(s) na turma de ID: " +
-              idTurma
-          );
-          toast.success("Alunas matriculadas com sucesso!");
-          queryClient.invalidateQueries("listar_alunas");
-          setOpenMatricula(false);
-        })
-        .catch((err) => {
-          console.warn(err);
-          alert("Erro ao matricular aluna(s)");
-          setOpenMatricula(false);
-        });
+      const response = await cadastrarAluna(turmaMatricula);
+      if (response.status === 200) {
+        toast.success("Alunas matriculadas com sucesso!");
+        queryClient.invalidateQueries("listar_alunas");
+      }
+      setOpenMatricula(false);
     }
   };
 
   const desmatAluna = async (idTurma: number, idAluna: number) => {
-    await axios
-      .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
-      .then((response) => {
-        console.log(response.data);
-        console.log(
-          "Aluna de ID: " +
-            idAluna +
-            " desmatriculada da turma de ID: " +
-            idTurma
-        );
-        toast.success("Aluna(s) removida(s) da turma com sucesso!");
-        queryClient.invalidateQueries("listar_alunas");
-        handleDesmatCloseConfirmation();
-      })
-      .catch((err) => {
-        console.warn(err);
-        alert("Erro ao desmatricular aluna");
-        handleDesmatCloseConfirmation();
-      });
+    const response = await desmatricularAluna(idTurma, idAluna);
+    if (response.status === 200) {
+      toast.success("Aluna(s) removida(s) da turma com sucesso!");
+      queryClient.invalidateQueries("listar_alunas");
+    } else {
+      toast.error("Erro na remoção da(S) aluna(s) da turma.");
+    }
+    handleDesmatCloseConfirmation();
   };
 
   const columnsTableAlunas = [
@@ -328,35 +305,33 @@ export function Turmas(this: any) {
   ];
 
   const consultaAlunasNaTurma = async (idTurma: number) => {
-    await axios
-      .get("http://localhost:8080/matricula/" + idTurma)
-      .then((response) => {
-        setAlunasTurma(response.data);
-      })
-      .catch((err) => {
-        setAlunasTurma([]);
-        console.warn(err);
-      });
+    const response = await listaAlunasNaTurma(idTurma);
+    if (response === 200) {
+      setAlunasTurma(response.data);
+    } else {
+      setAlunasTurma([]);
+    }
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await axios.get("http://localhost:8080/alunas");
-
+    const response = await listarAlunas();
     const temp: AlunasListarDTO[] = [];
-    response.data.forEach((value: AlunasListarDTO) => {
-      temp.push({
-        id: value.id,
-        nome: value.nome,
-        cpf: value.cpf,
-        dNascimento: value.dNascimento,
+    if (response === 200) {
+      response.data.forEach((value: AlunasListarDTO) => {
+        temp.push({
+          id: value.id,
+          nome: value.nome,
+          cpf: value.cpf,
+          dNascimento: value.dNascimento,
+        });
       });
-    });
-    setDataTableAlunas(temp);
+    } else {
+      setDataTableAlunas(temp);
+    }
   });
 
   const listarIDTurma = async (idDaTurma: number) => {
     console.log("ID Turma:", idDaTurma);
-
     setIdTurma(idDaTurma);
   };
 
@@ -365,10 +340,10 @@ export function Turmas(this: any) {
   };
 
   const listarVagas = async (idTurmaVagas: number) => {
-    const response = await axios.get(
-      "http://localhost:8080/matricula/turma/" + idTurmaVagas
-    );
-    setVagas(response.data as VagasListarDTO);
+    const response = await listarVagasTurma(idTurmaVagas);
+    if (response === 200) {
+      setVagas(response.data as VagasListarDTO);
+    }
   };
 
   const columnsTable = [
