@@ -27,7 +27,7 @@ import dayjs from "dayjs";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   cadastrarAssistente,
   editarAssistente,

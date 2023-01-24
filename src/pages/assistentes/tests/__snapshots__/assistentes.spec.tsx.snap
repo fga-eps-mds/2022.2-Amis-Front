@@ -320,8 +320,5 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       </div>
     </div>
   </div>
-  <div
-    className="Toastify"
-  />
 </div>
 `;

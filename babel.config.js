@@ -6,4 +6,15 @@ module.exports = {
     }],
     "@babel/preset-typescript",
   ],
+  plugins: [
+    function () {
+      return {
+        visitor: {
+          MetaProperty(path) {
+            path.replaceWithSourceString('process')
+          },
+        },
+      }
+    },
+  ],
 };
