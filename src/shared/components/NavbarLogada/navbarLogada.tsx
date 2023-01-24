@@ -13,8 +13,12 @@ const DivNavbar = styled.div`
   margin: 0 auto;
 `;
 
-const Title = styled.h1`
-  color: ${(props) => "black"};
+interface TitleProps {
+  text?: string;
+}
+
+const Title = styled.h1<TitleProps>`
+  color: ${(props) => props.theme.colors.black};
   font-size: 28px;
   font-weight: 500;
   height: 40px;
