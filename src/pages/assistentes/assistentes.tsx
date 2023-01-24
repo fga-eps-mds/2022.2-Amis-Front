@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import React, { useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
@@ -18,7 +20,6 @@ import {
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { AssistentesListarDTO } from "./dtos/AssistentesListarDTO";
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
@@ -27,6 +28,12 @@ import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
 import { toast, ToastContainer } from "react-toastify";
+import {
+  cadastrarAssistente,
+  editarAssistente,
+  excluirAssistente,
+  listarAssistentes,
+} from "../../services/assistentes";
 
 const Container = styled.div`
   width: 100%;
@@ -103,7 +110,6 @@ export function Assistentes() {
 
   const registerAssistentes = async (data: any) => {
     const assistente = {
-      id: Math.random(),
       nome: data.nome,
       cpf: data.cpf,
       login: data.login,
@@ -113,53 +119,34 @@ export function Assistentes() {
       dCriacao: dayjs().format("DD/MM/YYYY"),
     } as unknown as AssistentesCadastrarDTO;
 
-    setDataTable([...dataTable, assistente]);
-    console.log(assistente);
-    setOpen(false);
-    toast.success("Assistente cadastrado com sucesso!");
+    const response = await cadastrarAssistente(assistente);
 
-    // await axios
-    //   .post(
-    //     "https://amis-service-stg.azurewebsites.net/assistentes/",
-    //     assistente
-    //   )
-    //   .then((response) => {
-    //     console.log(response.status);
-    //     handleClose();
-    //   })
-    //   .catch((err) => console.warn(err));
+    if (response.status === 200) {
+      setOpen(false);
+      toast.success("Assistente cadastrado com sucesso!");
+    }
   };
 
-  // useQuery("listar_assistentes", async () => {
-  //   const response = await axios.get(
-  //     "https://amis-service-stg.azurewebsites.net/assistentes/"
-  //   );
-  //   const temp: AssistentesListarDTO[] = [];
-  //   response.data.forEach((value: AssistentesListarDTO) => {
-  //     temp.push({
-  //       id: value.id,
-  //       nome: value.nome,
-  //       obs: value.obs,
-  //       admin: value.admin,
-  //     });
-  //   });
-  //   setDataTable(temp);
-  // });
+  useQuery("listar_assistentes", async () => {
+    const response = await listarAssistentes();
+    const temp: AssistentesListarDTO[] = [];
+    response.data.forEach((value: AssistentesListarDTO) => {
+      temp.push({
+        id: value.id,
+        nome: value.nome,
+        obs: value.obs,
+        admin: value.admin,
+      });
+    });
+    setDataTable(temp);
+  });
 
   const deleteAssistentes = async () => {
-    console.log("Id excluido", id);
-    setOpenConfirmation(false);
-    // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     handleCloseConfirmation();
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //     handleCloseConfirmation();
-    //   });
-    toast.success("Assistente excluído com sucesso!");
+    const response = await excluirAssistente(id.toString());
+    if (response.status === 200) {
+      handleCloseConfirmation();
+      toast.success("Assistente excluído com sucesso!");
+    }
   };
 
   const editAssistentes = async (data: any) => {
@@ -177,17 +164,11 @@ export function Assistentes() {
         setOpenEdit(false);
       }
     });
-    // await axios
-    //   .delete("https://amis-service-stg.azurewebsites.net/assistentes/", id)
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     handleCloseConfirmation();
-    //   })
-    //   .catch((err) => {
-    //     console.warn(err);
-    //     handleCloseConfirmation();
-    //   });
-    toast.success("Assistente editado com sucesso!");
+    const response = await editarAssistente(id.toString(), assistente);
+    if (response.status === 200) {
+      handleCloseConfirmation();
+      toast.success("Assistente editado com sucesso!");
+    }
   };
 
   const columnsTable = [
@@ -211,7 +192,6 @@ export function Assistentes() {
       type: "actions",
       width: 80,
       getActions: (params: { id: GridRowId }) => [
-        // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
@@ -220,7 +200,6 @@ export function Assistentes() {
             handleOpenConfirmation();
           }}
         />,
-        // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
           icon={<AiFillEdit size={20} />}
           label="Editar"
@@ -266,7 +245,6 @@ export function Assistentes() {
             <TextField
               id="outlined-nome"
               label="Nome"
-              defaultValue={assistente.nome}
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -362,8 +340,6 @@ export function Assistentes() {
           </Form>
         </Box>
       </Modal>
-      {/* <button onClick={notify}>Notify!</button> */}
-      <ToastContainer position="top-right" autoClose={3000} />
     </Container>
   );
 }
