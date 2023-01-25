@@ -145,7 +145,7 @@ export function Turmas(this: any) {
     } as TurmasCadastrarDTO;
 
     await axios
-      .post("http://localhost:8080/turmas/", turma)
+      .post("https://service-amis.azurewebsites.net/turmas/", turma)
       .then((response) => {
         console.log(response.status);
         toast.success("Turma criada com sucesso!");
@@ -155,7 +155,9 @@ export function Turmas(this: any) {
   };
 
   useQuery("listar_Turmas", async () => {
-    const response = await axios.get("http://localhost:8080/turmas/");
+    const response = await axios.get(
+      "https://service-amis.azurewebsites.net/turmas/"
+    );
     const temp: TurmasListarDTO[] = [];
     response.data.forEach((value: TurmasListarDTO) => {
       if (value.turno === "1") {
@@ -210,7 +212,7 @@ export function Turmas(this: any) {
 
   const deleteTurmas = async () => {
     await axios
-      .delete("http://localhost:8080/turmas/" + id)
+      .delete("https://service-amis.azurewebsites.net/turmas/" + id)
       .then((response) => {
         console.log(response.status);
         toast.success("Turma excluida com sucesso!");
@@ -234,7 +236,7 @@ export function Turmas(this: any) {
     } as TurmasCadastrarDTO;
 
     await axios
-      .put("http://localhost:8080/turmas/" + id, turmaEdit)
+      .put("https://service-amis.azurewebsites.net/turmas/" + id, turmaEdit)
       .then((response) => {
         console.log(response.status);
         toast.success("Turma atualizada com sucesso!");
@@ -256,7 +258,10 @@ export function Turmas(this: any) {
       toast.error("Quantidade de vagas excedida");
     } else {
       await axios
-        .post("http://localhost:8080/matricula/", turmaMatricula)
+        .post(
+          "https://service-amis.azurewebsites.net/matricula/",
+          turmaMatricula
+        )
         .then((response) => {
           console.log(response.data);
           console.log(
@@ -279,7 +284,12 @@ export function Turmas(this: any) {
 
   const desmatAluna = async (idTurma: number, idAluna: number) => {
     await axios
-      .delete("http://localhost:8080/matricula/" + idTurma + "/" + idAluna)
+      .delete(
+        "https://service-amis.azurewebsites.net/matricula/" +
+          idTurma +
+          "/" +
+          idAluna
+      )
       .then((response) => {
         console.log(response.data);
         console.log(
@@ -331,7 +341,7 @@ export function Turmas(this: any) {
 
   const consultaAlunasNaTurma = async (idTurma: number) => {
     await axios
-      .get("http://localhost:8080/matricula/" + idTurma)
+      .get("https://service-amis.azurewebsites.net/matricula/" + idTurma)
       .then((response) => {
         setAlunasTurma(response.data);
       })
@@ -342,7 +352,9 @@ export function Turmas(this: any) {
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await axios.get("http://localhost:8080/alunas");
+    const response = await axios.get(
+      "https://service-amis.azurewebsites.net/alunas/"
+    );
 
     const temp: AlunasListarDTO[] = [];
     response.data.forEach((value: AlunasListarDTO) => {
@@ -368,7 +380,7 @@ export function Turmas(this: any) {
 
   const listarVagas = async (idTurmaVagas: number) => {
     const response = await axios.get(
-      "http://localhost:8080/matricula/turma/" + idTurmaVagas
+      "https://service-amis.azurewebsites.net/matricula/turma/" + idTurmaVagas
     );
     setVagas(response.data as VagasListarDTO);
   };

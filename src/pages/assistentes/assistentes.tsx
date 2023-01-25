@@ -113,7 +113,7 @@ export function Assistentes() {
     // console.log(data.administrador)
 
     await axios
-      .post("http://localhost:8080/assistentes", assistente)
+      .post("https://service-amis.azurewebsites.net/assistentes/", assistente)
       .then((response) => {
         console.log(response.status);
         handleClose();
@@ -122,7 +122,9 @@ export function Assistentes() {
   };
 
   useQuery("listar_assistentes", async () => {
-    const response = await axios.get("http://localhost:8080/assistentes");
+    const response = await axios.get(
+      "https://service-amis.azurewebsites.net/assistentes/"
+    );
     const temp: AssistentesListarDTO[] = [];
     response.data.forEach((value: AssistentesListarDTO) => {
       temp.push({
@@ -140,7 +142,7 @@ export function Assistentes() {
 
   const deleteAssistentes = async () => {
     await axios
-      .delete("http://localhost:8080/assistentes/" + id)
+      .delete("https://service-amis.azurewebsites.net/assistentes/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
@@ -162,7 +164,10 @@ export function Assistentes() {
     } as AssistentesCadastrarDTO;
 
     await axios
-      .put("http://localhost:8080/assistentes/" + id, assistente)
+      .put(
+        "https://service-amis.azurewebsites.net/assistentes/" + id,
+        assistente
+      )
       .then((response) => {
         console.log(response.data);
         setOpenEdit(false);

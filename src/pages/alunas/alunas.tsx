@@ -113,7 +113,7 @@ export function Alunas() {
     console.log(aluna);
 
     await axios
-      .post("http://localhost:8080/alunas", aluna)
+      .post("https://service-amis.azurewebsites.net/alunas/", aluna)
       .then((response) => {
         console.log(response.status);
         handleClose();
@@ -122,7 +122,9 @@ export function Alunas() {
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await axios.get("http://localhost:8080/alunas");
+    const response = await axios.get(
+      "https://service-amis.azurewebsites.net/alunas/"
+    );
 
     const temp: AlunasListarDTO[] = [];
     response.data.forEach((value: AlunasListarDTO) => {
@@ -139,7 +141,7 @@ export function Alunas() {
 
   const deleteAlunas = async () => {
     await axios
-      .delete("http://localhost:8080/alunas/" + id)
+      .delete("https://service-amis.azurewebsites.net/alunas/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
@@ -165,7 +167,7 @@ export function Alunas() {
     } as AlunasCadastrarDTO;
 
     await axios
-      .put("http://localhost:8080/alunas/" + id, aluna)
+      .put("https://service-amis.azurewebsites.net/alunas/" + id, aluna)
       .then((response) => {
         console.log(response.data);
         setOpenEdit(false);
