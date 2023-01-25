@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
-import { BiUser } from "react-icons/bi";
+import { BiLogOut, BiUser } from "react-icons/bi";
+import { FiSettings } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { grey } from "@mui/material/colors";
@@ -49,7 +50,7 @@ const Logo = styled.div`
 `;
 
 export function Sidebar() {
-  const [pathname, setPathname] = useState("/alunas");
+  const [pathname] = useState(window.location.pathname);
 
   const sidebarData = [
     {
@@ -96,6 +97,39 @@ export function Sidebar() {
         />
       ),
     },
+    {
+      id: 5,
+      name: "Assistentes",
+      path: "/assistentes",
+      icon: (
+        <BiUser
+          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+    {
+      id: 6,
+      name: "Configurações",
+      path: "/configurações",
+      icon: (
+        <FiSettings
+          color={pathname === "/configurações" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+    {
+      id: 7,
+      name: "Sair",
+      path: "/sair",
+      icon: (
+        <BiLogOut
+          color={pathname === "/sair" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
   ];
 
   return (
@@ -105,7 +139,6 @@ export function Sidebar() {
         <SidebarItem
           key={index}
           isActive={pathname === itemData.path}
-          onClick={() => setPathname(itemData.path)}
           to={itemData.path}
         >
           {itemData.icon}

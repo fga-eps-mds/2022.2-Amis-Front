@@ -3,18 +3,14 @@ import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
-import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
-import { BsFillTrashFill } from "react-icons/bs";
-import { AiFillEdit } from "react-icons/ai";
-
 import {
   Box,
-  FormControl,
   Button,
   Dialog,
   DialogActions,
   DialogTitle,
+  FormControl,
   InputLabel,
   MenuItem,
   Modal,
@@ -24,8 +20,12 @@ import {
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { AlunasListarDTO } from "./dtos/AlunasListarDTO";
-import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrarDTO";
+import { AssistentesListarDTO } from "./dtos/AssistentesListarDTO";
+import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
+// import dayjs from "dayjs";
+import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
+import { BsFillTrashFill } from "react-icons/bs";
+import { AiFillEdit } from "react-icons/ai";
 
 const Container = styled.div`
   width: 100%;
@@ -77,19 +77,22 @@ const style = {
   boxShadow: 24,
   p: 4,
   padding: "50px",
+  height: "85%",
+  overflow: "hidden",
+  overflowY: "scroll",
 };
 
-export function Alunas() {
+export function Assistentes() {
   const [open, setOpen] = useState(false);
-  const [aluna, setAluna] = useState(Object);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [dataTable, setDataTable] = useState(Array<Object>);
+  const [assistente, setAssistente] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [dataTable, setDataTable] = useState(Array<Object>);
   const {
     register,
     handleSubmit,
@@ -97,23 +100,20 @@ export function Alunas() {
     formState: { errors },
   } = useForm();
 
-  const cadastrarAlunas = async (data: any) => {
-    const aluna = {
+  const registerAssistentes = async (data: any) => {
+    const assistente = {
       nome: data.nome,
-      nomeSocial: data.nome,
       cpf: data.cpf,
-      rg: data.rg,
-      dNascimento: data.dNascimento,
-      nomePai: data.nomePai,
-      nomeMae: data.nomeMae,
-      deficiencia: data.deficiencia,
-      idEndereco: 1,
-    } as AlunasCadastrarDTO;
+      login: data.login,
+      // senha: data.senha,
+      observacao: data.observacao,
+      administrador: data.administrador,
+    } as AssistentesCadastrarDTO;
 
-    console.log(aluna);
+    // console.log(data.administrador)
 
     await axios
-      .post("https://service-amis.azurewebsites.net/alunas/", aluna)
+      .post("https://service-amis.azurewebsites.net/assistentes/", assistente)
       .then((response) => {
         console.log(response.status);
         handleClose();
@@ -121,27 +121,28 @@ export function Alunas() {
       .catch((err) => console.warn(err));
   };
 
-  useQuery("listar_alunas", async () => {
+  useQuery("listar_assistentes", async () => {
     const response = await axios.get(
-      "https://service-amis.azurewebsites.net/alunas/"
+      "https://service-amis.azurewebsites.net/assistentes/"
     );
-
-    const temp: AlunasListarDTO[] = [];
-    response.data.forEach((value: AlunasListarDTO) => {
+    const temp: AssistentesListarDTO[] = [];
+    response.data.forEach((value: AssistentesListarDTO) => {
       temp.push({
         id: value.id,
         nome: value.nome,
         cpf: value.cpf,
-        dNascimento: value.dNascimento,
+        login: value.login,
+        // senha: value.senha,
+        observacao: value.observacao,
+        administrador: value.administrador,
       });
     });
-
     setDataTable(temp);
   });
 
-  const deleteAlunas = async () => {
+  const deleteAssistentes = async () => {
     await axios
-      .delete("https://service-amis.azurewebsites.net/alunas/" + id)
+      .delete("https://service-amis.azurewebsites.net/assistentes/" + id)
       .then((response) => {
         console.log(response.data);
         handleCloseConfirmation();
@@ -152,22 +153,21 @@ export function Alunas() {
       });
   };
 
-  const editAlunas = async (data: any) => {
+  const editAssistentes = async (data: any) => {
     // eslint-disable-next-line array-callback-return
-    const aluna = {
+    const assistente = {
       nome: data.nome,
-      nomeSocial: data.nomeSocial,
       cpf: data.cpf,
-      rg: data.rg,
-      dNascimento: data.dNascimento,
-      nomePai: data.nomePai,
-      nomeMae: data.nomeMae,
-      deficiencia: data.deficiencia,
-      idEndereco: 1,
-    } as AlunasCadastrarDTO;
+      administrador: data.administrador,
+      login: data.login,
+      observacao: data.observacao,
+    } as AssistentesCadastrarDTO;
 
     await axios
-      .put("https://service-amis.azurewebsites.net/alunas/" + id, aluna)
+      .put(
+        "https://service-amis.azurewebsites.net/assistentes/" + id,
+        assistente
+      )
       .then((response) => {
         console.log(response.data);
         setOpenEdit(false);
@@ -179,9 +179,15 @@ export function Alunas() {
   };
 
   const columnsTable = [
-    { field: "nome", headerName: "Nome", width: 150 },
+    { field: "nome", headerName: "Nome", width: 350 },
     { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "dNascimento", headerName: "Data Nascimento", width: 150 },
+    { field: "observacao", headerName: "Observações", width: 450 },
+    {
+      field: "administrador",
+      headerName: "Administrador(a)",
+      width: 180,
+      type: "boolean",
+    },
     {
       field: "actions",
       headerName: "Ações",
@@ -214,10 +220,9 @@ export function Alunas() {
     <Container>
       <Sidebar />
       <Content>
-        <Navbarlog text={"Alunas"} />
+        <Navbarlog text={"Assistentes"} />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar Aluno(a)"} handleClick={handleOpen} />
-          {/* <PrimaryButton text={"Editar"} /> */}
+          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
         <Dialog
@@ -231,7 +236,7 @@ export function Alunas() {
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleCloseConfirmation}>Não</Button>
-            <Button onClick={deleteAlunas} autoFocus>
+            <Button onClick={deleteAssistentes} autoFocus>
               Sim
             </Button>
           </DialogActions>
@@ -239,56 +244,55 @@ export function Alunas() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormText id="cabecalho">
-            Preencha corretamente os dados cadastrais.
-          </FormText>
-          <Form onSubmit={handleSubmit(cadastrarAlunas)}>
+          <FormText>Preencha corretamente os dados cadastrais.</FormText>
+          <Form onSubmit={handleSubmit(registerAssistentes)}>
             <TextField
               id="outlined-nome"
               label="Nome"
+              defaultValue={assistente.nome}
+              required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
               label="CPF (apenas números)"
-              inputProps={{ maxLength: 11 }}
+              required={true}
+              inputProps={{ maxLength: 12 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-rg"
-              label="RG"
-              {...register("rg")}
+              id="outlined-login"
+              label="Login"
+              required={true}
+              {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-dNascimento"
-              label="Data de Nascimento"
-              {...register("dNascimento")}
+            {/* <TextField
+              id="outlined-senha"
+              label="Senha"
+              type="password"
+              required={true}
+              {...register("senha")}
               sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            /> */}
             <TextField
-              id="outlined-nome-pai"
-              label="Nome do pai"
-              {...register("nomePai")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nome-mae"
-              label="Nome da mãe"
-              {...register("nomeMae")}
+              id="outlined-Observações"
+              label="Observações"
+              {...register("observacao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
-                Possui deficiência?
+                Administrador(a)?
               </InputLabel>
               <Select
-                id="simple-select-label-deficiencia"
-                labelId="simple-select-deficiencia"
-                label="Possui deficiência?"
-                {...register("deficiencia")}
+                id="simple-select-label-admin"
+                labelId="simple-select-admin"
+                required={true}
+                label="Administrador(a)?"
+                {...register("administrador")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
                 <MenuItem value={false as any}>Não</MenuItem>
@@ -301,23 +305,14 @@ export function Alunas() {
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
-          <FormText>Altere os dados da aluna.</FormText>
-          <Form onSubmit={handleSubmit(editAlunas)}>
+          <FormText>Altere os dados cadastrais.</FormText>
+          <Form onSubmit={handleSubmit(editAssistentes)}>
             <TextField
               id="outlined-nome"
               label="Nome"
-              defaultValue={aluna.nome}
+              defaultValue={assistente.nome}
               required={true}
               {...register("nome")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nomeSocial"
-              label="Nome Social"
-              required={true}
-              inputProps={{ maxLength: 120 }}
-              defaultValue={aluna.nomeSocial}
-              {...register("nomeSocial")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -325,53 +320,38 @@ export function Alunas() {
               label="CPF (apenas números)"
               required={true}
               inputProps={{ maxLength: 11 }}
-              defaultValue={aluna.cpf}
+              defaultValue={assistente.cpf}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-rg"
-              label="RG"
-              defaultValue={aluna.rg}
+              id="outlined-login"
+              label="Login"
               required={true}
-              {...register("rg")}
+              inputProps={{ maxLength: 120 }}
+              defaultValue={assistente.login}
+              {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-dNascimento"
-              label="Data de Nascimento"
-              defaultValue={aluna.dNascimento}
+              id="outlined-observacao"
+              label="Observações"
+              defaultValue={assistente.observacao}
               required={true}
-              {...register("dNascimento")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nomePai"
-              label="Nome do Pai"
-              defaultValue={aluna.nomePai}
-              required={true}
-              {...register("nomePai")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nomeMae"
-              label="Nome da Mãe"
-              defaultValue={aluna.nomeMae}
-              required={true}
-              {...register("nomeMae")}
+              {...register("observacao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
-                Deficiência?
+                Administrador(a)?
               </InputLabel>
               <Select
-                id="simple-select-label-deficiencia"
-                labelId="simple-select-deficiencia"
+                id="simple-select-label-admin"
+                labelId="simple-select-admin"
                 required={true}
-                defaultValue={aluna.deficiencia}
-                label="Possui deficiência?"
-                {...register("deficiencia")}
+                defaultValue={assistente.administrador}
+                label="Administrador(a)?"
+                {...register("administrador")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
                 <MenuItem value={false as any}>Não</MenuItem>
