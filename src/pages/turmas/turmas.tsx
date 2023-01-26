@@ -31,9 +31,9 @@ import {
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { TurmasListarDTO } from "./dtos/TurmasListarDTO";
-import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrarDTO";
-import { VagasListarDTO } from "./dtos/VagasListarDTO";
+import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
+import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
+import { VagasListarDTO } from "./dtos/VagasListar.dto";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
 import {
   BsFillTrashFill,
@@ -44,7 +44,7 @@ import { FaList } from "react-icons/fa";
 // import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 // import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
-import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
+import { TurmasMatricularDTO } from "./dtos/TurmasMatricular.dto";
 import { toast } from "react-toastify";
 import { queryClient } from "../../services/queryClient";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
