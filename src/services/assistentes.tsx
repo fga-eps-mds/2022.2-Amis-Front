@@ -14,12 +14,12 @@ export const editarAssistente = async (
   assistente: Object
 ) => {
   return await api
-    .put("/alunas/" + assistenteId, { assistente })
+    .put("/assistentes/" + assistenteId, assistente)
     .then((response) => response);
 };
 
 export const excluirAssistente = async (assistenteId: string) => {
   return await api
-    .delete("/alunas/" + assistenteId)
+    .delete("/assistentes/" + assistenteId)
     .then((response) => response);
 };

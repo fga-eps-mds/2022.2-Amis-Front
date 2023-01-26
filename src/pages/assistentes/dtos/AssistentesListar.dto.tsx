@@ -1,7 +1,8 @@
 export interface AssistentesListarDTO {
   id: string;
   nome: string;
-  dCriacao?: string;
-  obs: string;
-  admin: boolean;
+  cpf: string;
+  observacao: string;
+  administrador: boolean;
+  login: string;
 }
