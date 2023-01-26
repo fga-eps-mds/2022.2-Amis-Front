@@ -107,15 +107,15 @@ export function Assistentes() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm({});
+  } = useForm();
 
   const registerAssistentes = async (data: any) => {
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
       login: data.login,
-      observacao: data.obs,
-      administrador: data.admin,
+      observacao: data.observacao,
+      administrador: data.administrador,
     } as AssistentesCadastrarDTO;
 
     const response = await cadastrarAssistente(assistente);
@@ -169,11 +169,11 @@ export function Assistentes() {
 
   const editAssistentes = async (data: any) => {
     const assistenteEditada = {
-      nome: data.nome,
-      cpf: data.cpf,
-      administrador: data.admin,
-      login: assistente.login,
-      observacao: assistente.observacao,
+      nome: data.nomeEdit,
+      cpf: data.cpfEdit,
+      administrador: data.adminEdit,
+      login: data.loginEdit,
+      observacao: data.observacaoEdit,
     };
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
@@ -196,6 +196,7 @@ export function Assistentes() {
     },
     {
       field: "actions",
+      headerName: "Ações",
       type: "actions",
       flex: 1,
       getActions: (params: { id: GridRowId }) => [
@@ -257,7 +258,7 @@ export function Assistentes() {
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
               required={true}
               inputProps={{ maxLength: 11 }}
               {...register("cpf")}
@@ -271,17 +272,9 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-senha"
-              label="Senha"
-              type="password"
-              required={true}
-              {...register("senha")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
               id="outlined-Observações"
               label="Observações"
-              {...register("obs")}
+              {...register("observacao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
@@ -293,7 +286,7 @@ export function Assistentes() {
                 labelId="simple-select-admin"
                 label="Administrador(a)?"
                 required={true}
-                {...register("admin")}
+                {...register("administrador")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
                 <MenuItem value={false as any}>Não</MenuItem>
@@ -311,18 +304,31 @@ export function Assistentes() {
             <TextField
               id="outlined-nome"
               label="Nome"
-              defaultValue={assistente.nome}
               required={true}
               {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
-              label="CPF"
+              label="CPF (apenas números)"
               required={true}
               inputProps={{ maxLength: 11 }}
-              defaultValue={assistente.cpf}
               {...register("cpfEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-login"
+              label="Login"
+              required={true}
+              inputProps={{ maxLength: 120 }}
+              {...register("loginEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-observacao"
+              label="Observações"
+              required={true}
+              {...register("observacaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
@@ -333,7 +339,6 @@ export function Assistentes() {
                 id="simple-select-label-admin"
                 labelId="simple-select-admin"
                 required={true}
-                defaultValue={assistente.admin}
                 label="Administrador(a)?"
                 {...register("adminEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
