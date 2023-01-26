@@ -44,10 +44,10 @@ import { FaList } from "react-icons/fa";
 // import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 // import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
-import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
 import { toast } from "react-toastify";
 import { queryClient } from "../../services/queryClient";
+import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
 
 const Container = styled.div`
   width: 100%;
