@@ -14,10 +14,15 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Creating env file
+        run: |
+          echo ${{ secrets.ENV_FILE }} > .env
+          cat .env
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
