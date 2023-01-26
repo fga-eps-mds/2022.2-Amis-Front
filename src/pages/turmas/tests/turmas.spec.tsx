@@ -6,16 +6,20 @@ import { Turmas } from "../turmas";
 import theme from "../../../styles/theme";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { QueryClientProvider } from "react-query";
+import { queryClient } from "../../../services/queryClient";
 
 describe("Snapshot", () => {
   it("Deve corresponder ao Snapshot", () => {
     const tree = renderer
       .create(
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <Turmas />
-          </ThemeProvider>
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <ThemeProvider theme={theme}>
+              <Turmas />
+            </ThemeProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
       )
       .toJSON();
     expect(tree).toMatchSnapshot();
@@ -25,11 +29,13 @@ describe("Snapshot", () => {
 describe("Tela Turmas", () => {
   it("Tabela Turmas", () => {
     const { getByLabelText, getByText } = render(
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <Turmas />
-        </ThemeProvider>
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <Turmas />
+          </ThemeProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
     );
 
     const buttonCadastrar = getByText("Cadastrar");
