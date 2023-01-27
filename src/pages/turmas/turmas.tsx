@@ -162,7 +162,7 @@ export function Turmas(this: any) {
     }
   };
 
-  useQuery("listar_Turmas", async () => {
+  useQuery("listar_turmas", async () => {
     const response = await listarTurmas();
     const temp: TurmasListarDTO[] = [];
     response.data.forEach((value: TurmasListarDTO) => {
@@ -225,12 +225,13 @@ export function Turmas(this: any) {
       } else {
         toast.error("Erro ao excluir a turma.");
       }
-      handleCloseConfirmation();
     } else {
       toast.error(
         "Não foi possível excluir a turma, pois existem alunas cadastradas."
       );
     }
+    handleCloseConfirmation();
+    queryClient.invalidateQueries("listar_turmas");
   };
 
   const editTurmas = async (data: any) => {
@@ -275,7 +276,6 @@ export function Turmas(this: any) {
     const response = await desmatricularAluna(idTurma, idAluna);
     if (response.status === 204) {
       toast.success("Aluna(s) removida(s) da turma com sucesso!");
-      queryClient.invalidateQueries("listar_alunas");
       setOpenList(false);
     } else {
       toast.error("Erro na remoção da(s) aluna(s) da turma.");
