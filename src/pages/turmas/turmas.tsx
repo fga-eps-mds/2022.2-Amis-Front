@@ -263,7 +263,7 @@ export function Turmas(this: any) {
       toast.error("Quantidade de vagas excedida.");
     } else {
       const response = await cadastrarAluna(turmaMatricula);
-      if (response.status === 200) {
+      if (response.status === 201) {
         toast.success("Aluna(s) matriculada(s) com sucesso!");
         queryClient.invalidateQueries("listar_alunas");
       }
@@ -320,7 +320,8 @@ export function Turmas(this: any) {
     const response = await listarAlunasNaTurma(idTurma);
     if (response.status === 200) {
       setAlunasTurma(response.data);
-      console.log(response.data, alunasTurma);
+      console.log(response.data);
+      console.log(alunasTurma);
     } else {
       setAlunasTurma([]);
     }
@@ -345,7 +346,6 @@ export function Turmas(this: any) {
   });
 
   const listarIDTurma = async (idDaTurma: number) => {
-    console.log("ID Turma:", idDaTurma);
     setIdTurma(idDaTurma);
   };
 
@@ -357,7 +357,6 @@ export function Turmas(this: any) {
     const response = await listarVagasTurma(idTurmaVagas);
     if (response.status === 200) {
       setVagas(response.data as VagasListarDTO);
-      console.log(vagas);
     }
   };
 
@@ -383,6 +382,7 @@ export function Turmas(this: any) {
             await listarIDTurma(Number(params.id));
             const idTurma = params.id;
             await listarVagas(Number(idTurma));
+            await queryClient.invalidateQueries("listar_alunas");
             setOpenMatricula(true);
           }}
         />,
@@ -391,6 +391,7 @@ export function Turmas(this: any) {
           icon={<FaList size={20} />}
           label="ListarAlunas"
           onClick={async () => {
+            setAlunasTurma([]);
             setOpenList(true);
             await consultaAlunasNaTurma(Number(params.id));
             await listarIDTurma(Number(params.id));
