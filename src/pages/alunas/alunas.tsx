@@ -5,8 +5,10 @@ import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
+import { toast } from "react-toastify";
 
 import {
   Box,
@@ -22,10 +24,15 @@ import {
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { AlunasListarDTO } from "./dtos/AlunasListar.dto";
 import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrar.dto";
+import {
+  cadastraAluna,
+  listaAlunas,
+  apagaAluna,
+  editaAluna,
+} from "../../services/alunas";
 
 const Container = styled.div`
   width: 100%;
@@ -110,22 +117,18 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    console.log(aluna);
-
-    await axios
-      .post("https://service-amis.azurewebsites.net/alunas/", aluna)
-      .then((response) => {
-        console.log(response.status);
-        handleClose();
-      })
-      .catch((err) => console.warn(err));
+    const response = await cadastraAluna(aluna);
+    if (response.status === 201) {
+      handleClose();
+      toast.success("Aluna cadastrada com sucesso!");
+    } else {
+      toast.error("Erro ao cadastrar a aluna.");
+    }
+    await queryClient.invalidateQueries("listar_alunas");
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await axios.get(
-      "https://service-amis.azurewebsites.net/alunas/"
-    );
-
+    const response = await listaAlunas();
     const temp: AlunasListarDTO[] = [];
     response.data.forEach((value: AlunasListarDTO) => {
       temp.push({
@@ -135,21 +138,18 @@ export function Alunas() {
         dNascimento: value.dNascimento,
       });
     });
-
     setDataTable(temp);
   });
 
   const deleteAlunas = async () => {
-    await axios
-      .delete("https://service-amis.azurewebsites.net/alunas/" + id)
-      .then((response) => {
-        console.log(response.data);
-        handleCloseConfirmation();
-      })
-      .catch((err) => {
-        console.warn(err);
-        handleCloseConfirmation();
-      });
+    const response = await apagaAluna(id.toString());
+    if (response.status === 204) {
+      toast.success("Aluna excluída com sucesso!");
+    } else {
+      toast.error("Erro ao excluir a aluna.");
+    }
+    handleCloseConfirmation();
+    await queryClient.invalidateQueries("listar_alunas");
   };
 
   const editAlunas = async (data: any) => {
@@ -166,37 +166,26 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    await axios
-      .put("https://service-amis.azurewebsites.net/alunas/" + id, aluna)
-      .then((response) => {
-        console.log(response.data);
-        setOpenEdit(false);
-      })
-      .catch((err) => {
-        console.warn(err);
-        setOpenEdit(false);
-      });
+    const response = await editaAluna(id.toString(), aluna);
+    if (response.status === 200 || response.status === 204) {
+      toast.success("Aluna atualizada com sucesso!");
+    } else {
+      toast.error("Erro na atualização da aluna.");
+    }
+    setOpenEdit(false);
+    await queryClient.invalidateQueries("listar_alunas");
   };
 
   const columnsTable = [
-    { field: "nome", headerName: "Nome", width: 150 },
-    { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "dNascimento", headerName: "Data Nascimento", width: 150 },
+    { field: "nome", headerName: "Nome", flex: 2 },
+    { field: "cpf", headerName: "CPF", flex: 2 },
+    { field: "dNascimento", headerName: "Data Nascimento", flex: 2 },
     {
       field: "actions",
       headerName: "Ações",
       type: "actions",
-      width: 80,
+      flex: 1,
       getActions: (params: { id: GridRowId }) => [
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
-          onClick={() => {
-            setId(params.id);
-            handleOpenConfirmation();
-          }}
-        />,
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
           icon={<AiFillEdit size={20} />}
@@ -204,6 +193,15 @@ export function Alunas() {
           onClick={async () => {
             setId(params.id);
             setOpenEdit(true);
+          }}
+        />,
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<BsFillTrashFill size={18} />}
+          label="Deletar"
+          onClick={() => {
+            setId(params.id);
+            handleOpenConfirmation();
           }}
         />,
       ],
@@ -227,7 +225,7 @@ export function Alunas() {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Você tem certeza que deseja excluir?"}
+            {"Você tem certeza que deseja excluir esta aluna?"}
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleCloseConfirmation}>Não</Button>
