@@ -286,6 +286,7 @@ export function Assistentes() {
                 labelId="simple-select-admin"
                 label="Administrador(a)?"
                 required={true}
+                defaultValue=""
                 {...register("administrador")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
@@ -340,6 +341,7 @@ export function Assistentes() {
                 labelId="simple-select-admin"
                 required={true}
                 label="Administrador(a)?"
+                defaultValue=""
                 {...register("adminEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >

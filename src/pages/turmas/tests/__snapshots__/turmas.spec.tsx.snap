@@ -16,7 +16,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     <a
       className="sc-gswNZR gptURg"
       href="/"
-      isActive={true}
       onClick={[Function]}
     >
       <svg
@@ -47,7 +46,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     <a
       className="sc-gswNZR jZMjZO"
       href="/alunas"
-      isActive={false}
       onClick={[Function]}
     >
       <svg
@@ -78,7 +76,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     <a
       className="sc-gswNZR jZMjZO"
       href="/turmas"
-      isActive={false}
       onClick={[Function]}
     >
       <svg
@@ -109,7 +106,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     <a
       className="sc-gswNZR jZMjZO"
       href="/relatorios"
-      isActive={false}
       onClick={[Function]}
     >
       <svg
@@ -143,7 +139,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     <a
       className="sc-gswNZR jZMjZO"
       href="/assistentes"
-      isActive={false}
       onClick={[Function]}
     >
       <svg
@@ -174,7 +169,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     <a
       className="sc-gswNZR jZMjZO"
       href="/configurações"
-      isActive={false}
       onClick={[Function]}
     >
       <svg
@@ -212,7 +206,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     <a
       className="sc-gswNZR jZMjZO"
       href="/sair"
-      isActive={false}
       onClick={[Function]}
     >
       <svg
