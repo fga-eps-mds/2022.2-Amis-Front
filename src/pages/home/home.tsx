@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
 import home_image2 from "../../assets/home_image2.png";
 import footer_image1 from "../../assets/footer_image1.png";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { QtdAlunasDTO } from "./QtdAlunasDTO";
+import { QtdAlunasFormDTO } from "./QtdAlunasFormDTO";
+import axios from "axios";
+import { useQuery } from "react-query";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -99,6 +103,23 @@ const FooterText = styled.span`
 `;
 
 export function Home() {
+  const [qtdAluna, setQtdAluna] = useState<QtdAlunasDTO>();
+  const [qtdAlunaForm, setQtdAlunaForm] = useState<QtdAlunasFormDTO>();
+
+  useQuery("quantidade_alunas", async () => {
+    const responseQtdAlunas = await axios.get(
+      "https://service-amis.azurewebsites.net/alunas/count/"
+    );
+    setQtdAluna(responseQtdAlunas.data as QtdAlunasDTO);
+  });
+
+  useQuery("quantidade_alunasFormadas", async () => {
+    const responseQtdFormadas = await axios.get(
+      "https://service-amis.azurewebsites.net/alunas/count/formada"
+    );
+    setQtdAlunaForm(responseQtdFormadas.data as QtdAlunasFormDTO);
+  });
+
   return (
     <div>
       <Navbar />
@@ -172,15 +193,11 @@ export function Home() {
       </DivText>
       <DivCounter>
         <DivEachCounter>
-          <CounterNumber>98</CounterNumber>
+          <CounterNumber>{qtdAluna?.count}</CounterNumber>
           <CounterText>Mulheres atendidas</CounterText>
         </DivEachCounter>
         <DivEachCounter>
-          <CounterNumber>187</CounterNumber>
-          <CounterText>Famílias impactadas</CounterText>
-        </DivEachCounter>
-        <DivEachCounter>
-          <CounterNumber>91</CounterNumber>
+          <CounterNumber>{qtdAlunaForm?.count}</CounterNumber>
           <CounterText>Formações profissionais</CounterText>
         </DivEachCounter>
       </DivCounter>
