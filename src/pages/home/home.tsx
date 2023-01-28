@@ -58,7 +58,7 @@ const DivCounter = styled.div`
   background: ${(props) => props.theme.colors.primary};
   display: flex;
   padding: 45px 150px;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `;
 
 const DivEachCounter = styled.div`
