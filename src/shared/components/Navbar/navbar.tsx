@@ -64,8 +64,6 @@ export function Navbar(props: any) {
     },
   ];
 
-  const alunas = "/alunas";
-
   return (
     <DivNavbar>
       <DivNavbarCenter>
@@ -84,7 +82,7 @@ export function Navbar(props: any) {
           ))}
         </DivNavbarMenu>
         {props.hideButton !== true && (
-          <Link to={alunas}>
+          <Link to="/login">
             <PrimaryButton text="Área Logada" />
           </Link>
         )}

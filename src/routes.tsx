@@ -21,10 +21,8 @@ export default function AppRoutes() {
         <Route path="/alunas" element={<Alunas />} />
         <Route path="/assistentes" element={<Assistentes />} />
         <Route path="/turmas" element={<Turmas />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-      <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );

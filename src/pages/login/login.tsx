@@ -1,14 +1,18 @@
 import {
+  CircularProgress,
   FormControl,
   InputAdornment,
   InputLabel,
   OutlinedInput,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import styled from "styled-components";
+import { AuthContext } from "../../context/AuthProvider";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 
@@ -69,8 +73,26 @@ export function Login() {
   } = useForm();
   const [showPassword, setShowPassword] = React.useState(false);
   const handleShowPassword = () => setShowPassword(!showPassword);
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
 
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    const { email, senha } = data;
+
+    const request = await auth.authenticate(email, senha);
+
+    console.log(request);
+
+    if (request.token) {
+      setLoading(false);
+      navigate("/alunas");
+    } else {
+      setLoading(false);
+      toast.error("Não foi possível entrar, verifique as credenciais!");
+    }
+  };
 
   return (
     <Container>
@@ -119,7 +141,13 @@ export function Login() {
               />
             </FormControl>
             <Link>Esqueceu sua senha?</Link>
-            <PrimaryButton text="Entrar" />
+            <PrimaryButton>
+              {loading ? (
+                <CircularProgress size={20} sx={{ color: "#fff" }} />
+              ) : (
+                <>Entrar</>
+              )}
+            </PrimaryButton>
           </Form>
         </DivLogin>
       </Content>

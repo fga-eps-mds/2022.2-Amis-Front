@@ -4,6 +4,7 @@ import styled from "styled-components";
 interface ButtonProps {
   text?: string;
   handleClick?: () => void;
+  children?: React.ReactNode;
 }
 
 const Button = styled.button`
@@ -20,10 +21,11 @@ const Button = styled.button`
   }
 `;
 
-export function PrimaryButton({ text, handleClick }: ButtonProps) {
+export function PrimaryButton({ children, text, handleClick }: ButtonProps) {
   return (
     <Button type="submit" onClick={handleClick}>
       {text}
+      {children}
     </Button>
   );
 }
