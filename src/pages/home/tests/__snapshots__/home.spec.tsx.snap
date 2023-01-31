@@ -1,0 +1,243 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
+<div>
+  <div
+    className="sc-gswNZR bunAuC"
+  >
+    <div
+      className="sc-dkrFOg bktbFR"
+    >
+      <div
+        className="sc-hLBbgP PqNIR"
+      >
+        <h1
+          className="sc-eDvSVe kinkDz"
+        >
+          AMIS
+        </h1>
+        <a
+          href="/"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-jSUZER jcgnhb"
+            onClick={[Function]}
+          >
+            Home
+          </button>
+        </a>
+        <a
+          href="/receitas"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-jSUZER dJarrl"
+            onClick={[Function]}
+          >
+            Receitas
+          </button>
+        </a>
+        <a
+          href="/contato"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-jSUZER dJarrl"
+            onClick={[Function]}
+          >
+            Contato
+          </button>
+        </a>
+      </div>
+      <a
+        href="/alunas"
+        onClick={[Function]}
+      >
+        <button
+          className="sc-bcXHqe kgeCMO"
+          type="submit"
+        >
+          Área Logada
+        </button>
+      </a>
+    </div>
+  </div>
+  <div
+    className="sc-gKPRtg cMVdQR"
+  >
+    <div
+      className="sc-iBYQkv deFuDe"
+    >
+      <h1
+        className="sc-pyfCe ilited"
+      >
+        AMIS
+      </h1>
+      <h1
+        className="sc-pyfCe ilited"
+      >
+        Mulheres Criativas
+      </h1>
+      <span
+        style={
+          {
+            "paddingTop": "30px",
+          }
+        }
+      >
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </span>
+      <span
+        style={
+          {
+            "paddingBottom": "30px",
+          }
+        }
+      >
+        Varius sed pharetra dictum neque massa congue
+      </span>
+      <div
+        style={
+          {
+            "display": "flex",
+            "gap": "15px",
+          }
+        }
+      >
+        <button
+          className="sc-bcXHqe kgeCMO"
+          type="submit"
+        >
+          Saiba Mais
+        </button>
+        <button
+          className="sc-bcXHqe kgeCMO"
+          type="submit"
+        >
+          Faça um pedido
+        </button>
+      </div>
+    </div>
+    <div
+      style={
+        {
+          "position": "relative",
+        }
+      }
+    >
+      <img
+        className="sc-ftTHYK dCrpnR"
+        src="test-file-stub"
+        style={
+          {
+            "bottom": -80,
+            "left": -250,
+            "position": "absolute",
+            "width": "350px",
+            "zIndex": 5,
+          }
+        }
+      />
+      <img
+        className="sc-ftTHYK dCrpnR"
+        src="test-file-stub"
+        style={
+          {
+            "width": "400px",
+            "zIndex": 0,
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="sc-jrcTuL ePCbck"
+  >
+    <h1
+      className="sc-kDvujY jLmErB"
+    >
+      Quem Somos
+    </h1>
+    <span
+      className="sc-ipEyDJ flFEmF"
+    >
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate, sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem. Maecenas et lacus vel lacus lacinia porttitor. Nulla tempus dictum efficitur. Suspendisse potenti. Sed ac nulla eget nunc tempor faucibus sed et mauris. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Quisque tortor ipsum, tincidunt eget ligula at, aliquet commodo purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In pretium leo ac dolor gravida pretium. Sed eu venenatis lacus, efficitur pulvinar massa. Morbi aliquet sapien vitae purus tincidunt, eget consequat erat iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut fermentum non libero ut consequat. Quisque elementum velit eget ipsum suscipit rutrum.
+    </span>
+    <h1
+      className="sc-kDvujY jLmErB"
+    >
+       Nossa missão
+    </h1>
+    <span
+      className="sc-ipEyDJ flFEmF"
+    >
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate, sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem. Maecenas et lacus vel lacus lacinia porttitor. Nulla tempus dictum efficitur. Suspendisse potenti. Sed ac nulla eget nunc tempor faucibus sed et mauris. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Quisque tortor ipsum, tincidunt eget ligula at, aliquet commodo purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In pretium leo ac dolor gravida pretium. Sed eu venenatis lacus, efficitur pulvinar massa. Morbi aliquet sapien vitae purus tincidunt, eget consequat erat iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut fermentum non libero ut consequat. Quisque elementum velit eget ipsum suscipit rutrum.
+    </span>
+  </div>
+  <div
+    className="sc-csuSiG jjqImO"
+  >
+    <div
+      className="sc-eDWCr etltNc"
+    >
+      <h1
+        className="sc-bqWxrE jWIUEt"
+      />
+      <span
+        className="sc-ksBlkl cRcsET"
+      >
+        Mulheres atendidas
+      </span>
+    </div>
+    <div
+      className="sc-eDWCr etltNc"
+    >
+      <h1
+        className="sc-bqWxrE jWIUEt"
+      />
+      <span
+        className="sc-ksBlkl cRcsET"
+      >
+        Formações profissionais
+      </span>
+    </div>
+  </div>
+  <div
+    className="sc-hBxehG gGmGpW"
+  >
+    <div>
+      <h1
+        className="sc-fnGiBr eysZbq"
+      >
+        Nossas receitas
+      </h1>
+    </div>
+  </div>
+  <div
+    className="sc-fEXmlR eXVrRI"
+  >
+    <a
+      href="https://www.instagram.com/amismulherescriativas/"
+    >
+      <img
+        className="sc-ftTHYK dCrpnR"
+        src="test-file-stub"
+        style={
+          {
+            "marginBottom": "20px",
+            "width": "40px",
+          }
+        }
+      />
+    </a>
+    <div>
+      <span
+        className="sc-bjfHbI kBRovy"
+      >
+        © 2022. All rights reserved.
+      </span>
+    </div>
+  </div>
+</div>
+`;

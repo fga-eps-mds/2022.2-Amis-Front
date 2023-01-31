@@ -33,9 +33,9 @@ const Title = styled.h1`
   font-size: 24px;
 `;
 
-const MenuButton = styled.button<{ isActive?: boolean }>`
+const MenuButton = styled(({ active, ...props }) => <button {...props} />)`
   color: ${(props) =>
-    props.isActive ?? false
+    props.active === true
       ? props.theme.colors.primary
       : props.theme.colors.black};
   margin-right: 50px;
@@ -75,7 +75,7 @@ export function Navbar(props: any) {
             <Link key={index} to={itemData.path}>
               <MenuButton
                 key={index}
-                isActive={pathname === itemData.path}
+                active={pathname === itemData.path}
                 onClick={() => setPathname(itemData.path)}
               >
                 {itemData.name}

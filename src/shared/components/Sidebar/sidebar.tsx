@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
-import { BiUser } from "react-icons/bi";
+import { BiLogOut, BiUser } from "react-icons/bi";
+import { FiSettings } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { grey } from "@mui/material/colors";
@@ -14,7 +15,7 @@ const Container = styled.div`
   background: white;
 `;
 
-const SidebarItem = styled(Link)<{ isActive?: boolean }>`
+const SidebarItem = styled(({ active, ...props }) => <Link {...props} />)`
   width: 200px;
   height: 60px;
   border: none;
@@ -24,10 +25,10 @@ const SidebarItem = styled(Link)<{ isActive?: boolean }>`
   cursor: pointer;
   border-radius: 5px 0 0 5px;
   text-decoration: none;
-  padding-left: ${(props) => props.isActive && "13px"};
-  background: ${(props) => (props.isActive ? grey : "white")};
-  color: ${(props) => (props.isActive ? "#da4d3d" : "#525252")};
-  border-left: ${(props) => props.isActive && "7px solid" + "#da4d3d"};
+  padding-left: ${(props) => props.active && "13px"};
+  background: ${(props) => (props.active ? grey : "white")};
+  color: ${(props) => (props.active ? "#da4d3d" : "#525252")};
+  border-left: ${(props) => props.active && "7px solid" + "#da4d3d"};
 `;
 
 const ItemText = styled.h1`
@@ -49,7 +50,7 @@ const Logo = styled.div`
 `;
 
 export function Sidebar() {
-  const [pathname, setPathname] = useState("/alunas");
+  const [pathname] = useState(window.location.pathname);
 
   const sidebarData = [
     {
@@ -96,6 +97,39 @@ export function Sidebar() {
         />
       ),
     },
+    {
+      id: 5,
+      name: "Assistentes",
+      path: "/assistentes",
+      icon: (
+        <BiUser
+          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+    {
+      id: 6,
+      name: "Configurações",
+      path: "/configurações",
+      icon: (
+        <FiSettings
+          color={pathname === "/configurações" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
+    {
+      id: 7,
+      name: "Sair",
+      path: "/sair",
+      icon: (
+        <BiLogOut
+          color={pathname === "/sair" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
   ];
 
   return (
@@ -104,8 +138,7 @@ export function Sidebar() {
       {sidebarData.map((itemData, index) => (
         <SidebarItem
           key={index}
-          isActive={pathname === itemData.path}
-          onClick={() => setPathname(itemData.path)}
+          active={pathname === itemData.path}
           to={itemData.path}
         >
           {itemData.icon}

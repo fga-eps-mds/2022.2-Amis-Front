@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
+<div
+  className="sc-gswNZR bunAuC"
+>
+  <div
+    className="sc-dkrFOg bktbFR"
+  >
+    <div
+      className="sc-hLBbgP PqNIR"
+    >
+      <h1
+        className="sc-eDvSVe kinkDz"
+      >
+        AMIS
+      </h1>
+      <a
+        href="/"
+        onClick={[Function]}
+      >
+        <button
+          className="sc-jSUZER jcgnhb"
+          onClick={[Function]}
+        >
+          Home
+        </button>
+      </a>
+      <a
+        href="/receitas"
+        onClick={[Function]}
+      >
+        <button
+          className="sc-jSUZER dJarrl"
+          onClick={[Function]}
+        >
+          Receitas
+        </button>
+      </a>
+      <a
+        href="/contato"
+        onClick={[Function]}
+      >
+        <button
+          className="sc-jSUZER dJarrl"
+          onClick={[Function]}
+        >
+          Contato
+        </button>
+      </a>
+    </div>
+    <a
+      href="/alunas"
+      onClick={[Function]}
+    >
+      <button
+        className="sc-bcXHqe kgeCMO"
+        type="submit"
+      >
+        Área Logada
+      </button>
+    </a>
+  </div>
+</div>
+`;

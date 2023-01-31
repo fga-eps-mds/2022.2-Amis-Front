@@ -1,4 +1,4 @@
-import { Alunas } from "../../pages/alunas/alunas";
+import { Alunas } from "../alunas";
 import {
   getByAltText,
   getByLabelText,
@@ -7,11 +7,16 @@ import {
   getByTestId,
   render,
   screen,
-  waitFor
+  waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React, { Component } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter, BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
+import theme from "../../../styles/theme";
+import renderer from "react-test-renderer";
+import { QueryClientProvider } from "react-query";
+import { queryClient } from "../../../services/queryClient";
 
 describe("alunas", () => {
   it("Alunas", async () => {
@@ -19,9 +24,13 @@ describe("alunas", () => {
     const { getByText, queryByText, getByLabelText, findByText, debug } =
       render(
         // eslint-disable-next-line react/react-in-jsx-scope
-        <Router>
-          <Alunas />
-        </Router>
+        <QueryClientProvider client={queryClient}>
+          <Router>
+            <ThemeProvider theme={theme}>
+              <Alunas />
+            </ThemeProvider>
+          </Router>
+        </QueryClientProvider>
       );
 
     const inputNome = getByLabelText("Nome");
@@ -51,5 +60,22 @@ describe("alunas", () => {
       void userEvent.click(addButtonCadastrar);
       expect(getByLabelText("Nome do pai")).toBeInTheDocument();
     });
+  });
+});
+
+describe("Snapshot", () => {
+  it("Deve corresponder ao Snapshot", () => {
+    const tree = renderer
+      .create(
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <ThemeProvider theme={theme}>
+              <Alunas />
+            </ThemeProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      )
+      .toJSON();
+    expect(tree).toMatchSnapshot();
   });
 });
