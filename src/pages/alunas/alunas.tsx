@@ -24,8 +24,8 @@ import {
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { AlunasListarDTO } from "./dtos/AlunasListarDTO";
-import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrarDTO";
+import { AlunasListarDTO } from "./dtos/AlunasListar.dto";
+import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrar.dto";
 
 const Container = styled.div`
   width: 100%;

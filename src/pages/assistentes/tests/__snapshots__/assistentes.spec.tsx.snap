@@ -4,7 +4,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
 <div
   className="sc-ipEyDJ fEkVjI"
 >
-   
   <div
     className="sc-bcXHqe kOWTzR"
   >
@@ -247,7 +246,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
         className="sc-jSUZER iDPtwI"
       >
          
-        Turmas
+        Assistentes
          
       </h1>
       <div
@@ -296,7 +295,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       }
     >
       <div
-        aria-colcount={8}
+        aria-colcount={5}
         aria-multiselectable={false}
         aria-rowcount={1}
         className="MuiDataGrid-root MuiDataGrid-root--densityStandard css-1v2s6lm-MuiDataGrid-root"

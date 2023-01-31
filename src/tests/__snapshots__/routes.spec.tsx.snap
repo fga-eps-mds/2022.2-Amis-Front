@@ -1,0 +1,261 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
+<div>
+  <div
+    className="sc-hBxehG kllKCH"
+  >
+    <div
+      className="sc-fnGiBr vpwKY"
+    >
+      <div
+        className="sc-fEXmlR boZxAa"
+      >
+        <h1
+          className="sc-bjfHbI iJdsUp"
+        >
+          AMIS
+        </h1>
+        <a
+          href="/"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-idXgbr jmnPjA"
+            onClick={[Function]}
+          >
+            Home
+          </button>
+        </a>
+        <a
+          href="/receitas"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-idXgbr dPAtZG"
+            onClick={[Function]}
+          >
+            Receitas
+          </button>
+        </a>
+        <a
+          href="/contato"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-idXgbr dPAtZG"
+            onClick={[Function]}
+          >
+            Contato
+          </button>
+        </a>
+      </div>
+      <a
+        href="/alunas"
+        onClick={[Function]}
+      >
+        <button
+          className="sc-kDvujY hKfSYs"
+          type="submit"
+        >
+          Área Logada
+        </button>
+      </a>
+    </div>
+  </div>
+  <div
+    className="sc-dIfARi gMhZEh"
+  >
+    <div
+      className="sc-hHTYSt cIAGAu"
+    >
+      <h1
+        className="sc-kgTSHT bzMpRr"
+      >
+        AMIS
+      </h1>
+      <h1
+        className="sc-kgTSHT bzMpRr"
+      >
+        Mulheres Criativas
+      </h1>
+      <span
+        style={
+          {
+            "paddingTop": "30px",
+          }
+        }
+      >
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </span>
+      <span
+        style={
+          {
+            "paddingBottom": "30px",
+          }
+        }
+      >
+        Varius sed pharetra dictum neque massa congue
+      </span>
+      <div
+        style={
+          {
+            "display": "flex",
+            "gap": "15px",
+          }
+        }
+      >
+        <button
+          className="sc-kDvujY hKfSYs"
+          type="submit"
+        >
+          Saiba Mais
+        </button>
+        <button
+          className="sc-kDvujY hKfSYs"
+          type="submit"
+        >
+          Faça um pedido
+        </button>
+      </div>
+    </div>
+    <div
+      style={
+        {
+          "position": "relative",
+        }
+      }
+    >
+      <img
+        className="sc-dmctIk efDvch"
+        src="test-file-stub"
+        style={
+          {
+            "bottom": -80,
+            "left": -250,
+            "position": "absolute",
+            "width": "350px",
+            "zIndex": 5,
+          }
+        }
+      />
+      <img
+        className="sc-dmctIk efDvch"
+        src="test-file-stub"
+        style={
+          {
+            "width": "400px",
+            "zIndex": 0,
+          }
+        }
+      />
+    </div>
+  </div>
+  <div
+    className="sc-fLcnxK ekFjVe"
+  >
+    <h1
+      className="sc-bBABsx cGhTru"
+    >
+      Quem Somos
+    </h1>
+    <span
+      className="sc-iveFHk fucQIt"
+    >
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate, sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem. Maecenas et lacus vel lacus lacinia porttitor. Nulla tempus dictum efficitur. Suspendisse potenti. Sed ac nulla eget nunc tempor faucibus sed et mauris. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Quisque tortor ipsum, tincidunt eget ligula at, aliquet commodo purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In pretium leo ac dolor gravida pretium. Sed eu venenatis lacus, efficitur pulvinar massa. Morbi aliquet sapien vitae purus tincidunt, eget consequat erat iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut fermentum non libero ut consequat. Quisque elementum velit eget ipsum suscipit rutrum.
+    </span>
+    <h1
+      className="sc-bBABsx cGhTru"
+    >
+       Nossa missão
+    </h1>
+    <span
+      className="sc-iveFHk fucQIt"
+    >
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate, sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem. Maecenas et lacus vel lacus lacinia porttitor. Nulla tempus dictum efficitur. Suspendisse potenti. Sed ac nulla eget nunc tempor faucibus sed et mauris. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Quisque tortor ipsum, tincidunt eget ligula at, aliquet commodo purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In pretium leo ac dolor gravida pretium. Sed eu venenatis lacus, efficitur pulvinar massa. Morbi aliquet sapien vitae purus tincidunt, eget consequat erat iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut fermentum non libero ut consequat. Quisque elementum velit eget ipsum suscipit rutrum.
+    </span>
+  </div>
+  <div
+    className="sc-cwSeag bxbSyJ"
+  >
+    <div
+      className="sc-lllmON hUojln"
+    >
+      <h1
+        className="sc-iJnaPW dUnHxV"
+      >
+        98
+      </h1>
+      <span
+        className="sc-gikAfH hkBoiE"
+      >
+        Mulheres atendidas
+      </span>
+    </div>
+    <div
+      className="sc-lllmON hUojln"
+    >
+      <h1
+        className="sc-iJnaPW dUnHxV"
+      >
+        187
+      </h1>
+      <span
+        className="sc-gikAfH hkBoiE"
+      >
+        Famílias impactadas
+      </span>
+    </div>
+    <div
+      className="sc-lllmON hUojln"
+    >
+      <h1
+        className="sc-iJnaPW dUnHxV"
+      >
+        91
+      </h1>
+      <span
+        className="sc-gikAfH hkBoiE"
+      >
+        Formações profissionais
+      </span>
+    </div>
+  </div>
+  <div
+    className="sc-ezOQGI heycA-d"
+  >
+    <div>
+      <h1
+        className="sc-bYMpWt hMVtjJ"
+      >
+        Nossas receitas
+      </h1>
+    </div>
+  </div>
+  <div
+    className="sc-kMjNwy gMcDcs"
+  >
+    <a
+      href="https://www.instagram.com/amismulherescriativas/"
+    >
+      <img
+        className="sc-dmctIk efDvch"
+        src="test-file-stub"
+        style={
+          {
+            "marginBottom": "20px",
+            "width": "40px",
+          }
+        }
+      />
+    </a>
+    <div>
+      <span
+        className="sc-ilhmMj eYqxrY"
+      >
+        © 2022. All rights reserved.
+      </span>
+    </div>
+  </div>
+</div>
+`;
