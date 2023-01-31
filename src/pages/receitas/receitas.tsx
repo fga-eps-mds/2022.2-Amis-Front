@@ -14,7 +14,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { Form } from "react-router-dom";
 import { ReceitasCadastrarDTO } from "./ReceitasCadastrarDTO";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -67,8 +66,27 @@ const DivCards = styled.div`
   align-items: center;
 `;
 
+const Form = styled.form`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+`;
+
 const Container = styled.div`
   width: 100%;
+`;
+
+const AddCampo = styled.button`
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border-color: #000;
+  font-size: 35px;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #fff;
 `;
 
 export function Receitas() {
@@ -109,43 +127,6 @@ export function Receitas() {
           </Title>
           <PrimaryButton text={"Cadastrar receita"} handleClick={handleOpen} />
         </DivHeaderReceitas>
-        <Modal open={openCad} onClose={handleClose}>
-          <Box sx={style}>
-            <FormText
-              style={{
-                textAlign: "center",
-                fontWeight: "bold",
-                fontSize: 30,
-              }}
-            >
-              Cadastrar uma nova receita
-            </FormText>
-            <Form onSubmit={handleSubmit(registerReceitas)}>
-              <TextField
-                id="outlined-nome_receita"
-                label="Nome"
-                required={true}
-                {...register("nome")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              <TextField
-                id="outlined-ingredientes"
-                label="Ingredientes"
-                required={true}
-                {...register("ingredientes")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              <TextField
-                id="outlined-modo_preparo"
-                label="Modo de Preparo"
-                required={true}
-                {...register("modo_preparo")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              <PrimaryButton text={"Cadastrar receita"} />
-            </Form>
-          </Box>
-        </Modal>
         <DivCards>
           <Card sx={{ maxWidth: 330, borderRadius: 7, padding: 2, margin: 2 }}>
             <CardActionArea>
@@ -163,6 +144,44 @@ export function Receitas() {
         </DivCards>
       </DivPresentation>
       <Footer />
+      <Modal open={openCad} onClose={handleClose}>
+        <Box sx={style}>
+          <FormText
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: 30,
+            }}
+          >
+            Cadastrar uma nova receita
+          </FormText>
+          <Form onSubmit={handleSubmit(registerReceitas)}>
+            <TextField
+              id="outlined-nome_receita"
+              label="Nome"
+              required={true}
+              {...register("nome")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-ingredientes"
+              label="Ingredientes"
+              required={true}
+              {...register("ingredientes")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <AddCampo>+</AddCampo>
+            <TextField
+              id="outlined-modo_preparo"
+              label="Modo de Preparo"
+              required={true}
+              {...register("modo_preparo")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <PrimaryButton text={"Cadastrar receita"} />
+          </Form>
+        </Box>
+      </Modal>
     </Container>
   );
 }

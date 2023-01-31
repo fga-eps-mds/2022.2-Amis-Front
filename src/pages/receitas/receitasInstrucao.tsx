@@ -4,6 +4,7 @@ import { Navbar } from "../../shared/components/Navbar/navbar";
 import Title from "../../shared/components/Title/Title";
 import { Footer } from "../../shared/components/Footer/footer";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { BsJustify } from "react-icons/bs";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -23,9 +24,27 @@ const DivPresentationInner = styled.div`
 `;
 
 const DivIngredientes = styled.div`
-  display: flex;
   justify-content: center;
   margin-top: 40px;
+`;
+
+const ContIngredientes = styled.div`
+  justify-content: center;
+  padding: 20px;
+  margin: 20px;
+  width: 25%;
+`;
+
+const DivModoPreparo = styled.div`
+  justify-content: center;
+  margin-top: 40px;
+`;
+
+const ContModoPreparo = styled.div`
+  justify-content: center;
+  padding: 20px;
+  margin: 20px;
+  width: 98%;
 `;
 
 const DivButtons = styled.div`
@@ -37,30 +56,212 @@ const DivButtons = styled.div`
   padding-top: 0px;
 `;
 
+const ListaDesord = styled.ol`
+  counter-reset: li;
+  list-style: none;
+  padding: 0;
+  justify-content: space-between;
+  margin-bottom: 4em;
+  position: relative;
+  display: block;
+  padding: 0.4em 0.4em 0.4em 2em;
+  *padding: 0.4em;
+  margin: 15px 0;
+  background: #ddd;
+  text-decoration: none;
+  border-radius: 0.3em;
+  transition: all 0.3s ease-out;
+  &:hover {
+    background: #eee;
+  }
+  &:hover:before {
+    transform: rotate(360deg);
+  }
+  &:before {
+    content: attr(none);
+    counter-increment: none;
+    position: absolute;
+    left: -1.3em;
+    top: 50%;
+    margin-top: -1.3em;
+    background: #da4d3d;
+    color: #fff;
+    height: 2em;
+    width: 2em;
+    line-height: 2em;
+    border: 0.3em solid #fff;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 2em;
+    transition: all 0.3s ease-out;
+  }
+`;
+
+const ListaOrd = styled.ol`
+  counter-reset: li;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 4em;
+  position: relative;
+  display: block;
+  padding: 0.4em 0.4em 0.4em 2em;
+  *padding: 0.4em;
+  margin: 15px 0;
+  background: #ddd;
+  text-decoration: none;
+  border-radius: 0.3em;
+  transition: all 0.3s ease-out;
+  &:hover {
+    background: #eee;
+  }
+  &:hover:before {
+    transform: rotate(360deg);
+  }
+  &:before {
+    content: counter(li);
+    counter-increment: li;
+    position: absolute;
+    left: -1.3em;
+    top: 50%;
+    margin-top: -1.3em;
+    background: #da4d3d;
+    color: #fff;
+    height: 2em;
+    width: 2em;
+    line-height: 2em;
+    border: 0.3em solid #fff;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 2em;
+    transition: all 0.3s ease-out;
+  }
+`;
+
+const Nav = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 export function ReceitasInstrucao() {
   return (
     <div>
       <Navbar />
       <DivPresentation>
         <DivPresentationInner>
-          <Title fontSize={40} fontWeight={500}>
-            RECEITA 1 {/* {receita?.nome} // Esse vai ser o fixo */}
-          </Title>
-          <DivButtons>
-            <PrimaryButton
-              text={"Excluir"}
-              handleClick={() => console.log("EXCLUIR")}
-            />
-            <PrimaryButton
-              text={"Editar receita"}
-              handleClick={() => console.log("EDITAR RECEITA")}
-            />
-          </DivButtons>
+          <Nav>
+            <Title fontSize={40} fontWeight={700} style={{ width: "60%" }}>
+              RECEITA 1 {/* {receita?.nome} // Esse vai ser o fixo */}
+            </Title>
+            <DivButtons>
+              <PrimaryButton
+                text={"Excluir"}
+                handleClick={() => console.log("EXCLUIR")}
+              />
+              <PrimaryButton
+                text={"Editar receita"}
+                handleClick={() => console.log("EDITAR RECEITA")}
+              />
+            </DivButtons>
+          </Nav>
           <DivIngredientes>
-            <Title fontSize={35} fontWeight={400}>
+            <Title
+              fontSize={35}
+              fontWeight={500}
+              style={{ textAlign: "center" }}
+            >
               INGREDIENTES
             </Title>
+            <ContIngredientes>
+              <ListaDesord>
+                <li>2L de Água</li>
+              </ListaDesord>
+              <ListaDesord>
+                <li>200g de Açucar</li>
+              </ListaDesord>
+              <ListaDesord>
+                <li>2L de Água</li>
+              </ListaDesord>
+              <ListaDesord>
+                <li>200g de Açucar</li>
+              </ListaDesord>
+              <ListaDesord>
+                <li>2L de Água</li>
+              </ListaDesord>
+              <ListaDesord>
+                <li>200g de Açucar</li>
+              </ListaDesord>
+            </ContIngredientes>
           </DivIngredientes>
+          <DivModoPreparo>
+            <Title
+              fontSize={35}
+              fontWeight={500}
+              style={{ textAlign: "center" }}
+            >
+              MODO DE PREPARO
+            </Title>
+            <ContModoPreparo>
+              <ListaOrd>
+                <li>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Optio cupiditate commodi quisquam iste cumque incidunt quas
+                  aliquam maiores quaerat est, atque blanditiis ex delectus
+                  rerum impedit porro aspernatur. Dolorem, consequatur.
+                </li>
+              </ListaOrd>
+              <ListaOrd>
+                <li>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                  Sequi, nam? Dolor aliquid ullam hic, fugiat ut eos! Voluptatum
+                  aperiam fugit repellendus, explicabo saepe earum ipsam
+                  aspernatur magnam atque placeat nam! Lorem ipsum dolor sit
+                  amet, consectetur adipisicing elit. Sequi, nam? Dolor aliquid
+                  ullam hic, fugiat ut eos! Voluptatum aperiam fugit
+                  repellendus, explicabo saepe earum ipsam aspernatur magnam
+                  atque placeat nam! Lorem ipsum dolor sit amet, consectetur
+                  adipisicing elit. Sequi, nam? Dolor aliquid ullam hic, fugiat
+                  ut eos! Voluptatum aperiam fugit repellendus, explicabo saepe
+                  earum ipsam aspernatur magnam atque placeat nam! Lorem ipsum
+                  dolor sit amet, consectetur adipisicing elit. Sequi, nam?
+                  Dolor aliquid ullam hic, fugiat ut eos! Voluptatum aperiam
+                  fugit repellendus, explicabo saepe earum ipsam aspernatur
+                  magnam atque placeat nam!
+                </li>
+              </ListaOrd>
+              <ListaOrd>
+                <li>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Optio cupiditate commodi quisquam iste cumque incidunt quas
+                  aliquam maiores quaerat est, atque blanditiis ex delectus
+                  rerum impedit porro aspernatur. Dolorem, consequatur.
+                </li>
+              </ListaOrd>
+              <ListaOrd>
+                <li>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                  Sequi, nam? Dolor aliquid ullam hic, fugiat ut eos! Voluptatum
+                  aperiam fugit repellendus, explicabo saepe earum ipsam
+                  aspernatur magnam atque placeat nam!
+                </li>
+              </ListaOrd>
+              <ListaOrd>
+                <li>
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Optio cupiditate commodi quisquam iste cumque incidunt quas
+                  aliquam maiores quaerat est, atque blanditiis ex delectus
+                  rerum impedit porro aspernatur. Dolorem, consequatur.
+                </li>
+              </ListaOrd>
+              <ListaOrd>
+                <li>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                  Sequi, nam? Dolor aliquid ullam hic, fugiat ut eos! Voluptatum
+                  aperiam fugit repellendus, explicabo saepe earum ipsam
+                  aspernatur magnam atque placeat nam!
+                </li>
+              </ListaOrd>
+            </ContModoPreparo>
+          </DivModoPreparo>
         </DivPresentationInner>
       </DivPresentation>
       <Footer />
