@@ -15,7 +15,7 @@ const Container = styled.div`
   background: white;
 `;
 
-const SidebarItem = styled(Link)<{ isActive?: boolean }>`
+const SidebarItem = styled(({ active, ...props }) => <Link {...props} />)`
   width: 200px;
   height: 60px;
   border: none;
@@ -25,10 +25,10 @@ const SidebarItem = styled(Link)<{ isActive?: boolean }>`
   cursor: pointer;
   border-radius: 5px 0 0 5px;
   text-decoration: none;
-  padding-left: ${(props) => props.isActive && "13px"};
-  background: ${(props) => (props.isActive ? grey : "white")};
-  color: ${(props) => (props.isActive ? "#da4d3d" : "#525252")};
-  border-left: ${(props) => props.isActive && "7px solid" + "#da4d3d"};
+  padding-left: ${(props) => props.active && "13px"};
+  background: ${(props) => (props.active ? grey : "white")};
+  color: ${(props) => (props.active ? "#da4d3d" : "#525252")};
+  border-left: ${(props) => props.active && "7px solid" + "#da4d3d"};
 `;
 
 const ItemText = styled.h1`
@@ -138,7 +138,7 @@ export function Sidebar() {
       {sidebarData.map((itemData, index) => (
         <SidebarItem
           key={index}
-          isActive={pathname === itemData.path}
+          active={pathname === itemData.path}
           to={itemData.path}
         >
           {itemData.icon}

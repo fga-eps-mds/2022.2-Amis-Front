@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
+<h1
+  className="sc-bcXHqe fTvCMG"
+  fontSize={24}
+  fontWeight={400}
+>
+  Receitas
+</h1>
+`;

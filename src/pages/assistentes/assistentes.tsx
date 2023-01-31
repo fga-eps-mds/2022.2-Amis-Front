@@ -1,3 +1,6 @@
+/* eslint-disable array-callback-return */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable react/jsx-key */
 import React, { useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
@@ -18,14 +21,20 @@ import {
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import axios from "axios";
 import { useForm } from "react-hook-form";
-import { AssistentesListarDTO } from "./dtos/AssistentesListarDTO";
-import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrarDTO";
-// import dayjs from "dayjs";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
+import { toast } from "react-toastify";
+import {
+  cadastrarAssistente,
+  editarAssistente,
+  excluirAssistente,
+  listarAssistentes,
+} from "../../services/assistentes";
+import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
+import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
+import { queryClient } from "../../services/queryClient";
 
 const Container = styled.div`
   width: 100%;
@@ -96,7 +105,7 @@ export function Assistentes() {
   const {
     register,
     handleSubmit,
-    watch,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -105,96 +114,92 @@ export function Assistentes() {
       nome: data.nome,
       cpf: data.cpf,
       login: data.login,
-      // senha: data.senha,
       observacao: data.observacao,
       administrador: data.administrador,
     } as AssistentesCadastrarDTO;
 
-    // console.log(data.administrador)
+    const response = await cadastrarAssistente(assistente);
 
-    await axios
-      .post("https://service-amis.azurewebsites.net/assistentes/", assistente)
-      .then((response) => {
-        console.log(response.status);
-        handleClose();
-      })
-      .catch((err) => console.warn(err));
+    if (response.status === 201) {
+      setOpen(false);
+      queryClient.invalidateQueries("listar_assistentes");
+      toast.success("Assistente cadastrado com sucesso!");
+    }
   };
 
   useQuery("listar_assistentes", async () => {
-    const response = await axios.get(
-      "https://service-amis.azurewebsites.net/assistentes/"
-    );
+    const response = await listarAssistentes();
+
     const temp: AssistentesListarDTO[] = [];
     response.data.forEach((value: AssistentesListarDTO) => {
       temp.push({
         id: value.id,
         nome: value.nome,
         cpf: value.cpf,
-        login: value.login,
-        // senha: value.senha,
         observacao: value.observacao,
         administrador: value.administrador,
+        login: value.login,
       });
     });
     setDataTable(temp);
   });
 
   const deleteAssistentes = async () => {
-    await axios
-      .delete("https://service-amis.azurewebsites.net/assistentes/" + id)
-      .then((response) => {
-        console.log(response.data);
-        handleCloseConfirmation();
-      })
-      .catch((err) => {
-        console.warn(err);
-        handleCloseConfirmation();
-      });
+    const response = await excluirAssistente(id.toString());
+    if (response.status === 204) {
+      handleCloseConfirmation();
+      queryClient.invalidateQueries("listar_assistentes");
+      toast.success("Assistente excluído com sucesso!");
+    }
+  };
+
+  const carregarAssistentes = async (id: any) => {
+    const response = dataTable.find((element: any) => {
+      if (element.id === id) {
+        return element;
+      }
+    });
+    const assistente = response as AssistentesListarDTO;
+    setAssistente(assistente);
+    setValue("nomeEdit", assistente.nome);
+    setValue("cpfEdit", assistente.cpf);
+    setValue("adminEdit", assistente.administrador);
+    setOpenEdit(true);
   };
 
   const editAssistentes = async (data: any) => {
-    // eslint-disable-next-line array-callback-return
-    const assistente = {
-      nome: data.nome,
-      cpf: data.cpf,
-      administrador: data.administrador,
-      login: data.login,
-      observacao: data.observacao,
-    } as AssistentesCadastrarDTO;
+    const assistenteEditada = {
+      nome: data.nomeEdit,
+      cpf: data.cpfEdit,
+      administrador: data.adminEdit,
+      login: data.loginEdit,
+      observacao: data.observacaoEdit,
+    };
 
-    await axios
-      .put(
-        "https://service-amis.azurewebsites.net/assistentes/" + id,
-        assistente
-      )
-      .then((response) => {
-        console.log(response.data);
-        setOpenEdit(false);
-      })
-      .catch((err) => {
-        console.warn(err);
-        setOpenEdit(false);
-      });
+    const response = await editarAssistente(assistente.id, assistenteEditada);
+    if (response.status === 200) {
+      queryClient.invalidateQueries("listar_assistentes");
+      setOpenEdit(false);
+      toast.success("Assistente editado com sucesso!");
+    }
   };
 
   const columnsTable = [
-    { field: "nome", headerName: "Nome", width: 350 },
-    { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "observacao", headerName: "Observações", width: 450 },
+    { field: "nome", headerName: "Nome", flex: 2 },
+    { field: "cpf", headerName: "CPF", flex: 1 },
+    { field: "observacao", headerName: "Observações", flex: 2 },
     {
       field: "administrador",
       headerName: "Administrador(a)",
-      width: 180,
+      flex: 1,
       type: "boolean",
     },
     {
       field: "actions",
       headerName: "Ações",
       type: "actions",
-      width: 80,
+      flex: 1,
       getActions: (params: { id: GridRowId }) => [
-        // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
@@ -203,13 +208,11 @@ export function Assistentes() {
             handleOpenConfirmation();
           }}
         />,
-        // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
           icon={<AiFillEdit size={20} />}
           label="Editar"
           onClick={async () => {
-            setId(params.id);
-            setOpenEdit(true);
+            carregarAssistentes(params.id);
           }}
         />,
       ],
@@ -249,7 +252,6 @@ export function Assistentes() {
             <TextField
               id="outlined-nome"
               label="Nome"
-              defaultValue={assistente.nome}
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -258,7 +260,7 @@ export function Assistentes() {
               id="outlined-cpf"
               label="CPF (apenas números)"
               required={true}
-              inputProps={{ maxLength: 12 }}
+              inputProps={{ maxLength: 11 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
@@ -269,14 +271,6 @@ export function Assistentes() {
               {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            {/* <TextField
-              id="outlined-senha"
-              label="Senha"
-              type="password"
-              required={true}
-              {...register("senha")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            /> */}
             <TextField
               id="outlined-Observações"
               label="Observações"
@@ -284,14 +278,15 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Administrador(a)?
+              <InputLabel required={true} id="demo-simple-select-label">
+                Administrador (a)?
               </InputLabel>
               <Select
                 id="simple-select-label-admin"
                 labelId="simple-select-admin"
-                required={true}
                 label="Administrador(a)?"
+                required={true}
+                defaultValue=""
                 {...register("administrador")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
@@ -310,9 +305,8 @@ export function Assistentes() {
             <TextField
               id="outlined-nome"
               label="Nome"
-              defaultValue={assistente.nome}
               required={true}
-              {...register("nome")}
+              {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -320,8 +314,7 @@ export function Assistentes() {
               label="CPF (apenas números)"
               required={true}
               inputProps={{ maxLength: 11 }}
-              defaultValue={assistente.cpf}
-              {...register("cpf")}
+              {...register("cpfEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -329,16 +322,14 @@ export function Assistentes() {
               label="Login"
               required={true}
               inputProps={{ maxLength: 120 }}
-              defaultValue={assistente.login}
-              {...register("login")}
+              {...register("loginEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-observacao"
               label="Observações"
-              defaultValue={assistente.observacao}
               required={true}
-              {...register("observacao")}
+              {...register("observacaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
@@ -349,9 +340,9 @@ export function Assistentes() {
                 id="simple-select-label-admin"
                 labelId="simple-select-admin"
                 required={true}
-                defaultValue={assistente.administrador}
                 label="Administrador(a)?"
-                {...register("administrador")}
+                defaultValue=""
+                {...register("adminEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
                 <MenuItem value={false as any}>Não</MenuItem>

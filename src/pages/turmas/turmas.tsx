@@ -31,9 +31,9 @@ import {
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { TurmasListarDTO } from "./dtos/TurmasListarDTO";
-import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrarDTO";
-import { VagasListarDTO } from "./dtos/VagasListarDTO";
+import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
+import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
+import { VagasListarDTO } from "./dtos/VagasListar.dto";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
 import {
   BsFillTrashFill,
@@ -44,10 +44,10 @@ import { FaList } from "react-icons/fa";
 // import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 // import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
-import { AlunasListarDTO } from "../alunas/dtos/AlunasListarDTO";
-import { TurmasMatricularDTO } from "./dtos/TurmasMatricularDTO";
+import { TurmasMatricularDTO } from "./dtos/TurmasMatricular.dto";
 import { toast } from "react-toastify";
 import { queryClient } from "../../services/queryClient";
+import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
 
 const Container = styled.div`
   width: 100%;
@@ -154,61 +154,61 @@ export function Turmas(this: any) {
       .catch((err) => console.warn(err));
   };
 
-  useQuery("listar_Turmas", async () => {
-    const response = await axios.get(
-      "https://service-amis.azurewebsites.net/turmas/"
-    );
-    const temp: TurmasListarDTO[] = [];
-    response.data.forEach((value: TurmasListarDTO) => {
-      if (value.turno === "1") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
-          turno: "Matutino",
-        });
-      }
-      if (value.turno === "2") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
-          turno: "Vespertino",
-        });
-      }
-      if (value.turno === "3") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
-          turno: "Noturno",
-        });
-      }
-      // temp.push({
-      //   id: value.id,
-      //   descricao: value.descricao,
-      //   turno: value.turno,
-      //   capacidade: value.capacidade,
-      //   horarioInicio: value.horarioInicio,
-      //   horarioFim: value.horarioFim,
-      //   dataInicio: value.dataInicio,
-      //   dataFim: value.dataFim,
-      // });
-    });
-    setDataTable(temp);
-  });
+  // useQuery("listar_Turmas", async () => {
+  //   const response = await axios.get(
+  //     "https://service-amis.azurewebsites.net/turmas/"
+  //   );
+  //   const temp: TurmasListarDTO[] = [];
+  //   response.data.forEach((value: TurmasListarDTO) => {
+  //     if (value.turno === "1") {
+  //       temp.push({
+  //         id: value.id,
+  //         descricao: value.descricao,
+  //         capacidade: value.capacidade,
+  //         horarioInicio: value.horarioInicio,
+  //         horarioFim: value.horarioFim,
+  //         dataInicio: value.dataInicio,
+  //         dataFim: value.dataFim,
+  //         turno: "Matutino",
+  //       });
+  //     }
+  //     if (value.turno === "2") {
+  //       temp.push({
+  //         id: value.id,
+  //         descricao: value.descricao,
+  //         capacidade: value.capacidade,
+  //         horarioInicio: value.horarioInicio,
+  //         horarioFim: value.horarioFim,
+  //         dataInicio: value.dataInicio,
+  //         dataFim: value.dataFim,
+  //         turno: "Vespertino",
+  //       });
+  //     }
+  //     if (value.turno === "3") {
+  //       temp.push({
+  //         id: value.id,
+  //         descricao: value.descricao,
+  //         capacidade: value.capacidade,
+  //         horarioInicio: value.horarioInicio,
+  //         horarioFim: value.horarioFim,
+  //         dataInicio: value.dataInicio,
+  //         dataFim: value.dataFim,
+  //         turno: "Noturno",
+  //       });
+  //     }
+  // temp.push({
+  //   id: value.id,
+  //   descricao: value.descricao,
+  //   turno: value.turno,
+  //   capacidade: value.capacidade,
+  //   horarioInicio: value.horarioInicio,
+  //   horarioFim: value.horarioFim,
+  //   dataInicio: value.dataInicio,
+  //   dataFim: value.dataFim,
+  // });
+  //   });
+  //   setDataTable(temp);
+  // });
 
   const deleteTurmas = async () => {
     await axios
@@ -351,22 +351,22 @@ export function Turmas(this: any) {
       });
   };
 
-  useQuery("listar_alunas", async () => {
-    const response = await axios.get(
-      "https://service-amis.azurewebsites.net/alunas/"
-    );
+  // useQuery("listar_alunas", async () => {
+  //   const response = await axios.get(
+  //     "https://service-amis.azurewebsites.net/alunas/"
+  //   );
 
-    const temp: AlunasListarDTO[] = [];
-    response.data.forEach((value: AlunasListarDTO) => {
-      temp.push({
-        id: value.id,
-        nome: value.nome,
-        cpf: value.cpf,
-        dNascimento: value.dNascimento,
-      });
-    });
-    setDataTableAlunas(temp);
-  });
+  //   const temp: AlunasListarDTO[] = [];
+  //   response.data.forEach((value: AlunasListarDTO) => {
+  //     temp.push({
+  //       id: value.id,
+  //       nome: value.nome,
+  //       cpf: value.cpf,
+  //       dNascimento: value.dNascimento,
+  //     });
+  //   });
+  //   setDataTableAlunas(temp);
+  // });
 
   const listarIDTurma = async (idDaTurma: number) => {
     console.log("ID Turma:", idDaTurma);
@@ -516,6 +516,7 @@ export function Turmas(this: any) {
                 id="simple-select-label-turno"
                 labelId="simple-select-turno"
                 label="Informe o turno"
+                defaultValue=""
                 {...register("turno")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
@@ -607,6 +608,7 @@ export function Turmas(this: any) {
                 id="simple-select-label-turno"
                 labelId="simple-select-turno"
                 label="Informe o turno"
+                defaultValue=""
                 {...register("turno")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
