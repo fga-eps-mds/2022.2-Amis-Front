@@ -1,5 +1,5 @@
-import { TurmasCadastrarDTO } from "../pages/turmas/dtos/TurmasCadastrarDTO";
-import { TurmasMatricularDTO } from "../pages/turmas/dtos/TurmasMatricularDTO";
+import { TurmasCadastrarDTO } from "../pages/turmas/dtos/TurmasCadastrar.dto";
+import { TurmasMatricularDTO } from "../pages/turmas/dtos/TurmasMatricular.dto";
 import api from "./api";
 
 export const cadastrarTurmas = async (payload: TurmasCadastrarDTO) => {
