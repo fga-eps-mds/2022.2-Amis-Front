@@ -129,11 +129,11 @@ export function Home() {
           <Image
             src={home_image1}
             style={{
-              width: "350px",
+              width: "300px",
               zIndex: 5,
               position: "absolute",
               bottom: -80,
-              left: -250,
+              left: -200,
             }}
           ></Image>
           <Image
