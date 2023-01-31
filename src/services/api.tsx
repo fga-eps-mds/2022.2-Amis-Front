@@ -3,7 +3,7 @@
 import axios from "axios";
 import { getUserLocalStorage } from "./auth";
 
-const userLocalStorage = await getUserLocalStorage();
+const userLocalStorage = getUserLocalStorage();
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_URL_API,

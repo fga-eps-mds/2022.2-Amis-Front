@@ -18,14 +18,14 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       onClick={[Function]}
     >
       <svg
-        color="#525252"
+        color="#da4d3d"
         fill="currentColor"
         height={22}
         stroke="currentColor"
         strokeWidth="0"
         style={
           {
-            "color": "#525252",
+            "color": "#da4d3d",
           }
         }
         viewBox="0 0 1024 1024"
@@ -39,7 +39,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       <h1
         className="sc-dkrFOg gvjiCT"
       >
-        Visão geral
+        Tela Inicial
       </h1>
     </a>
     <a
@@ -104,39 +104,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     </a>
     <a
       className="sc-gswNZR jZMjZO"
-      href="/relatorios"
-      onClick={[Function]}
-    >
-      <svg
-        color="#525252"
-        fill="none"
-        height={22}
-        stroke="currentColor"
-        strokeWidth="0"
-        style={
-          {
-            "color": "#525252",
-          }
-        }
-        viewBox="0 0 24 24"
-        width={22}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-        />
-      </svg>
-      <h1
-        className="sc-dkrFOg gvjiCT"
-      >
-        Relatórios
-      </h1>
-    </a>
-    <a
-      className="sc-gswNZR jZMjZO"
       href="/assistentes"
       onClick={[Function]}
     >
@@ -163,43 +130,6 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
         className="sc-dkrFOg gvjiCT"
       >
         Assistentes
-      </h1>
-    </a>
-    <a
-      className="sc-gswNZR jZMjZO"
-      href="/configurações"
-      onClick={[Function]}
-    >
-      <svg
-        color="#525252"
-        fill="none"
-        height={22}
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        style={
-          {
-            "color": "#525252",
-          }
-        }
-        viewBox="0 0 24 24"
-        width={22}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          cx="12"
-          cy="12"
-          r="3"
-        />
-        <path
-          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
-        />
-      </svg>
-      <h1
-        className="sc-dkrFOg gvjiCT"
-      >
-        Configurações
       </h1>
     </a>
     <a
@@ -275,11 +205,11 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       className="sc-eDWCr fOChem"
     >
       <button
-        className="sc-kDvujY hKfSYs"
+        className="sc-kDvujY FpMuN"
         onClick={[Function]}
         type="submit"
       >
-        Cadastrar Aluno(a)
+        Cadastrar
       </button>
     </div>
     <div
