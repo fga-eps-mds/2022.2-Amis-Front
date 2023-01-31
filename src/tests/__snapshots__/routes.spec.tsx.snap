@@ -176,16 +176,14 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     </span>
   </div>
   <div
-    className="sc-cwSeag bxbSyJ"
+    className="sc-cwSeag llenra"
   >
     <div
       className="sc-lllmON hUojln"
     >
       <h1
         className="sc-iJnaPW dUnHxV"
-      >
-        98
-      </h1>
+      />
       <span
         className="sc-gikAfH hkBoiE"
       >
@@ -197,23 +195,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     >
       <h1
         className="sc-iJnaPW dUnHxV"
-      >
-        187
-      </h1>
-      <span
-        className="sc-gikAfH hkBoiE"
-      >
-        Famílias impactadas
-      </span>
-    </div>
-    <div
-      className="sc-lllmON hUojln"
-    >
-      <h1
-        className="sc-iJnaPW dUnHxV"
-      >
-        91
-      </h1>
+      />
       <span
         className="sc-gikAfH hkBoiE"
       >
