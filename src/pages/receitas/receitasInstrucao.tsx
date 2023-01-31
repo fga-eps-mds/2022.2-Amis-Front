@@ -4,7 +4,6 @@ import { Navbar } from "../../shared/components/Navbar/navbar";
 import Title from "../../shared/components/Title/Title";
 import { Footer } from "../../shared/components/Footer/footer";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
-import { BsJustify } from "react-icons/bs";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};

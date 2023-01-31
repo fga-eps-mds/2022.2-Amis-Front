@@ -14,10 +14,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { ReceitasCadastrarDTO } from "./ReceitasCadastrarDTO";
-import axios from "axios";
+import { ReceitasCadastrarDTO } from "./CadastrarReceita.dto";
+import { ListarReceitaDTO } from "./ListarReceita.dto";
+import axios, { formToJSON } from "axios";
 import { toast } from "react-toastify";
 import AddButton from "../../shared/components/InputButtons/AddButton";
+import { getValue } from "@mui/system";
+import { useQuery } from "react-query";
 
 const style = {
   position: "absolute",
@@ -87,7 +90,7 @@ const Inputs = styled.div`
   width: 100%;
 `;
 
-const CamposIngred = styled.div`
+const CamposInput = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -100,12 +103,12 @@ const CamposIngred = styled.div`
     height: 50px;
     outline-color: #267db7;
     border: 1.5px solid #b1b1b1;
-    background-color: #f3f6f9;
+    background-color: #f5f4ff;
     border-radius: 6px;
     padding-left: 10px;
     font-size: 16px;
   }
-  button {
+  a {
     width: 38px;
     height: 35px;
     border: none;
@@ -128,6 +131,8 @@ export function Receitas() {
   const [openCad, setOpenCad] = useState(false);
   const handleOpen = () => setOpenCad(true);
   const handleClose = () => setOpenCad(false);
+  const [dataTableReceitas, setDataTableReceitas] = useState(Array<Object>);
+  // const [objTemp, setObjTemp] = useState(Object);
 
   const {
     register,
@@ -143,28 +148,80 @@ export function Receitas() {
       modo_preparo: data.modo_preparo,
     } as ReceitasCadastrarDTO;
 
-    await axios
+    console.log(receita);
+
+    /* await axios
       .post("https://service-amis.azurewebsites.net/receitas/", receita)
       .then((response) => {
         console.log(response.status);
         toast.success("Receita criada com sucesso!");
       })
-      .catch((err) => console.warn(err));
+      .catch((err) => console.warn(err)); */
   };
 
-  function addInput() {
-    const inputG = document.getElementById("inpGroup");
+  useQuery("listar_receitas", async () => {
+    const response = await axios.get(
+      "https://service-amis.azurewebsites.net/receitas/"
+    );
+
+    const temp: ListarReceitaDTO[] = [];
+    response.data.forEach((value: ListarReceitaDTO) => {
+      temp.push({
+        nome: value.nome,
+        descricao: value.descricao,
+        ingredientes: value.ingredientes,
+        modo_preparo: value.modo_preparo,
+      });
+    });
+    setDataTableReceitas(temp);
+  });
+
+  // Adiciona Inputs para Ingredientes
+  function addInputIngred() {
+    const inputIng = document.getElementById("inpIngredGroup");
 
     const ingrediente = document.createElement("input");
-    ingrediente.placeholder = "Ingrediente";
+    ingrediente.placeholder = "Ingrediente *";
+    ingrediente.id = "ingr";
     ingrediente.required = true;
 
-    const remBtn = document.createElement("button");
+    const remBtn = document.createElement("a");
     remBtn.className = "remButton";
     remBtn.innerHTML = "-";
+    remBtn.onclick = remInputIngred;
 
-    inputG?.appendChild(ingrediente);
-    inputG?.appendChild(remBtn);
+    function remInputIngred(this: any) {
+      const apaga = document.getElementById("ingr");
+      apaga!.remove();
+      this.remove();
+    }
+
+    inputIng?.appendChild(ingrediente);
+    inputIng?.appendChild(remBtn);
+  }
+
+  // Adiciona Inputs para Modo de Preparo
+  function addInputModPrep() {
+    const inputPrep = document.getElementById("inpModPrepGroup");
+
+    const ModPreparo = document.createElement("input");
+    ModPreparo.placeholder = "Modo de Preparo *";
+    ModPreparo.id = "prep";
+    ModPreparo.required = true;
+
+    const remBtn = document.createElement("a");
+    remBtn.className = "remButton";
+    remBtn.innerHTML = "-";
+    remBtn.onclick = remInputPrep;
+
+    function remInputPrep(this: any) {
+      const apaga = document.getElementById("prep");
+      apaga!.remove();
+      this.remove();
+    }
+
+    inputPrep?.appendChild(ModPreparo);
+    inputPrep?.appendChild(remBtn);
   }
 
   return (
@@ -230,10 +287,9 @@ export function Receitas() {
               >
                 Ingredientes
               </FormText>
-
-              <AddButton handleClick={addInput} />
+              <AddButton handleClick={addInputIngred} />
             </Inputs>
-            <CamposIngred id="inpGroup"></CamposIngred>
+            <CamposInput id="inpIngredGroup"></CamposInput>
             <Inputs>
               {/* <TextField
                 id="outlined-modo_preparo"
@@ -251,8 +307,9 @@ export function Receitas() {
               >
                 Modo de preparo
               </FormText>
-              <AddButton handleClick={addInput} />
+              <AddButton handleClick={addInputModPrep} />
             </Inputs>
+            <CamposInput id="inpModPrepGroup"></CamposInput>
             <PrimaryButton text={"Cadastrar receita"} />
           </Form>
         </Box>
