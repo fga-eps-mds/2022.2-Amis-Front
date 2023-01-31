@@ -17,7 +17,6 @@ import {
   MenuItem,
   Modal,
   Paper,
-  responsiveFontSizes,
   Select,
   Table,
   TableBody,
@@ -26,10 +25,8 @@ import {
   TableHead,
   TableRow,
   TextField,
-  toggleButtonGroupClasses,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
@@ -41,13 +38,23 @@ import {
   BsFillPersonDashFill,
 } from "react-icons/bs";
 import { FaList } from "react-icons/fa";
-// import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
-// import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricular.dto";
 import { toast } from "react-toastify";
 import { queryClient } from "../../services/queryClient";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
+import {
+  cadastrarTurmas,
+  listarTurmas,
+  apagarTurmas,
+  editarTurmas,
+  cadastrarAluna,
+  desmatricularAluna,
+  listarAlunasNaTurma,
+  listarAlunas,
+  listarVagasTurma,
+  confereTurmaMatricula,
+} from "../../services/turmas";
 
 const Container = styled.div`
   width: 100%;
@@ -144,84 +151,85 @@ export function Turmas(this: any) {
       dataFim: data.dataFim,
     } as TurmasCadastrarDTO;
 
-    await axios
-      .post("https://service-amis.azurewebsites.net/turmas/", turma)
-      .then((response) => {
-        console.log(response.status);
-        toast.success("Turma criada com sucesso!");
-        handleClose();
-      })
-      .catch((err) => console.warn(err));
+    const response = await cadastrarTurmas(turma);
+    if (response.status === 201) {
+      setOpen(false);
+      toast.success("Turma criada com sucesso!");
+    } else {
+      toast.error("Erro ao criar a turma.");
+    }
   };
 
-  // useQuery("listar_Turmas", async () => {
-  //   const response = await axios.get(
-  //     "https://service-amis.azurewebsites.net/turmas/"
-  //   );
-  //   const temp: TurmasListarDTO[] = [];
-  //   response.data.forEach((value: TurmasListarDTO) => {
-  //     if (value.turno === "1") {
-  //       temp.push({
-  //         id: value.id,
-  //         descricao: value.descricao,
-  //         capacidade: value.capacidade,
-  //         horarioInicio: value.horarioInicio,
-  //         horarioFim: value.horarioFim,
-  //         dataInicio: value.dataInicio,
-  //         dataFim: value.dataFim,
-  //         turno: "Matutino",
-  //       });
-  //     }
-  //     if (value.turno === "2") {
-  //       temp.push({
-  //         id: value.id,
-  //         descricao: value.descricao,
-  //         capacidade: value.capacidade,
-  //         horarioInicio: value.horarioInicio,
-  //         horarioFim: value.horarioFim,
-  //         dataInicio: value.dataInicio,
-  //         dataFim: value.dataFim,
-  //         turno: "Vespertino",
-  //       });
-  //     }
-  //     if (value.turno === "3") {
-  //       temp.push({
-  //         id: value.id,
-  //         descricao: value.descricao,
-  //         capacidade: value.capacidade,
-  //         horarioInicio: value.horarioInicio,
-  //         horarioFim: value.horarioFim,
-  //         dataInicio: value.dataInicio,
-  //         dataFim: value.dataFim,
-  //         turno: "Noturno",
-  //       });
-  //     }
-  // temp.push({
-  //   id: value.id,
-  //   descricao: value.descricao,
-  //   turno: value.turno,
-  //   capacidade: value.capacidade,
-  //   horarioInicio: value.horarioInicio,
-  //   horarioFim: value.horarioFim,
-  //   dataInicio: value.dataInicio,
-  //   dataFim: value.dataFim,
-  // });
-  //   });
-  //   setDataTable(temp);
-  // });
+  useQuery("listar_turmas", async () => {
+    const response = await listarTurmas();
+    const temp: TurmasListarDTO[] = [];
+    response.data.forEach((value: TurmasListarDTO) => {
+      if (value.turno === "1") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Matutino",
+        });
+      }
+      if (value.turno === "2") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Vespertino",
+        });
+      }
+      if (value.turno === "3") {
+        temp.push({
+          id: value.id,
+          descricao: value.descricao,
+          capacidade: value.capacidade,
+          horarioInicio: value.horarioInicio,
+          horarioFim: value.horarioFim,
+          dataInicio: value.dataInicio,
+          dataFim: value.dataFim,
+          turno: "Noturno",
+        });
+      }
+      // temp.push({
+      //   id: value.id,
+      //   descricao: value.descricao,
+      //   turno: value.turno,
+      //   capacidade: value.capacidade,
+      //   horarioInicio: value.horarioInicio,
+      //   horarioFim: value.horarioFim,
+      //   dataInicio: value.dataInicio,
+      //   dataFim: value.dataFim,
+      // });
+    });
+    setDataTable(temp);
+  });
 
   const deleteTurmas = async () => {
-    await axios
-      .delete("https://service-amis.azurewebsites.net/turmas/" + id)
-      .then((response) => {
-        console.log(response.status);
-        toast.success("Turma excluida com sucesso!");
-        handleCloseConfirmation();
-      })
-      .catch((err) => {
-        console.warn(err);
-        handleCloseConfirmation();
-      });
+    const checkVagas = await confereTurmaMatricula(id.toString());
+    if (!checkVagas) {
+      const response = await apagarTurmas(id.toString());
+      if (response.status === 204) {
+        toast.success("Turma excluída com sucesso!");
+      } else {
+        toast.error("Erro ao excluir a turma.");
+      }
+    } else {
+      toast.error(
+        "Não foi possível excluir a turma, pois existem alunas cadastradas."
+      );
+    }
+    handleCloseConfirmation();
+    queryClient.invalidateQueries("listar_turmas");
   };
 
   const editTurmas = async (data: any) => {
@@ -235,17 +243,13 @@ export function Turmas(this: any) {
       dataFim: data.dataFim,
     } as TurmasCadastrarDTO;
 
-    await axios
-      .put("https://service-amis.azurewebsites.net/turmas/" + id, turmaEdit)
-      .then((response) => {
-        console.log(response.status);
-        toast.success("Turma atualizada com sucesso!");
-        setOpenEdit(false);
-      })
-      .catch((err) => {
-        console.warn(err);
-        setOpenEdit(false);
-      });
+    const response = await editarTurmas(id.toString(), turmaEdit);
+    if (response.status === 200 || response.status === 204) {
+      toast.success("Turma atualizada com sucesso!");
+    } else {
+      toast.error("Erro na atualização da turma.");
+    }
+    setOpenEdit(false);
   };
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
@@ -255,69 +259,40 @@ export function Turmas(this: any) {
     } as unknown as TurmasMatricularDTO;
 
     if (matriculas.length > vagas?.vagasDisponiveis!) {
-      toast.error("Quantidade de vagas excedida");
+      toast.error("Quantidade de vagas excedida.");
     } else {
-      await axios
-        .post(
-          "https://service-amis.azurewebsites.net/matricula/",
-          turmaMatricula
-        )
-        .then((response) => {
-          console.log(response.data);
-          console.log(
-            "Aluna(s) de ID: " +
-              turmaMatricula.idAluna +
-              " matriculada(s) na turma de ID: " +
-              idTurma
-          );
-          toast.success("Alunas matriculadas com sucesso!");
-          queryClient.invalidateQueries("listar_alunas");
-          setOpenMatricula(false);
-        })
-        .catch((err) => {
-          console.warn(err);
-          alert("Erro ao matricular aluna(s)");
-          setOpenMatricula(false);
-        });
+      const response = await cadastrarAluna(turmaMatricula);
+      if (response.status === 201) {
+        toast.success("Aluna(s) matriculada(s) com sucesso!");
+        queryClient.invalidateQueries("listar_alunas");
+      }
+      setOpenMatricula(false);
     }
   };
 
   const desmatAluna = async (idTurma: number, idAluna: number) => {
-    await axios
-      .delete(
-        "https://service-amis.azurewebsites.net/matricula/" +
-          idTurma +
-          "/" +
-          idAluna
-      )
-      .then((response) => {
-        console.log(response.data);
-        console.log(
-          "Aluna de ID: " +
-            idAluna +
-            " desmatriculada da turma de ID: " +
-            idTurma
-        );
-        toast.success("Aluna(s) removida(s) da turma com sucesso!");
-        queryClient.invalidateQueries("listar_alunas");
-        handleDesmatCloseConfirmation();
-      })
-      .catch((err) => {
-        console.warn(err);
-        alert("Erro ao desmatricular aluna");
-        handleDesmatCloseConfirmation();
-      });
+    const response = await desmatricularAluna(idTurma, idAluna);
+    if (response.status === 204) {
+      toast.success("Aluna(s) removida(s) da turma com sucesso!");
+      setOpenList(false);
+    } else {
+      toast.error("Erro na remoção da(s) aluna(s) da turma.");
+    }
+    handleDesmatCloseConfirmation();
+    useQuery("consultaAlunasNaTurma", async () => {
+      await consultaAlunasNaTurma(idTurma);
+    });
   };
 
   const columnsTableAlunas = [
-    { field: "nome", headerName: "Nome", width: 330 },
-    { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
+    { field: "nome", headerName: "Nome", flex: 2 },
+    { field: "cpf", headerName: "CPF", flex: 1 },
+    { field: "dNascimento", headerName: "Data de Nascimento", flex: 1 },
     {
       field: "actions",
       headerName: "Desmatricular",
       type: "actions",
-      width: 120,
+      flex: 1,
       getActions: (params: { id: GridRowId }) => [
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
@@ -340,37 +315,35 @@ export function Turmas(this: any) {
   ];
 
   const consultaAlunasNaTurma = async (idTurma: number) => {
-    await axios
-      .get("https://service-amis.azurewebsites.net/matricula/" + idTurma)
-      .then((response) => {
-        setAlunasTurma(response.data);
-      })
-      .catch((err) => {
-        setAlunasTurma([]);
-        console.warn(err);
-      });
+    const response = await listarAlunasNaTurma(idTurma);
+    if (response.status === 200) {
+      setAlunasTurma(response.data);
+      console.log(response.data);
+      console.log(alunasTurma);
+    } else {
+      setAlunasTurma([]);
+    }
   };
 
-  // useQuery("listar_alunas", async () => {
-  //   const response = await axios.get(
-  //     "https://service-amis.azurewebsites.net/alunas/"
-  //   );
-
-  //   const temp: AlunasListarDTO[] = [];
-  //   response.data.forEach((value: AlunasListarDTO) => {
-  //     temp.push({
-  //       id: value.id,
-  //       nome: value.nome,
-  //       cpf: value.cpf,
-  //       dNascimento: value.dNascimento,
-  //     });
-  //   });
-  //   setDataTableAlunas(temp);
-  // });
+  useQuery("listar_alunas", async () => {
+    const response = await listarAlunas();
+    const temp: AlunasListarDTO[] = [];
+    if (response.status === 200) {
+      response.data.forEach((value: AlunasListarDTO) => {
+        temp.push({
+          id: value.id,
+          nome: value.nome,
+          cpf: value.cpf,
+          dNascimento: value.dNascimento,
+        });
+      });
+      setDataTableAlunas(temp);
+    } else {
+      setDataTableAlunas(temp);
+    }
+  });
 
   const listarIDTurma = async (idDaTurma: number) => {
-    console.log("ID Turma:", idDaTurma);
-
     setIdTurma(idDaTurma);
   };
 
@@ -379,10 +352,10 @@ export function Turmas(this: any) {
   };
 
   const listarVagas = async (idTurmaVagas: number) => {
-    const response = await axios.get(
-      "https://service-amis.azurewebsites.net/matricula/turma/" + idTurmaVagas
-    );
-    setVagas(response.data as VagasListarDTO);
+    const response = await listarVagasTurma(idTurmaVagas);
+    if (response.status === 200) {
+      setVagas(response.data as VagasListarDTO);
+    }
   };
 
   const columnsTable = [
@@ -407,7 +380,7 @@ export function Turmas(this: any) {
             await listarIDTurma(Number(params.id));
             const idTurma = params.id;
             await listarVagas(Number(idTurma));
-
+            await queryClient.invalidateQueries("listar_alunas");
             setOpenMatricula(true);
           }}
         />,
@@ -416,12 +389,13 @@ export function Turmas(this: any) {
           icon={<FaList size={20} />}
           label="ListarAlunas"
           onClick={async () => {
+            setAlunasTurma([]);
+            setOpenList(true);
             await consultaAlunasNaTurma(Number(params.id));
             await listarIDTurma(Number(params.id));
             setId(params.id);
             const idTurma = params.id;
             await listarVagas(Number(idTurma));
-            setOpenList(true);
           }}
         />,
         // eslint-disable-next-line react/jsx-key
@@ -530,20 +504,6 @@ export function Turmas(this: any) {
               label="Número de vagas"
               required={true}
               {...register("capacidade")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-horarioInicio"
-              label="Horário de Inicio"
-              required={true}
-              {...register("horarioInicio")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-horarioFim"
-              label="Horário de Término"
-              required={true}
-              {...register("horarioFim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
