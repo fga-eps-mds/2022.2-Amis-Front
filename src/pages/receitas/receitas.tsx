@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { ReceitasCadastrarDTO } from "./ReceitasCadastrarDTO";
 import axios from "axios";
 import { toast } from "react-toastify";
+import AddButton from "../../shared/components/InputButtons/AddButton";
 
 const style = {
   position: "absolute",
@@ -29,7 +30,7 @@ const style = {
   boxShadow: 24,
   p: 4,
   padding: "50px",
-  height: "85%",
+  height: "62%",
   overflow: "hidden",
   overflowY: "scroll",
 };
@@ -78,15 +79,49 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const AddCampo = styled.button`
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  border-color: #000;
-  font-size: 35px;
-  cursor: pointer;
-  font-weight: bold;
-  background-color: #fff;
+const Inputs = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+`;
+
+const CamposIngred = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  input {
+    margin: 10px;
+    width: 86%;
+    height: 50px;
+    outline-color: #267db7;
+    border: 1.5px solid #b1b1b1;
+    background-color: #f3f6f9;
+    border-radius: 6px;
+    padding-left: 10px;
+    font-size: 16px;
+  }
+  button {
+    width: 38px;
+    height: 35px;
+    border: none;
+    font-size: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    background-color: #da4d3d;
+    &:hover {
+      background-color: #d2301e;
+      color: #ddd;
+    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 export function Receitas() {
@@ -116,6 +151,21 @@ export function Receitas() {
       })
       .catch((err) => console.warn(err));
   };
+
+  function addInput() {
+    const inputG = document.getElementById("inpGroup");
+
+    const ingrediente = document.createElement("input");
+    ingrediente.placeholder = "Ingrediente";
+    ingrediente.required = true;
+
+    const remBtn = document.createElement("button");
+    remBtn.className = "remButton";
+    remBtn.innerHTML = "-";
+
+    inputG?.appendChild(ingrediente);
+    inputG?.appendChild(remBtn);
+  }
 
   return (
     <Container>
@@ -163,21 +213,46 @@ export function Receitas() {
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-ingredientes"
-              label="Ingredientes"
-              required={true}
-              {...register("ingredientes")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <AddCampo>+</AddCampo>
-            <TextField
-              id="outlined-modo_preparo"
-              label="Modo de Preparo"
-              required={true}
-              {...register("modo_preparo")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <Inputs>
+              {/* <TextField
+                id="outlined-ingredientes"
+                label="Ingredientes"
+                required={true}
+                {...register("ingredientes")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              /> */}
+              <FormText
+                style={{
+                  textAlign: "center",
+                  fontWeight: "normal",
+                  fontSize: 20,
+                }}
+              >
+                Ingredientes
+              </FormText>
+
+              <AddButton handleClick={addInput} />
+            </Inputs>
+            <CamposIngred id="inpGroup"></CamposIngred>
+            <Inputs>
+              {/* <TextField
+                id="outlined-modo_preparo"
+                label="Modo de Preparo"
+                required={true}
+                {...register("modo_preparo")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              /> */}
+              <FormText
+                style={{
+                  textAlign: "center",
+                  fontWeight: "normal",
+                  fontSize: 20,
+                }}
+              >
+                Modo de preparo
+              </FormText>
+              <AddButton handleClick={addInput} />
+            </Inputs>
             <PrimaryButton text={"Cadastrar receita"} />
           </Form>
         </Box>
