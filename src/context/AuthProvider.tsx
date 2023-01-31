@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   getUserLocalStorage,
   LoginRequest,
@@ -47,8 +48,6 @@ const AuthProvider: React.FC = ({ children }: Props) => {
 
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      console.log(userLocalStorage);
-
       if (userLocalStorage) {
         setUser(userLocalStorage);
       }
@@ -61,7 +60,7 @@ const AuthProvider: React.FC = ({ children }: Props) => {
 
   function logout() {
     setUser(null);
-    setUserLocalStorage(null);
+    setUserLocalStorage("");
   }
 
   return (

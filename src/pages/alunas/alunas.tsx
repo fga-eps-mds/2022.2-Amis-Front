@@ -214,7 +214,7 @@ export function Alunas() {
       <Content>
         <Navbarlog text={"Alunas"} />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar Aluno(a)"} handleClick={handleOpen} />
+          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
           {/* <PrimaryButton text={"Editar"} /> */}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />

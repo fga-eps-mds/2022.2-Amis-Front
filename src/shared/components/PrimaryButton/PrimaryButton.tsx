@@ -15,7 +15,8 @@ const Button = styled.button`
   cursor: pointer;
   color: ${(props) => "white"};
   background: ${(props) => "#da4d3d"};
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 14px;
   &:hover {
     background-color: #d2301e;
   }

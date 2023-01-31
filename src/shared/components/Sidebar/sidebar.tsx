@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
 import { BiLogOut, BiUser } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
+import { AuthContext } from "../../../context/AuthProvider";
 
 const Container = styled.div`
   width: 200px;
@@ -51,15 +52,17 @@ const Logo = styled.div`
 
 export function Sidebar() {
   const [pathname] = useState(window.location.pathname);
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const sidebarData = [
     {
       id: 1,
-      name: "Visão geral",
+      name: "Tela Inicial",
       path: "/",
       icon: (
         <AiOutlineHome
-          color={pathname === "/geral" ? "#da4d3d" : "#525252"}
+          color={pathname === "/" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
@@ -86,17 +89,17 @@ export function Sidebar() {
         />
       ),
     },
-    {
-      id: 4,
-      name: "Relatórios",
-      path: "/relatorios",
-      icon: (
-        <HiOutlineDocumentReport
-          color={pathname === "/relatorios" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
-    },
+    // {
+    //   id: 4,
+    //   name: "Relatórios",
+    //   path: "/relatorios",
+    //   icon: (
+    //     <HiOutlineDocumentReport
+    //       color={pathname === "/relatorios" ? "#da4d3d" : "#525252"}
+    //       size={22}
+    //     />
+    //   ),
+    // },
     {
       id: 5,
       name: "Assistentes",
@@ -108,17 +111,17 @@ export function Sidebar() {
         />
       ),
     },
-    {
-      id: 6,
-      name: "Configurações",
-      path: "/configurações",
-      icon: (
-        <FiSettings
-          color={pathname === "/configurações" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
-    },
+    // {
+    //   id: 6,
+    //   name: "Configurações",
+    //   path: "/configurações",
+    //   icon: (
+    //     <FiSettings
+    //       color={pathname === "/configurações" ? "#da4d3d" : "#525252"}
+    //       size={22}
+    //     />
+    //   ),
+    // },
     {
       id: 7,
       name: "Sair",
@@ -129,6 +132,10 @@ export function Sidebar() {
           size={22}
         />
       ),
+      handleClick: () => {
+        auth.logout();
+        navigate("/");
+      },
     },
   ];
 
@@ -140,6 +147,7 @@ export function Sidebar() {
           key={index}
           active={pathname === itemData.path}
           to={itemData.path}
+          onClick={itemData.handleClick}
         >
           {itemData.icon}
           <ItemText>{itemData.name}</ItemText>

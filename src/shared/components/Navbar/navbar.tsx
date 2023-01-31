@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import { AuthContext } from "../../../context/AuthProvider";
 
 const DivNavbar = styled.div`
   width: 100%;
@@ -48,6 +49,7 @@ const MenuButton = styled(({ active, ...props }) => <button {...props} />)`
 
 export function Navbar(props: any) {
   const [pathname, setPathname] = useState("/");
+  const auth = useContext(AuthContext);
 
   const menuData = [
     {
@@ -58,10 +60,10 @@ export function Navbar(props: any) {
       name: "Receitas",
       path: "/receitas",
     },
-    {
-      name: "Contato",
-      path: "/contato",
-    },
+    // {
+    //   name: "Contato",
+    //   path: "/contato",
+    // },
   ];
 
   return (
@@ -82,7 +84,7 @@ export function Navbar(props: any) {
           ))}
         </DivNavbarMenu>
         {props.hideButton !== true && (
-          <Link to="/login">
+          <Link to={auth.isAuthenticated ? "/alunas" : "/login"}>
             <PrimaryButton text="Área Logada" />
           </Link>
         )}
