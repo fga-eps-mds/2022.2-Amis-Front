@@ -2,7 +2,7 @@
 
 exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
 <div
-  className="sc-gswNZR bunAuC"
+  className="sc-gswNZR kZkAEs"
 >
   <div
     className="sc-dkrFOg bktbFR"
@@ -37,24 +37,13 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
           Receitas
         </button>
       </a>
-      <a
-        href="/contato"
-        onClick={[Function]}
-      >
-        <button
-          className="sc-jSUZER dJarrl"
-          onClick={[Function]}
-        >
-          Contato
-        </button>
-      </a>
     </div>
     <a
-      href="/alunas"
+      href="/login"
       onClick={[Function]}
     >
       <button
-        className="sc-bcXHqe kgeCMO"
+        className="sc-bcXHqe hosLZH"
         type="submit"
       >
         Área Logada

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,9 +7,33 @@ import {
 } from "react-router-dom";
 import { Alunas } from "./pages/alunas/alunas";
 import { Home } from "./pages/home/home";
+import { Login } from "./pages/login/login";
 import { Receitas } from "./pages/receitas/receitas";
 import { Assistentes } from "./pages/assistentes/assistentes";
 import { Turmas } from "./pages/turmas/turmas";
+import { AuthContext } from "./context/AuthProvider";
+import { Backdrop, CircularProgress } from "@mui/material";
+
+interface Props {
+  component: React.ComponentType;
+  path?: string;
+}
+
+export const PrivateRoute: React.FC<Props> = ({
+  component: RouteComponent,
+}) => {
+  const auth = useContext(AuthContext);
+
+  if (auth.loading) {
+    return (
+      <Backdrop open={true} sx={{ backgroundColor: "#da4d3d" }}>
+        <CircularProgress size={50} sx={{ color: "#fff" }} />
+      </Backdrop>
+    );
+  }
+
+  return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
+};
 
 export default function AppRoutes() {
   return (
@@ -17,9 +41,13 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/receitas" element={<Receitas />} />
-        <Route path="/alunas" element={<Alunas />} />
-        <Route path="/assistentes" element={<Assistentes />} />
-        <Route path="/turmas" element={<Turmas />} />
+        <Route path="/alunas" element={<PrivateRoute component={Alunas} />} />
+        <Route
+          path="/assistentes"
+          element={<PrivateRoute component={Assistentes} />}
+        />
+        <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
+        <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

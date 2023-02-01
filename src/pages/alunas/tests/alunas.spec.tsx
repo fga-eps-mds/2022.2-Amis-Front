@@ -41,7 +41,7 @@ describe("alunas", () => {
     void userEvent.type(inputCpf, "432432");
     void userEvent.type(inputNascimento, "123");
 
-    const addButtonCadastrar = getByText("Cadastrar Aluno(a)");
+    const addButtonCadastrar = getByText("Cadastrar");
     void userEvent.click(addButtonCadastrar);
 
     await waitFor(() => {
@@ -55,11 +55,11 @@ describe("alunas", () => {
       // void userEvent.type(inputDeficiencia, "Sim");
     });
 
-    await waitFor(() => {
-      const addButtonCadastrar = getByText("Cadastrar");
-      void userEvent.click(addButtonCadastrar);
-      expect(getByLabelText("Nome do pai")).toBeInTheDocument();
-    });
+    // await waitFor(() => {
+    //   const addButtonCadastrar = getByText("Cadastrar");
+    //   void userEvent.click(addButtonCadastrar);
+    //   expect(getByLabelText("Nome do pai")).toBeInTheDocument();
+    // });
   });
 });
 

@@ -113,7 +113,6 @@ const style = {
 
 export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
-  const [turma, setTurma] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [idTurma, setIdTurma] = useState<GridRowId>(0);
   const [idAluna, setIdAluna] = useState<GridRowId>(0);
@@ -479,7 +478,6 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-descricao"
               label="Turma"
-              defaultValue={turma.descricao}
               required={true}
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -549,7 +547,6 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-descricao"
               label="Turma"
-              defaultValue={turma.descricao}
               required={true}
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -557,7 +554,6 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-capacidade"
               label="Número de vagas"
-              defaultValue={turma.capacidade}
               required={true}
               {...register("capacidade")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -580,7 +576,6 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-dataInicio"
               label="Data de Início"
-              defaultValue={turma.dataInicio}
               required={true}
               {...register("dataInicio")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -588,7 +583,6 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-dataFim"
               label="Data de Término"
-              defaultValue={turma.dataFim}
               required={true}
               {...register("dataFim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -596,7 +590,6 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-horarioInicio"
               label="Horário de Inicio"
-              defaultValue={turma.horarioInicio}
               required={true}
               {...register("horarioInicio")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -604,7 +597,6 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-horarioFim"
               label="Horário de Término"
-              defaultValue={turma.horarioFim}
               required={true}
               {...register("horarioFim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
