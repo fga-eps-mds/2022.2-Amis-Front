@@ -8,7 +8,7 @@ export async function LoginRequest(email: string, senha: string): Promise<any> {
     params.append("password", senha);
 
     const request = await axios.post(
-      import.meta.env.VITE_URL_API_AUTH + "/login/",
+      "https://auth-amis.azurewebsites.net" + "/login/",
       params
     );
 
