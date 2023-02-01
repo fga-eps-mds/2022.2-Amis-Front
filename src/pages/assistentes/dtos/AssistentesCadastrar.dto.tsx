@@ -6,4 +6,5 @@ export interface AssistentesCadastrarDTO {
   login: string;
   observacao: string;
   administrador: boolean;
+  senha: string;
 }

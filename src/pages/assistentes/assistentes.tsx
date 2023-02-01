@@ -14,9 +14,11 @@ import {
   DialogActions,
   DialogTitle,
   FormControl,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Modal,
+  OutlinedInput,
   Select,
   TextField,
 } from "@mui/material";
@@ -24,7 +26,7 @@ import { useQuery } from "react-query";
 import { useForm } from "react-hook-form";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
-import { AiFillEdit } from "react-icons/ai";
+import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
 import {
   cadastrarAssistente,
@@ -92,6 +94,7 @@ const style = {
 };
 
 export function Assistentes() {
+  const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
   const [assistente, setAssistente] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
@@ -116,6 +119,7 @@ export function Assistentes() {
       login: data.login,
       observacao: data.observacao,
       administrador: data.administrador,
+      senha: data.senha,
     } as AssistentesCadastrarDTO;
 
     const response = await cadastrarAssistente(assistente);
@@ -271,6 +275,43 @@ export function Assistentes() {
               {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            <FormControl
+              sx={{ width: "100%", background: "#F5F4FF" }}
+              variant="outlined"
+            >
+              <InputLabel htmlFor="outlined-adornment-password">
+                Senha
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={showPassword ? "text" : "password"}
+                {...register("senha")}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {showPassword ? (
+                      <AiFillEyeInvisible
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowPassword(!showPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    ) : (
+                      <AiFillEye
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowPassword(!showPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    )}
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
             <TextField
               id="outlined-Observações"
               label="Observações"
