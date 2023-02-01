@@ -6,7 +6,7 @@ import { getUserLocalStorage } from "./auth";
 const userLocalStorage = getUserLocalStorage();
 
 const api = axios.create({
-  baseURL: "https://service-amis.azurewebsites.net/",
+  baseURL: "https://service-amis.azurewebsites.net",
   headers: {
     Authorization: `Bearer ${userLocalStorage?.token}`,
   },
