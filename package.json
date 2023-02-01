@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --omit=dev",
     "preview": "vite preview",
     "test": "jest",
     "test:cov": "jest --ci --coverage --testLocationInResults"
