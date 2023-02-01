@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
@@ -89,9 +89,7 @@ const Inputs = styled.div`
   width: 100%;
 `;
 
-const CamposInput = styled.div`
-
-`;
+const CamposInput = styled.div``;
 
 const DivInput = styled.div`
   display: flex;
@@ -135,6 +133,7 @@ export function Receitas() {
   const handleClose = () => setOpenCad(false);
   const [dataTableReceitas, setDataTableReceitas] = useState(Array<Object>);
   const [ingre, setIngre] = useState([""]);
+  const [prep, setPrep] = useState([""]);
 
   const {
     register,
@@ -146,17 +145,29 @@ export function Receitas() {
   const registerReceitas = async (data: any) => {
     const tempIngredientes = [String];
     tempIngredientes.shift();
-    Object.keys(data).some(function(key) {
-      if (key.indexOf("ingrediente") == 0) {
+    // eslint-disable-next-line array-callback-return
+    Object.keys(data).some(function (key) {
+      if (key.indexOf("ingrediente") === 0) {
         tempIngredientes.push(data[key]);
       }
     });
     console.log(tempIngredientes);
+
+    const tempModPrep = [String];
+    tempModPrep.shift();
+    // eslint-disable-next-line array-callback-return
+    Object.keys(data).some(function (key) {
+      if (key.indexOf("modo_preparo") === 0) {
+        tempModPrep.push(data[key]);
+      }
+    });
+    console.log(tempModPrep);
+
     const receita = {
       nome: data.nome,
       descricao: data.descricao,
       ingredientes: tempIngredientes,
-      modo_preparo: data.modo_preparo,
+      modo_preparo: tempModPrep,
     } as ReceitasCadastrarDTO;
 
     console.log(receita);
@@ -190,13 +201,10 @@ export function Receitas() {
   // Adiciona Inputs para Ingredientes
   function addInputIngred() {
     const tmpIngredient = ingre;
-    tmpIngredient.push(`Elemento ${ingre.length}`);
+    tmpIngredient.push(`Ingred ${ingre.length}`);
     setIngre(tmpIngredient);
-    console.log(ingre);
-    /* return;
-
+    /* 
     const inputIng = document.getElementById("inpIngredGroup");
-
     const ingrediente = document.createElement("input");
     ingrediente.placeholder = "Ingrediente *";
     ingrediente.id = "ingr";
@@ -219,8 +227,10 @@ export function Receitas() {
 
   // Adiciona Inputs para Modo de Preparo
   function addInputModPrep() {
-    const inputPrep = document.getElementById("inpModPrepGroup");
-
+    const tmpModPrep = prep;
+    tmpModPrep.push(`Modo ${prep.length}`);
+    setPrep(tmpModPrep);
+    /*
     const ModPreparo = document.createElement("input");
     ModPreparo.placeholder = "Modo de Preparo *";
     ModPreparo.id = "prep";
@@ -231,15 +241,19 @@ export function Receitas() {
     remBtn.innerHTML = "-";
     remBtn.onclick = remInputPrep;
 
-    function remInputPrep(this: any) {
-      const apaga = document.getElementById("prep");
-      apaga!.remove();
-      this.remove();
-    }
-
     inputPrep?.appendChild(ModPreparo);
-    inputPrep?.appendChild(remBtn);
+    inputPrep?.appendChild(remBtn); */
   }
+
+  // function remInputPrep() {
+  //   const apaga = document.getElementById("divPrep");
+  //   apaga!.remove();
+  // }
+
+  // function remInputIngr() {
+  //   const apaga = document.getElementById("divIngr");
+  //   apaga!.remove();
+  // }
 
   return (
     <Container>
@@ -307,20 +321,19 @@ export function Receitas() {
               </FormText>
               <AddButton handleClick={addInputIngred} />
             </Inputs>
-            {/* <CamposInput id="inpIngredGroup"> */}
-              {ingre.map((value: string, index: number) => (
-                <DivInput>
-                  <input
-                    id={String(index)}
-                    key={index}
-                    placeholder="Ingrediente *"
-                    required={true}
-                    {...register("ingrediente" + index)}
-                  ></input>
-                  <a style={{ borderRadius: 5 }}>-</a>
-                </DivInput>
-              ))}
-            {/* </CamposInput> */}
+            {ingre.map((value: string, index: number) => (
+              // eslint-disable-next-line react/jsx-key
+              <DivInput id="divIngr">
+                <input
+                  id={String(index)}
+                  key={index}
+                  placeholder="Ingrediente *"
+                  required={true}
+                  {...register("ingrediente" + index)}
+                ></input>
+                <a style={{ borderRadius: 5 }}>-</a>
+              </DivInput>
+            ))}
             <Inputs>
               <FormText
                 style={{
@@ -333,10 +346,19 @@ export function Receitas() {
               </FormText>
               <AddButton handleClick={addInputModPrep} />
             </Inputs>
-            <CamposInput
-              id="inpModPrepGroup"
-              {...register("modo_preparo")}
-            ></CamposInput>
+            {prep.map((value: string, index: number) => (
+              // eslint-disable-next-line react/jsx-key
+              <DivInput id="divPrep">
+                <input
+                  id={String(index)}
+                  key={index}
+                  placeholder="Modo Preparo *"
+                  required={true}
+                  {...register("modo_preparo" + index)}
+                ></input>
+                <a style={{ borderRadius: 5 }}>-</a>
+              </DivInput>
+            ))}
             <PrimaryButton text={"Cadastrar receita"} />
           </Form>
         </Box>
