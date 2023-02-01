@@ -25,7 +25,7 @@ interface IAuthContext extends IUser {
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 
-const AuthProvider: React.FC = ({ children }: Props) => {
+const AuthProvider: React.FC = ( props : Props ) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -74,7 +74,7 @@ const AuthProvider: React.FC = ({ children }: Props) => {
         loading,
       }}
     >
-      {children}
+      {props.children}
     </AuthContext.Provider>
   );
 };
