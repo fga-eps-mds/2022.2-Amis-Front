@@ -25,10 +25,10 @@ const Button = styled.button`
   align-items: center;
 `;
 
-export function AddButton({ handleClick }: ButtonProps) {
+export function AddButton({ handleClick, text }: ButtonProps) {
   return (
     <Button type="button" onClick={handleClick}>
-      +
+      {text}
     </Button>
   );
 }

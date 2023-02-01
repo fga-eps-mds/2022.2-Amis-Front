@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import AddButton from "../../shared/components/InputButtons/AddButton";
 import { getValue } from "@mui/system";
 import { useQuery } from "react-query";
+import { wait } from "@testing-library/user-event/dist/types/utils";
 
 const style = {
   position: "absolute",
@@ -200,60 +201,41 @@ export function Receitas() {
 
   // Adiciona Inputs para Ingredientes
   function addInputIngred() {
+    setOpenCad(false);
     const tmpIngredient = ingre;
     tmpIngredient.push(`Ingred ${ingre.length}`);
     setIngre(tmpIngredient);
-    /* 
-    const inputIng = document.getElementById("inpIngredGroup");
-    const ingrediente = document.createElement("input");
-    ingrediente.placeholder = "Ingrediente *";
-    ingrediente.id = "ingr";
-    ingrediente.required = true;
-
-    const remBtn = document.createElement("a");
-    remBtn.className = "remButton";
-    remBtn.innerHTML = "-";
-    remBtn.onclick = remInputIngred;
-
-    function remInputIngred(this: any) {
-      const apaga = document.getElementById("ingr");
-      apaga!.remove();
-      this.remove();
-    }
-
-    inputIng?.appendChild(ingrediente);
-    inputIng?.appendChild(remBtn); */
+    setTimeout(() => {
+      setOpenCad(true);
+    }, 50);
   }
 
   // Adiciona Inputs para Modo de Preparo
   function addInputModPrep() {
+    setOpenCad(false);
     const tmpModPrep = prep;
     tmpModPrep.push(`Modo ${prep.length}`);
     setPrep(tmpModPrep);
-    /*
-    const ModPreparo = document.createElement("input");
-    ModPreparo.placeholder = "Modo de Preparo *";
-    ModPreparo.id = "prep";
-    ModPreparo.required = true;
-
-    const remBtn = document.createElement("a");
-    remBtn.className = "remButton";
-    remBtn.innerHTML = "-";
-    remBtn.onclick = remInputPrep;
-
-    inputPrep?.appendChild(ModPreparo);
-    inputPrep?.appendChild(remBtn); */
+    setTimeout(() => {
+      setOpenCad(true);
+    }, 50);
   }
 
-  // function remInputPrep() {
-  //   const apaga = document.getElementById("divPrep");
-  //   apaga!.remove();
-  // }
+  function remInputPrep(index: number) {
+    setOpenCad(false);
+    prep.splice(index, 1);
+    setTimeout(() => {
+      setOpenCad(true);
+    }, 50);
+  }
 
-  // function remInputIngr() {
-  //   const apaga = document.getElementById("divIngr");
-  //   apaga!.remove();
-  // }
+  function remInputIngre(index: number) {
+    setOpenCad(false);
+    ingre.splice(index, 1);
+    setTimeout(() => {
+      setOpenCad(true);
+    }, 50);
+  }
 
   return (
     <Container>
@@ -319,7 +301,7 @@ export function Receitas() {
               >
                 Ingredientes
               </FormText>
-              <AddButton handleClick={addInputIngred} />
+              <AddButton handleClick={addInputIngred} text="+" />
             </Inputs>
             {ingre.map((value: string, index: number) => (
               // eslint-disable-next-line react/jsx-key
@@ -331,7 +313,7 @@ export function Receitas() {
                   required={true}
                   {...register("ingrediente" + index)}
                 ></input>
-                <a style={{ borderRadius: 5 }}>-</a>
+                <AddButton handleClick={() => remInputIngre(index)} text="-" />
               </DivInput>
             ))}
             <Inputs>
@@ -344,7 +326,7 @@ export function Receitas() {
               >
                 Modo de preparo
               </FormText>
-              <AddButton handleClick={addInputModPrep} />
+              <AddButton handleClick={addInputModPrep} text="+" />
             </Inputs>
             {prep.map((value: string, index: number) => (
               // eslint-disable-next-line react/jsx-key
@@ -356,7 +338,7 @@ export function Receitas() {
                   required={true}
                   {...register("modo_preparo" + index)}
                 ></input>
-                <a style={{ borderRadius: 5 }}>-</a>
+                <AddButton handleClick={() => remInputPrep(index)} text="-" />
               </DivInput>
             ))}
             <PrimaryButton text={"Cadastrar receita"} />
