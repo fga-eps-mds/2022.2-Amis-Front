@@ -27,13 +27,13 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 600,
+  width: 500,
   bgcolor: "background.paper",
   border: "none",
   boxShadow: 24,
   p: 4,
   padding: "50px",
-  height: "62%",
+  height: "80%",
   overflow: "hidden",
   overflowY: "scroll",
 };
@@ -43,7 +43,6 @@ const FormText = styled.h1`
   font-size: 18px;
   font-weight: 400;
   text-align: left;
-  padding-bottom: 25px;
 `;
 
 const DivPresentation = styled.div`
@@ -84,13 +83,17 @@ const Container = styled.div`
 
 const Inputs = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   width: 100%;
 `;
 
 const CamposInput = styled.div`
+
+`;
+
+const DivInput = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -98,8 +101,7 @@ const CamposInput = styled.div`
   align-items: center;
   width: 100%;
   input {
-    margin: 10px;
-    width: 86%;
+    width: 80%;
     height: 50px;
     outline-color: #267db7;
     border: 1.5px solid #b1b1b1;
@@ -132,7 +134,7 @@ export function Receitas() {
   const handleOpen = () => setOpenCad(true);
   const handleClose = () => setOpenCad(false);
   const [dataTableReceitas, setDataTableReceitas] = useState(Array<Object>);
-  // const [objTemp, setObjTemp] = useState(Object);
+  const [ingre, setIngre] = useState([""]);
 
   const {
     register,
@@ -142,9 +144,18 @@ export function Receitas() {
   } = useForm({});
 
   const registerReceitas = async (data: any) => {
+    const tempIngredientes = [String];
+    tempIngredientes.shift();
+    Object.keys(data).some(function(key) {
+      if (key.indexOf("ingrediente") == 0) {
+        tempIngredientes.push(data[key]);
+      }
+    });
+    console.log(tempIngredientes);
     const receita = {
       nome: data.nome,
-      ingredientes: data.ingredientes,
+      descricao: data.descricao,
+      ingredientes: tempIngredientes,
       modo_preparo: data.modo_preparo,
     } as ReceitasCadastrarDTO;
 
@@ -159,7 +170,7 @@ export function Receitas() {
       .catch((err) => console.warn(err)); */
   };
 
-  useQuery("listar_receitas", async () => {
+  /* useQuery("listar_receitas", async () => {
     const response = await axios.get(
       "https://service-amis.azurewebsites.net/receitas/"
     );
@@ -174,10 +185,16 @@ export function Receitas() {
       });
     });
     setDataTableReceitas(temp);
-  });
+  }); */
 
   // Adiciona Inputs para Ingredientes
   function addInputIngred() {
+    const tmpIngredient = ingre;
+    tmpIngredient.push(`Elemento ${ingre.length}`);
+    setIngre(tmpIngredient);
+    console.log(ingre);
+    /* return;
+
     const inputIng = document.getElementById("inpIngredGroup");
 
     const ingrediente = document.createElement("input");
@@ -197,7 +214,7 @@ export function Receitas() {
     }
 
     inputIng?.appendChild(ingrediente);
-    inputIng?.appendChild(remBtn);
+    inputIng?.appendChild(remBtn); */
   }
 
   // Adiciona Inputs para Modo de Preparo
@@ -258,6 +275,7 @@ export function Receitas() {
               textAlign: "center",
               fontWeight: "bold",
               fontSize: 30,
+              paddingBottom: 20,
             }}
           >
             Cadastrar uma nova receita
@@ -270,14 +288,14 @@ export function Receitas() {
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            <TextField
+              id="outlined-desc_receita"
+              label="Descrição"
+              required={true}
+              {...register("descricao")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
             <Inputs>
-              {/* <TextField
-                id="outlined-ingredientes"
-                label="Ingredientes"
-                required={true}
-                {...register("ingredientes")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              /> */}
               <FormText
                 style={{
                   textAlign: "center",
@@ -289,15 +307,21 @@ export function Receitas() {
               </FormText>
               <AddButton handleClick={addInputIngred} />
             </Inputs>
-            <CamposInput id="inpIngredGroup"></CamposInput>
+            {/* <CamposInput id="inpIngredGroup"> */}
+              {ingre.map((value: string, index: number) => (
+                <DivInput>
+                  <input
+                    id={String(index)}
+                    key={index}
+                    placeholder="Ingrediente *"
+                    required={true}
+                    {...register("ingrediente" + index)}
+                  ></input>
+                  <a style={{ borderRadius: 5 }}>-</a>
+                </DivInput>
+              ))}
+            {/* </CamposInput> */}
             <Inputs>
-              {/* <TextField
-                id="outlined-modo_preparo"
-                label="Modo de Preparo"
-                required={true}
-                {...register("modo_preparo")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              /> */}
               <FormText
                 style={{
                   textAlign: "center",
@@ -309,7 +333,10 @@ export function Receitas() {
               </FormText>
               <AddButton handleClick={addInputModPrep} />
             </Inputs>
-            <CamposInput id="inpModPrepGroup"></CamposInput>
+            <CamposInput
+              id="inpModPrepGroup"
+              {...register("modo_preparo")}
+            ></CamposInput>
             <PrimaryButton text={"Cadastrar receita"} />
           </Form>
         </Box>
