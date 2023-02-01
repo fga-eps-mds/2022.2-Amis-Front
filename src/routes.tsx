@@ -48,7 +48,7 @@ export default function AppRoutes() {
         />
         <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/receitas-instrucao" element={<ReceitasInstrucao />} />
+        <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

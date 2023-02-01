@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import api from "../../services/api";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import Title from "../../shared/components/Title/Title";
 import { Footer } from "../../shared/components/Footer/footer";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { toast } from "react-toastify";
+import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
+import { ListarReceitaDTO } from "./ListarReceita.dto";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -142,6 +147,30 @@ const Nav = styled.div`
 `;
 
 export function ReceitasInstrucao() {
+  const { index } = useParams();
+  const [receitaDetail, setReceitaDetail] = useState(Object);
+
+  const removeReceita = async (id: number) => {
+    await api.delete("/receita/" + id).then((response: any) => {
+      console.log(response.data);
+      if (response.status === 204) {
+        toast.success("Receita excluída com sucesso!");
+      } else {
+        toast.error("Erro ao excluir a turma.");
+      }
+    });
+  };
+
+  useQuery("carregaReceitas", async () => {
+    await api.get(`/receita/${index}`).then((response: any) => {
+      console.log(response.data);
+      if (response.status === 200) {
+        setReceitaDetail(response.data);
+        console.log("receita", receitaDetail);
+      }
+    });
+  });
+
   return (
     <div>
       <Navbar />
@@ -149,17 +178,17 @@ export function ReceitasInstrucao() {
         <DivPresentationInner>
           <Nav>
             <Title fontSize={40} fontWeight={700} style={{ width: "60%" }}>
-              RECEITA 1 {/* {receita?.nome} // Esse vai ser o fixo */}
+              {receitaDetail.nome}
             </Title>
             <DivButtons>
               <PrimaryButton
-                text={"Excluir"}
-                handleClick={() => console.log("EXCLUIR")}
+                text={"Excluir Receita"}
+                handleClick={async () => removeReceita(index)}
               />
-              <PrimaryButton
+              {/* <PrimaryButton
                 text={"Editar receita"}
                 handleClick={() => console.log("EDITAR RECEITA")}
-              />
+              /> */}
             </DivButtons>
           </Nav>
           <DivIngredientes>
@@ -171,24 +200,13 @@ export function ReceitasInstrucao() {
               INGREDIENTES
             </Title>
             <ContIngredientes>
-              <ListaDesord>
-                <li>2L de Água</li>
-              </ListaDesord>
-              <ListaDesord>
-                <li>200g de Açucar</li>
-              </ListaDesord>
-              <ListaDesord>
-                <li>2L de Água</li>
-              </ListaDesord>
-              <ListaDesord>
-                <li>200g de Açucar</li>
-              </ListaDesord>
-              <ListaDesord>
-                <li>2L de Água</li>
-              </ListaDesord>
-              <ListaDesord>
-                <li>200g de Açucar</li>
-              </ListaDesord>
+              {receitaDetail.ingredientes
+                ? receitaDetail.ingredientes.map((ingrediente, index) => (
+                  <ListaDesord key={index}>
+                    <li>{ingrediente.descricao}</li>
+                  </ListaDesord>
+                ))
+                : null}
             </ContIngredientes>
           </DivIngredientes>
           <DivModoPreparo>
@@ -200,65 +218,13 @@ export function ReceitasInstrucao() {
               MODO DE PREPARO
             </Title>
             <ContModoPreparo>
-              <ListaOrd>
-                <li>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Optio cupiditate commodi quisquam iste cumque incidunt quas
-                  aliquam maiores quaerat est, atque blanditiis ex delectus
-                  rerum impedit porro aspernatur. Dolorem, consequatur.
-                </li>
-              </ListaOrd>
-              <ListaOrd>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Sequi, nam? Dolor aliquid ullam hic, fugiat ut eos! Voluptatum
-                  aperiam fugit repellendus, explicabo saepe earum ipsam
-                  aspernatur magnam atque placeat nam! Lorem ipsum dolor sit
-                  amet, consectetur adipisicing elit. Sequi, nam? Dolor aliquid
-                  ullam hic, fugiat ut eos! Voluptatum aperiam fugit
-                  repellendus, explicabo saepe earum ipsam aspernatur magnam
-                  atque placeat nam! Lorem ipsum dolor sit amet, consectetur
-                  adipisicing elit. Sequi, nam? Dolor aliquid ullam hic, fugiat
-                  ut eos! Voluptatum aperiam fugit repellendus, explicabo saepe
-                  earum ipsam aspernatur magnam atque placeat nam! Lorem ipsum
-                  dolor sit amet, consectetur adipisicing elit. Sequi, nam?
-                  Dolor aliquid ullam hic, fugiat ut eos! Voluptatum aperiam
-                  fugit repellendus, explicabo saepe earum ipsam aspernatur
-                  magnam atque placeat nam!
-                </li>
-              </ListaOrd>
-              <ListaOrd>
-                <li>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Optio cupiditate commodi quisquam iste cumque incidunt quas
-                  aliquam maiores quaerat est, atque blanditiis ex delectus
-                  rerum impedit porro aspernatur. Dolorem, consequatur.
-                </li>
-              </ListaOrd>
-              <ListaOrd>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Sequi, nam? Dolor aliquid ullam hic, fugiat ut eos! Voluptatum
-                  aperiam fugit repellendus, explicabo saepe earum ipsam
-                  aspernatur magnam atque placeat nam!
-                </li>
-              </ListaOrd>
-              <ListaOrd>
-                <li>
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Optio cupiditate commodi quisquam iste cumque incidunt quas
-                  aliquam maiores quaerat est, atque blanditiis ex delectus
-                  rerum impedit porro aspernatur. Dolorem, consequatur.
-                </li>
-              </ListaOrd>
-              <ListaOrd>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Sequi, nam? Dolor aliquid ullam hic, fugiat ut eos! Voluptatum
-                  aperiam fugit repellendus, explicabo saepe earum ipsam
-                  aspernatur magnam atque placeat nam!
-                </li>
-              </ListaOrd>
+              {receitaDetail.modo_preparo
+                ? receitaDetail.modo_preparo.map((etapa, index) => (
+                  <ListaDesord key={index}>
+                    <li>{etapa.descricao}</li>
+                  </ListaDesord>
+                ))
+                : null}
             </ContModoPreparo>
           </DivModoPreparo>
         </DivPresentationInner>
