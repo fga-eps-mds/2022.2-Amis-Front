@@ -11,7 +11,7 @@ const DivFooter = styled.div`
 `;
 
 const Image = styled.img`
-  border-radius: 35%;
+  margin: 0px 10px;
 `;
 
 const FooterText = styled.span`
