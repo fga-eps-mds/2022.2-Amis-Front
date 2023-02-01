@@ -1,4 +1,5 @@
 export interface ListarReceitaDTO {
+  id: number;
   nome: string;
   descricao: string;
   ingredientes: [];

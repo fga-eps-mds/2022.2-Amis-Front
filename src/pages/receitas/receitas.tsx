@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../../services/api";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
@@ -16,12 +17,12 @@ import {
 import { useForm } from "react-hook-form";
 import { ReceitasCadastrarDTO } from "./CadastrarReceita.dto";
 import { ListarReceitaDTO } from "./ListarReceita.dto";
-import axios, { formToJSON } from "axios";
 import { toast } from "react-toastify";
 import AddButton from "../../shared/components/InputButtons/AddButton";
 import { getValue } from "@mui/system";
 import { useQuery } from "react-query";
-import { wait } from "@testing-library/user-event/dist/types/utils";
+import { queryClient } from "../../services/queryClient";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -90,8 +91,6 @@ const Inputs = styled.div`
   width: 100%;
 `;
 
-const CamposInput = styled.div``;
-
 const DivInput = styled.div`
   display: flex;
   flex-direction: row;
@@ -135,13 +134,33 @@ export function Receitas() {
   const [dataTableReceitas, setDataTableReceitas] = useState(Array<Object>);
   const [ingre, setIngre] = useState([""]);
   const [prep, setPrep] = useState([""]);
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm({});
+
+  useQuery("carregaReceitas", async () => {
+    await api.get("/receita/").then((response: any) => {
+      console.log(response.data);
+      const temp: ListarReceitaDTO[] = [];
+      if (response.status === 200) {
+        response.data.forEach((value: ListarReceitaDTO) => {
+          temp.push({
+            id: value.id,
+            nome: value.nome,
+            descricao: value.descricao,
+            ingredientes: value.ingredientes,
+            modo_preparo: value.modo_preparo,
+          });
+        });
+        setDataTableReceitas(temp);
+      }
+      console.log(temp);
+    });
+  });
 
   const registerReceitas = async (data: any) => {
     const tempIngredientes = [String];
@@ -152,7 +171,6 @@ export function Receitas() {
         tempIngredientes.push(data[key]);
       }
     });
-    console.log(tempIngredientes);
 
     const tempModPrep = [String];
     tempModPrep.shift();
@@ -162,7 +180,6 @@ export function Receitas() {
         tempModPrep.push(data[key]);
       }
     });
-    console.log(tempModPrep);
 
     const receita = {
       nome: data.nome,
@@ -173,33 +190,16 @@ export function Receitas() {
 
     console.log(receita);
 
-    /* await axios
-      .post("https://service-amis.azurewebsites.net/receitas/", receita)
-      .then((response) => {
-        console.log(response.status);
-        toast.success("Receita criada com sucesso!");
-      })
-      .catch((err) => console.warn(err)); */
+    await api.post("/receita/", receita).then((response: any) => {
+      if (response.status === 201) {
+        toast.success("Receita cadastrada com sucesso!");
+      } else {
+        toast.error("Erro ao cadastrar a receita.");
+      }
+    });
+    await queryClient.invalidateQueries("carregaReceitas");
   };
 
-  /* useQuery("listar_receitas", async () => {
-    const response = await axios.get(
-      "https://service-amis.azurewebsites.net/receitas/"
-    );
-
-    const temp: ListarReceitaDTO[] = [];
-    response.data.forEach((value: ListarReceitaDTO) => {
-      temp.push({
-        nome: value.nome,
-        descricao: value.descricao,
-        ingredientes: value.ingredientes,
-        modo_preparo: value.modo_preparo,
-      });
-    });
-    setDataTableReceitas(temp);
-  }); */
-
-  // Adiciona Inputs para Ingredientes
   function addInputIngred() {
     setOpenCad(false);
     const tmpIngredient = ingre;
@@ -237,6 +237,10 @@ export function Receitas() {
     }, 50);
   }
 
+  function openReceita(index: number) {
+    navigate(`/receita/${index}`);
+  }
+
   return (
     <Container>
       <Navbar />
@@ -248,19 +252,23 @@ export function Receitas() {
           <PrimaryButton text={"Cadastrar receita"} handleClick={handleOpen} />
         </DivHeaderReceitas>
         <DivCards>
-          <Card sx={{ maxWidth: 330, borderRadius: 7, padding: 2, margin: 2 }}>
-            <CardActionArea>
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Biscoito ou Bolacha
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Quaerat laboriosam, asperiores fugiat quae ad corporis.
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
+          {dataTableReceitas.map((receita, index) => (
+            <Card
+              sx={{ minWidth: 330, borderRadius: 7, padding: 2, margin: 2 }}
+              key={index} onClick={() => openReceita(receita.id)}
+            >
+              <CardActionArea>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {receita.nome}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {receita.descricao}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          ))}
         </DivCards>
       </DivPresentation>
       <Footer />
