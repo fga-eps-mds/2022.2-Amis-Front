@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import api from "../../services/api";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
@@ -15,14 +15,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { ReceitasCadastrarDTO } from "./CadastrarReceita.dto";
-import { ListarReceitaDTO } from "./ListarReceita.dto";
+import { ReceitasCadastrarDTO } from "./dtos/CadastrarReceita.dto";
 import { toast } from "react-toastify";
 import AddButton from "../../shared/components/InputButtons/AddButton";
 import { getValue } from "@mui/system";
 import { useQuery } from "react-query";
 import { queryClient } from "../../services/queryClient";
 import { useNavigate } from "react-router-dom";
+import { ReceitasDTO } from "./dtos/receitas.dto";
+import { ListarReceitaDTO } from "./dtos/ListarReceita.dto";
 
 const style = {
   position: "absolute",
@@ -131,7 +132,9 @@ export function Receitas() {
   const [openCad, setOpenCad] = useState(false);
   const handleOpen = () => setOpenCad(true);
   const handleClose = () => setOpenCad(false);
-  const [dataTableReceitas, setDataTableReceitas] = useState(Array<Object>);
+  const [dataTableReceitas, setDataTableReceitas] = useState(
+    Array<ReceitasDTO>
+  );
   const [ingre, setIngre] = useState([""]);
   const [prep, setPrep] = useState([""]);
   const navigate = useNavigate();
@@ -255,7 +258,8 @@ export function Receitas() {
           {dataTableReceitas.map((receita, index) => (
             <Card
               sx={{ minWidth: 330, borderRadius: 7, padding: 2, margin: 2 }}
-              key={index} onClick={() => openReceita(receita.id)}
+              key={index}
+              onClick={() => openReceita(receita.id!)}
             >
               <CardActionArea>
                 <CardContent>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import React, { useState } from "react";
 import api from "../../services/api";
 import styled from "styled-components";
@@ -8,7 +9,7 @@ import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import { toast } from "react-toastify";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { ListarReceitaDTO } from "./ListarReceita.dto";
+import { ReceitasDTO } from "./dtos/receitas.dto";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -148,7 +149,7 @@ const Nav = styled.div`
 
 export function ReceitasInstrucao() {
   const { index } = useParams();
-  const [receitaDetail, setReceitaDetail] = useState(Object);
+  const [receitaDetail, setReceitaDetail] = useState<ReceitasDTO>();
 
   const removeReceita = async (id: number) => {
     await api.delete("/receita/" + id).then((response: any) => {
@@ -178,12 +179,12 @@ export function ReceitasInstrucao() {
         <DivPresentationInner>
           <Nav>
             <Title fontSize={40} fontWeight={700} style={{ width: "60%" }}>
-              {receitaDetail.nome}
+              {receitaDetail?.nome}
             </Title>
             <DivButtons>
               <PrimaryButton
                 text={"Excluir Receita"}
-                handleClick={async () => removeReceita(index)}
+                handleClick={async () => await removeReceita(Number(index))}
               />
               {/* <PrimaryButton
                 text={"Editar receita"}
@@ -200,13 +201,12 @@ export function ReceitasInstrucao() {
               INGREDIENTES
             </Title>
             <ContIngredientes>
-              {receitaDetail.ingredientes
-                ? receitaDetail.ingredientes.map((ingrediente, index) => (
+              {receitaDetail?.ingredientes &&
+                receitaDetail?.ingredientes.map((ingrediente, index) => (
                   <ListaDesord key={index}>
                     <li>{ingrediente.descricao}</li>
                   </ListaDesord>
-                ))
-                : null}
+                ))}
             </ContIngredientes>
           </DivIngredientes>
           <DivModoPreparo>
@@ -218,13 +218,11 @@ export function ReceitasInstrucao() {
               MODO DE PREPARO
             </Title>
             <ContModoPreparo>
-              {receitaDetail.modo_preparo
-                ? receitaDetail.modo_preparo.map((etapa, index) => (
-                  <ListaDesord key={index}>
-                    <li>{etapa.descricao}</li>
-                  </ListaDesord>
-                ))
-                : null}
+              {receitaDetail?.modo_preparo?.map((etapa: any, index) => (
+                <ListaDesord key={index}>
+                  <li>{etapa?.descricao}</li>
+                </ListaDesord>
+              ))}
             </ContModoPreparo>
           </DivModoPreparo>
         </DivPresentationInner>
