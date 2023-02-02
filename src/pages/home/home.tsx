@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Navbar } from "../../shared/components/Navbar/navbar";
+import { Footer } from "../../shared/components/Footer/footer";
 import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
 import home_image2 from "../../assets/home_image2.png";
-import footer_image1 from "../../assets/footer_image1.png";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
-import { QtdAlunasDTO } from "./QtdAlunasDTO";
-import { QtdAlunasFormDTO } from "./QtdAlunasFormDTO";
+import { QtdAlunasDTO } from "./dtos/QtdAlunas.dto";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { QtdAlunasFormDTO } from "./dtos/QtdAlunasForm.dto";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -89,19 +89,6 @@ const TituloReceitas = styled.h1`
   text-align: center;
 `;
 
-const DivFooter = styled.div`
-  width: 100%;
-  background: ${(props) => props.theme.colors.primary};
-  padding: 50px;
-  text-align: center;
-`;
-
-const FooterText = styled.span`
-  color: ${(props) => props.theme.colors.white};
-  font-weight: 400px;
-  font-size: 13px;
-`;
-
 export function Home() {
   const [qtdAluna, setQtdAluna] = useState<QtdAlunasDTO>();
   const [qtdAlunaForm, setQtdAlunaForm] = useState<QtdAlunasFormDTO>();
@@ -142,11 +129,11 @@ export function Home() {
           <Image
             src={home_image1}
             style={{
-              width: "350px",
+              width: "300px",
               zIndex: 5,
               position: "absolute",
               bottom: -80,
-              left: -250,
+              left: -200,
             }}
           ></Image>
           <Image
@@ -206,20 +193,7 @@ export function Home() {
           <TituloReceitas>Nossas receitas</TituloReceitas>
         </div>
       </DivRec>
-      <DivFooter>
-        <a href="https://www.instagram.com/amismulherescriativas/">
-          <Image
-            src={footer_image1}
-            style={{
-              width: "40px",
-              marginBottom: "20px",
-            }}
-          ></Image>
-        </a>
-        <div>
-          <FooterText>© 2022. All rights reserved.</FooterText>
-        </div>
-      </DivFooter>
+      <Footer />
     </div>
   );
 }

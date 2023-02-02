@@ -13,7 +13,7 @@ import { Assistentes } from "./pages/assistentes/assistentes";
 import { Turmas } from "./pages/turmas/turmas";
 import { AuthContext } from "./context/AuthProvider";
 import { Backdrop, CircularProgress } from "@mui/material";
-
+import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
 interface Props {
   component: React.ComponentType;
   path?: string;
@@ -48,6 +48,7 @@ export default function AppRoutes() {
         />
         <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
