@@ -67,16 +67,9 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       >
         RECEITAS
       </h1>
-      <button
-        className="sc-bcXHqe hosLZH"
-        onClick={[Function]}
-        type="submit"
-      >
-        Cadastrar receita
-      </button>
     </div>
     <div
-      className="sc-eDWCr hLBtxD"
+      className="sc-eDWCr jZlDS"
     />
   </div>
   <div

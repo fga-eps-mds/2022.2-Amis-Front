@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import api from "../../services/api";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { ReceitasDTO } from "./dtos/receitas.dto";
+import { AuthContext } from "../../context/AuthProvider";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -150,6 +151,7 @@ const Nav = styled.div`
 export function ReceitasInstrucao() {
   const { index } = useParams();
   const [receitaDetail, setReceitaDetail] = useState<ReceitasDTO>();
+  const auth = useContext(AuthContext);
 
   const removeReceita = async (id: number) => {
     await api.delete("/receita/" + id).then((response: any) => {
@@ -182,10 +184,12 @@ export function ReceitasInstrucao() {
               {receitaDetail?.nome}
             </Title>
             <DivButtons>
-              <PrimaryButton
-                text={"Excluir Receita"}
-                handleClick={async () => await removeReceita(Number(index))}
-              />
+              {auth.isAuthenticated && (
+                <PrimaryButton
+                  text={"Excluir Receita"}
+                  handleClick={async () => await removeReceita(Number(index))}
+                />
+              )}
               {/* <PrimaryButton
                 text={"Editar receita"}
                 handleClick={() => console.log("EDITAR RECEITA")}
