@@ -1,11 +1,124 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
-<h1
-  className="sc-bcXHqe fTvCMG"
-  fontSize={24}
-  fontWeight={400}
+<div
+  className="sc-ksBlkl fhBUpU"
 >
-  Receitas
-</h1>
+  <div
+    className="sc-gswNZR kZkAEs"
+  >
+    <div
+      className="sc-dkrFOg bktbFR"
+    >
+      <div
+        className="sc-hLBbgP PqNIR"
+      >
+        <h1
+          className="sc-eDvSVe kinkDz"
+        >
+          AMIS
+        </h1>
+        <a
+          href="/"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-jSUZER jcgnhb"
+            onClick={[Function]}
+          >
+            Home
+          </button>
+        </a>
+        <a
+          href="/receitas"
+          onClick={[Function]}
+        >
+          <button
+            className="sc-jSUZER dJarrl"
+            onClick={[Function]}
+          >
+            Receitas
+          </button>
+        </a>
+      </div>
+      <a
+        href="/login"
+        onClick={[Function]}
+      >
+        <button
+          className="sc-bcXHqe hosLZH"
+          type="submit"
+        >
+          Área Logada
+        </button>
+      </a>
+    </div>
+  </div>
+  <div
+    className="sc-ipEyDJ jKoUzE"
+  >
+    <div
+      className="sc-csuSiG eVWyhP"
+    >
+      <h1
+        className="sc-gKPRtg cQNkqa"
+        fontSize={40}
+        fontWeight={600}
+      >
+        RECEITAS
+      </h1>
+      <button
+        className="sc-bcXHqe hosLZH"
+        onClick={[Function]}
+        type="submit"
+      >
+        Cadastrar receita
+      </button>
+    </div>
+    <div
+      className="sc-eDWCr hLBtxD"
+    />
+  </div>
+  <div
+    className="sc-iBYQkv dWoHUu"
+  >
+    <a
+      href="https://www.instagram.com/amismulherescriativas/"
+    >
+      <img
+        className="sc-ftTHYK cNAVlE"
+        src="test-file-stub"
+        style={
+          {
+            "marginBottom": "20px",
+            "marginRight": "20x",
+            "width": "40px",
+          }
+        }
+      />
+    </a>
+    <a
+      href="https://pt-br.facebook.com/InstitutoMulheresCriativas/"
+    >
+      <img
+        className="sc-ftTHYK cNAVlE"
+        src="test-file-stub"
+        style={
+          {
+            "marginBottom": "20px",
+            "marginRight": "20px",
+            "width": "20px",
+          }
+        }
+      />
+    </a>
+    <div>
+      <span
+        className="sc-pyfCe cmKoG"
+      >
+        © 2022. All rights reserved.
+      </span>
+    </div>
+  </div>
+</div>
 `;
