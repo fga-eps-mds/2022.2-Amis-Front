@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import api from "../../services/api";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
@@ -18,12 +18,12 @@ import { useForm } from "react-hook-form";
 import { ReceitasCadastrarDTO } from "./dtos/CadastrarReceita.dto";
 import { toast } from "react-toastify";
 import AddButton from "../../shared/components/InputButtons/AddButton";
-import { getValue } from "@mui/system";
 import { useQuery } from "react-query";
 import { queryClient } from "../../services/queryClient";
 import { useNavigate } from "react-router-dom";
 import { ReceitasDTO } from "./dtos/receitas.dto";
 import { ListarReceitaDTO } from "./dtos/ListarReceita.dto";
+import { AuthContext } from "../../context/AuthProvider";
 
 const style = {
   position: "absolute",
@@ -68,7 +68,7 @@ const DivCards = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   align-content: space-between;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 `;
 
@@ -144,6 +144,7 @@ export function Receitas() {
     watch,
     formState: { errors },
   } = useForm({});
+  const auth = useContext(AuthContext);
 
   useQuery("carregaReceitas", async () => {
     await api.get("/receita/").then((response: any) => {
@@ -252,7 +253,12 @@ export function Receitas() {
           <Title fontSize={40} fontWeight={600}>
             RECEITAS
           </Title>
-          <PrimaryButton text={"Cadastrar receita"} handleClick={handleOpen} />
+          {auth.isAuthenticated && (
+            <PrimaryButton
+              text={"Cadastrar receita"}
+              handleClick={handleOpen}
+            />
+          )}
         </DivHeaderReceitas>
         <DivCards>
           {dataTableReceitas.map((receita, index) => (

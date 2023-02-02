@@ -84,6 +84,9 @@ const style = {
   boxShadow: 24,
   p: 4,
   padding: "50px",
+  height: "85%",
+  overflow: "hidden",
+  overflowY: "scroll",
 };
 
 export function Alunas() {
@@ -107,7 +110,7 @@ export function Alunas() {
   const cadastrarAlunas = async (data: any) => {
     const aluna = {
       nome: data.nome,
-      nomeSocial: data.nome,
+      nomeSocial: data.nomeSocial,
       cpf: data.cpf,
       rg: data.rg,
       dNascimento: data.dNascimento,
@@ -245,6 +248,12 @@ export function Alunas() {
               id="outlined-nome"
               label="Nome"
               {...register("nome")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nome"
+              label="Nome Social"
+              {...register("nomeSocial")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
