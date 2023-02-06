@@ -12,3 +12,4 @@ coverage/lcov-report
 # Arquivo de testes
 coverage/
 jest-report.xml
+.env

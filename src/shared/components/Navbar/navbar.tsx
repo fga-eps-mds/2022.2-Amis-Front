@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import PrimaryButton from "../PrimaryButton/PrimaryButton";
+import { AuthContext } from "../../../context/AuthProvider";
 
 const DivNavbar = styled.div`
   width: 100%;
-  height: 106px;
+  height: 100px;
   background: ${(props) => props.theme.colors.white};
   display: flex;
   justify-content: center;
@@ -33,9 +34,9 @@ const Title = styled.h1`
   font-size: 24px;
 `;
 
-const MenuButton = styled.button<{ isActive?: boolean }>`
+const MenuButton = styled(({ active, ...props }) => <button {...props} />)`
   color: ${(props) =>
-    props.isActive ?? false
+    props.active === true
       ? props.theme.colors.primary
       : props.theme.colors.black};
   margin-right: 50px;
@@ -46,8 +47,9 @@ const MenuButton = styled.button<{ isActive?: boolean }>`
   cursor: pointer;
 `;
 
-export function Navbar() {
+export function Navbar(props: any) {
   const [pathname, setPathname] = useState("/");
+  const auth = useContext(AuthContext);
 
   const menuData = [
     {
@@ -58,13 +60,11 @@ export function Navbar() {
       name: "Receitas",
       path: "/receitas",
     },
-    {
-      name: "Contato",
-      path: "/contato",
-    },
+    // {
+    //   name: "Contato",
+    //   path: "/contato",
+    // },
   ];
-
-  const alunas = "/alunas";
 
   return (
     <DivNavbar>
@@ -75,7 +75,7 @@ export function Navbar() {
             <Link key={index} to={itemData.path}>
               <MenuButton
                 key={index}
-                isActive={pathname === itemData.path}
+                active={pathname === itemData.path}
                 onClick={() => setPathname(itemData.path)}
               >
                 {itemData.name}
@@ -83,9 +83,11 @@ export function Navbar() {
             </Link>
           ))}
         </DivNavbarMenu>
-        <Link to={alunas}>
-          <PrimaryButton text="Área Logada" />
-        </Link>
+        {props.hideButton !== true && (
+          <Link to={auth.isAuthenticated ? "/alunas" : "/login"}>
+            <PrimaryButton text="Área Logada" />
+          </Link>
+        )}
       </DivNavbarCenter>
     </DivNavbar>
   );

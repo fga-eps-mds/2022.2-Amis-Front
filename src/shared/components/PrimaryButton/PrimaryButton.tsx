@@ -4,6 +4,7 @@ import styled from "styled-components";
 interface ButtonProps {
   text?: string;
   handleClick?: () => void;
+  children?: React.ReactNode;
 }
 
 const Button = styled.button`
@@ -12,18 +13,20 @@ const Button = styled.button`
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  color: ${(props) => props.theme.colors.white};
-  background: ${(props) => props.theme.colors.primary};
-  font-weight: bold;
+  color: ${(props) => "white"};
+  background: ${(props) => "#da4d3d"};
+  font-weight: 500;
+  font-size: 14px;
   &:hover {
     background-color: #d2301e;
   }
 `;
 
-export function PrimaryButton({ text, handleClick }: ButtonProps) {
+export function PrimaryButton({ children, text, handleClick }: ButtonProps) {
   return (
     <Button type="submit" onClick={handleClick}>
       {text}
+      {children}
     </Button>
   );
 }

@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "../../shared/components/Navbar/navbar";
+import { Footer } from "../../shared/components/Footer/footer";
 import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
 import home_image2 from "../../assets/home_image2.png";
-import footer_image1 from "../../assets/footer_image1.png";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { QtdAlunasDTO } from "./dtos/QtdAlunas.dto";
+import axios from "axios";
+import { useQuery } from "react-query";
+import { QtdAlunasFormDTO } from "./dtos/QtdAlunasForm.dto";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -54,7 +58,7 @@ const DivCounter = styled.div`
   background: ${(props) => props.theme.colors.primary};
   display: flex;
   padding: 45px 150px;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `;
 
 const DivEachCounter = styled.div`
@@ -85,20 +89,24 @@ const TituloReceitas = styled.h1`
   text-align: center;
 `;
 
-const DivFooter = styled.div`
-  width: 100%;
-  background: ${(props) => props.theme.colors.primary};
-  padding: 50px;
-  text-align: center;
-`;
-
-const FooterText = styled.span`
-  color: ${(props) => props.theme.colors.white};
-  font-weight: 400px;
-  font-size: 13px;
-`;
-
 export function Home() {
+  const [qtdAluna, setQtdAluna] = useState<QtdAlunasDTO>();
+  const [qtdAlunaForm, setQtdAlunaForm] = useState<QtdAlunasFormDTO>();
+
+  useQuery("quantidade_alunas", async () => {
+    const responseQtdAlunas = await axios.get(
+      "https://service-amis.azurewebsites.net/alunas/count/"
+    );
+    setQtdAluna(responseQtdAlunas.data as QtdAlunasDTO);
+  });
+
+  useQuery("quantidade_alunasFormadas", async () => {
+    const responseQtdFormadas = await axios.get(
+      "https://service-amis.azurewebsites.net/alunas/count/formada"
+    );
+    setQtdAlunaForm(responseQtdFormadas.data as QtdAlunasFormDTO);
+  });
+
   return (
     <div>
       <Navbar />
@@ -121,11 +129,11 @@ export function Home() {
           <Image
             src={home_image1}
             style={{
-              width: "350px",
+              width: "300px",
               zIndex: 5,
               position: "absolute",
               bottom: -80,
-              left: -250,
+              left: -200,
             }}
           ></Image>
           <Image
@@ -172,15 +180,11 @@ export function Home() {
       </DivText>
       <DivCounter>
         <DivEachCounter>
-          <CounterNumber>98</CounterNumber>
+          <CounterNumber>{qtdAluna?.count}</CounterNumber>
           <CounterText>Mulheres atendidas</CounterText>
         </DivEachCounter>
         <DivEachCounter>
-          <CounterNumber>187</CounterNumber>
-          <CounterText>Famílias impactadas</CounterText>
-        </DivEachCounter>
-        <DivEachCounter>
-          <CounterNumber>91</CounterNumber>
+          <CounterNumber>{qtdAlunaForm?.count}</CounterNumber>
           <CounterText>Formações profissionais</CounterText>
         </DivEachCounter>
       </DivCounter>
@@ -189,20 +193,7 @@ export function Home() {
           <TituloReceitas>Nossas receitas</TituloReceitas>
         </div>
       </DivRec>
-      <DivFooter>
-        <a href="https://www.instagram.com/amismulherescriativas/">
-          <Image
-            src={footer_image1}
-            style={{
-              width: "40px",
-              marginBottom: "20px",
-            }}
-          ></Image>
-        </a>
-        <div>
-          <FooterText>© 2022. All rights reserved.</FooterText>
-        </div>
-      </DivFooter>
+      <Footer />
     </div>
   );
 }
