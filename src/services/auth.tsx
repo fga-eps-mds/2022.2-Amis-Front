@@ -1,5 +1,5 @@
 import { ErrorResponse } from "@remix-run/router";
-import axios from "axios";
+import api from "./api";
 
 export async function LoginRequest(email: string, senha: string): Promise<any> {
   try {
@@ -7,8 +7,8 @@ export async function LoginRequest(email: string, senha: string): Promise<any> {
     params.append("username", email);
     params.append("password", senha);
 
-    const request = await axios.post(
-      "https://auth-amis.azurewebsites.net" + "/login/",
+    const request = await api.post(
+      "/login",
       params
     );
 
