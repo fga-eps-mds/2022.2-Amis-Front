@@ -1,6 +1,8 @@
 import { ErrorResponse } from "@remix-run/router";
-import api from "./api";
-
+import axios from "axios";
+const api = axios.create({
+  baseURL: import.meta.env.VITE_AMIS_API_LOGIN_URL,
+})
 export async function LoginRequest(email: string, senha: string): Promise<any> {
   try {
     const params = new URLSearchParams();
