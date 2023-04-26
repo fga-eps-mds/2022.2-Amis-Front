@@ -3,24 +3,19 @@
 import axios from "axios";
 import { getUserLocalStorage } from "./auth";
 
-const userLocalStorage = getUserLocalStorage();
-
 const api = axios.create({
   baseURL: import.meta.env.VITE_AMIS_API_BASE_URL,
-  headers: {
-    Authorization: `Bearer ${userLocalStorage?.token}`,
-  },
 });
 
-api.interceptors.request.use((config)=>{
-  const token = getUserLocalStorage()?.token;
-  const headers = config.headers;
-  if(headers) {
-    headers.Authorization = `Bearer ${token}`;
-    headers.set("Authorization", ); 
+api.interceptors.request.use(
+  (config) => {
+    const userLocalStorage = getUserLocalStorage();
+    config.headers.Authorization = `Bearer ${userLocalStorage?.token}`;
+    return config;
+  },
+  (err) => {
+    console.log(err);
   }
-  // config.headers.Authorization =  `Bearer ${token}`;
-  return config;
-});
+);
 
 export default api;
