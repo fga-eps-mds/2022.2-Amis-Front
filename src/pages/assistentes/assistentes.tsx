@@ -116,11 +116,13 @@ export function Assistentes() {
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
+      dataNascimento: data.dataNascimento,
+      telefone: data.telefone,
+      email: data.email,
       login: data.login,
-      observacao: data.observacao,
       administrador: data.administrador,
       senha: data.senha,
-    } as AssistentesCadastrarDTO;
+    } as unknown as AssistentesCadastrarDTO;
 
     const response = await cadastrarAssistente(assistente);
 
@@ -140,7 +142,9 @@ export function Assistentes() {
         id: value.id,
         nome: value.nome,
         cpf: value.cpf,
-        observacao: value.observacao,
+        dataNascimento: value.dataNascimento,
+        telefone: value.telefone,
+        email: value.email,
         administrador: value.administrador,
         login: value.login,
       });
@@ -167,6 +171,9 @@ export function Assistentes() {
     setAssistente(assistente);
     setValue("nomeEdit", assistente.nome);
     setValue("cpfEdit", assistente.cpf);
+    setValue("dataNascimento", assistente.dataNascimento);
+    setValue("telefone", assistente.telefone);
+    setValue("email", assistente.email);
     setValue("adminEdit", assistente.administrador);
     setOpenEdit(true);
   };
@@ -175,9 +182,11 @@ export function Assistentes() {
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
+      dataNascimento: data.dataNascimentoEdit,
+      telefone: data.telefoneEdit,
+      email: data.emailEdit,
       administrador: data.adminEdit,
       login: data.loginEdit,
-      observacao: data.observacaoEdit,
     };
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
@@ -255,17 +264,39 @@ export function Assistentes() {
           <Form onSubmit={handleSubmit(registerAssistentes)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Nome Completo"
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
-              label="CPF (apenas números)"
+              label="CPF"
               required={true}
               inputProps={{ maxLength: 11 }}
               {...register("cpf")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dataNascimento"
+              label="Data de Nascimento"
+              inputProps={{ maxLength: 11 }}
+              {...register("nascimento")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-telefone"
+              label="Telefone"
+              required={true}
+              inputProps={{ maxLength: 11 }}
+              {...register("telefone")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-email"
+              label="E-mail"
+              inputProps={{ maxLength: 11 }}
+              {...register("email")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -279,7 +310,7 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
               variant="outlined"
             >
-              <InputLabel htmlFor="outlined-adornment-password">
+              <InputLabel htmlFor="outlined-adornment-password" required={true}>
                 Senha
               </InputLabel>
               <OutlinedInput
@@ -312,12 +343,6 @@ export function Assistentes() {
                 label="Password"
               />
             </FormControl>
-            <TextField
-              id="outlined-Observações"
-              label="Observações"
-              {...register("observacao")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
             <FormControl fullWidth>
               <InputLabel required={true} id="demo-simple-select-label">
                 Administrador (a)?
@@ -345,17 +370,40 @@ export function Assistentes() {
           <Form onSubmit={handleSubmit(editAssistentes)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Nome Completo"
               required={true}
               {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
-              label="CPF (apenas números)"
+              label="CPF"
               required={true}
               inputProps={{ maxLength: 11 }}
               {...register("cpfEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dataNascimento"
+              label="Data de Nascimento"
+              required={true}
+              inputProps={{ maxLength: 11 }}
+              {...register("nascimentoEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-telefone"
+              label="Telefone"
+              required={true}
+              inputProps={{ maxLength: 11 }}
+              {...register("telefoneEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-email"
+              label="E-mail"
+              inputProps={{ maxLength: 11 }}
+              {...register("emailEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -364,13 +412,6 @@ export function Assistentes() {
               required={true}
               inputProps={{ maxLength: 120 }}
               {...register("loginEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-observacao"
-              label="Observações"
-              required={true}
-              {...register("observacaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
