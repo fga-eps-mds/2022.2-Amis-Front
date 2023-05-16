@@ -1,3 +1,12 @@
+function soma(a: number, b: number) {
+    return a + b;
+  }
+  
+  test('Teste de soma', () => {
+    const resultado = soma(2, 3);
+    expect(resultado).toBe(5);
+  });
+
 // import { BrowserRouter } from "react-router-dom";
 // import renderer from "react-test-renderer";
 // import { ThemeProvider } from "styled-components";
