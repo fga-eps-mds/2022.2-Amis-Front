@@ -1,11 +1,11 @@
 export interface AlunasCadastrarDTO {
   nome: string;
-  nomeSocial: string;
+  login: string;
   cpf: string;
-  rg: string;
+  telefone: string;
   dNascimento: string;
-  nomePai: string;
-  nomeMae: string;
-  deficiencia: boolean;
+  senha: string;
+  email: string;
+  status: boolean;
   idEndereco: number;
 }

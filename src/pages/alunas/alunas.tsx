@@ -110,13 +110,13 @@ export function Alunas() {
   const cadastrarAlunas = async (data: any) => {
     const aluna = {
       nome: data.nome,
-      nomeSocial: data.nomeSocial,
+      login: data.login,
       cpf: data.cpf,
-      rg: data.rg,
+      telefone: data.telefone,
       dNascimento: data.dNascimento,
-      nomePai: data.nomePai,
-      nomeMae: data.nomeMae,
-      deficiencia: data.deficiencia,
+      senha: data.senha,
+      
+      status: data.status,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
@@ -159,13 +159,13 @@ export function Alunas() {
     // eslint-disable-next-line array-callback-return
     const aluna = {
       nome: data.nome,
-      nomeSocial: data.nomeSocial,
+      login: data.login,
       cpf: data.cpf,
-      rg: data.rg,
+      telefone: data.telefone,
       dNascimento: data.dNascimento,
-      nomePai: data.nomePai,
-      nomeMae: data.nomeMae,
-      deficiencia: data.deficiencia,
+      senha: data.senha,
+      email: data.email,
+      status: data.status,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
@@ -251,9 +251,9 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-nome"
-              label="Nome Social"
-              {...register("nomeSocial")}
+              id="outlined-login"
+              label="login"
+              {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -264,9 +264,9 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-rg"
-              label="RG"
-              {...register("rg")}
+              id="outlined-telefone"
+              label="telefone"
+              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -276,30 +276,31 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-nome-pai"
-              label="Nome do pai"
-              {...register("nomePai")}
+              id="outlined-senha"
+              label="senha"
+              {...register("senha")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-nome-mae"
-              label="Nome da mãe"
-              {...register("nomeMae")}
+              id="outlined-email"
+              label="email"
+              {...register("email")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
-                Possui deficiência?
+                Status(Produção, Curso ou Inativo)
               </InputLabel>
               <Select
-                id="simple-select-label-deficiencia"
-                labelId="simple-select-deficiencia"
-                label="Possui deficiência?"
-                {...register("deficiencia")}
+                id="simple-select-label-status"
+                labelId="simple-select-status"
+                label="Status(Produção, Curso ou Inativo)"
+                {...register("status")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
+                <MenuItem value={1 as any}>Produção</MenuItem>
+                <MenuItem value={2 as any}>Curso</MenuItem>
+                <MenuItem value={3 as any}>Inativo</MenuItem>
               </Select>
             </FormControl>
             <PrimaryButton text={"Cadastrar"} />
@@ -319,12 +320,12 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-nomeSocial"
-              label="Nome Social"
+              id="outlined-login"
+              label="login"
               required={true}
               inputProps={{ maxLength: 120 }}
-              defaultValue={aluna.nomeSocial}
-              {...register("nomeSocial")}
+              defaultValue={aluna.login}
+              {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -337,11 +338,11 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-rg"
-              label="RG"
-              defaultValue={aluna.rg}
+              id="outlined-telefone"
+              label="telefone"
+              defaultValue={aluna.telefone}
               required={true}
-              {...register("rg")}
+              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -353,36 +354,36 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-nomePai"
-              label="Nome do Pai"
-              defaultValue={aluna.nomePai}
+              id="outlined-senha"
+              label="senha"
+              defaultValue={aluna.senha}
               required={true}
-              {...register("nomePai")}
+              {...register("senha")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-nomeMae"
-              label="Nome da Mãe"
-              defaultValue={aluna.nomeMae}
-              required={true}
-              {...register("nomeMae")}
+              id="outlined-email"
+              label="email"
+              {...register("email")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
-                Deficiência?
+              Status(Produção, Curso ou Inativo)
               </InputLabel>
               <Select
-                id="simple-select-label-deficiencia"
-                labelId="simple-select-deficiencia"
+                id="simple-select-label-status"
+                labelId="simple-select-status"
                 required={true}
-                defaultValue={aluna.deficiencia}
-                label="Possui deficiência?"
-                {...register("deficiencia")}
+                defaultValue={aluna.status}
+                label="Status(Produção, Curso ou Inativo)"
+                {...register("status")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
+                <MenuItem value={1 as any}>Produção</MenuItem>
+                <MenuItem value={2 as any}>Curso</MenuItem>
+                <MenuItem value={3 as any}>Inativo</MenuItem>
               </Select>
             </FormControl>
             <PrimaryButton text={"Editar"} />
