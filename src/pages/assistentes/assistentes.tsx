@@ -95,6 +95,7 @@ const style = {
 
 export function Assistentes() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [open, setOpen] = useState(false);
   const [assistente, setAssistente] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
@@ -343,6 +344,47 @@ export function Assistentes() {
                 label="Password"
               />
             </FormControl>
+
+
+
+            <FormControl
+              sx={{ width: "100%", background: "#F5F4FF" }}
+              variant="outlined"
+            >
+              <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
+                Confirmar senha
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("senha_confirmada")}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {showConfirmPassword ? (
+                      <AiFillEyeInvisible
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowConfirmPassword(!showConfirmPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    ) : (
+                      <AiFillEye
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowConfirmPassword(!showConfirmPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    )}
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+
             <FormControl fullWidth>
               <InputLabel required={true} id="demo-simple-select-label">
                 Administrador (a)?
