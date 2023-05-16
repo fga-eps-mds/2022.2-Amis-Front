@@ -16,7 +16,9 @@ jobs:
 
       - name: Copy repository
         uses: actions/checkout@v2
-      - run: wget https://sonarcloud.io/api/measures/component_tree?component=fga-eps-mds_2023.1-Amis-Front&metricKeys=files,functions,complexity,comment_lines_density,duplicated_lines_density,coverage,ncloc,tests,test_errors,test_failures,test_execution_time,security_rating&ps=500 -O ${{ steps.name.outputs.file_name }}.json
+      - run: wget $METRICS_URL -O ${{ steps.name.outputs.file_name }}.json
+        env:
+          METRICS_URL: ${{ secrets.METRICS_URL }}
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.name.outputs.file_name }}.json
