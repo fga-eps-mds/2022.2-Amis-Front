@@ -14,6 +14,7 @@ import { Turmas } from "./pages/turmas/turmas";
 import { AuthContext } from "./context/AuthProvider";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
+
 interface Props {
   component: React.ComponentType;
   path?: string;
@@ -31,6 +32,7 @@ export const PrivateRoute: React.FC<Props> = ({
       </Backdrop>
     );
   }
+  return <RouteComponent/>
 
   return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
 };

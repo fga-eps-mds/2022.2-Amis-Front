@@ -9,6 +9,8 @@ import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
+import { Typography } from "@mui/material";
+import CPFMask from "../../shared/components/Masks/CPFMask"
 
 import {
   Box,
@@ -106,12 +108,17 @@ export function Alunas() {
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const {
     register,
+    trigger,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
 
   const cadastrarAlunas = async (data: any) => {
+    const errors = await trigger(); // Dispara a validação de todos os campos
+    if (errors) {
+      return; // Há erros de validação, interrompe o envio dos dados
+    }
     const aluna = {
       nome: data.nome,
       login: data.login,
@@ -132,6 +139,14 @@ export function Alunas() {
       toast.error("Erro ao cadastrar a aluna.");
     }
     await queryClient.invalidateQueries("listar_alunas");
+  };
+
+  const validatePassword = (value: any) => {
+    const password = watch("senha"); // Obtém o valor do campo de senha
+    if (value === password) {
+      return true; // A senha e a confirmação de senha são iguais, a validação é bem-sucedida
+    }
+    return "As senhas não correspondem"; // A senha e a confirmação de senha não são iguais, a validação falhou
   };
 
   useQuery("listar_alunas", async () => {
@@ -254,13 +269,16 @@ export function Alunas() {
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
+            <CPFMask />
+            {/*
+              <TextField
               id="outlined-cpf"
               label="CPF *"
               inputProps={{ maxLength: 11 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+              />*/
+            }
             <TextField
               id="outlined-dNascimento"
               label="Data de Nascimento"
@@ -328,12 +346,12 @@ export function Alunas() {
               variant="outlined"
             >
               <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
-                Confirmar senha 
+                Confirmar senha
               </InputLabel>
               <OutlinedInput
                 id="outlined-adornment-confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
-                {...register("senha_confirmada")}
+                {...register("senha_confirmada", { validate: validatePassword })}
                 endAdornment={
                   <InputAdornment position="end">
                     {showConfirmPassword ? (
@@ -357,13 +375,22 @@ export function Alunas() {
                     )}
                   </InputAdornment>
                 }
-                label="Password"
+                label="Password********"
               />
+              {errors.senha_confirmada && (
+                 <Typography
+                 variant="body2"
+                 color="error"
+                 sx={{ mt: 1, mb: -3.5 }}
+               >
+                 Senha não corresponde!
+               </Typography>
+              )}
             </FormControl>
 
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
-                Status(Produção, Curso ou Inativo)
+                Status (Produção, Curso ou Inativo) 
               </InputLabel>
               <Select
                 id="simple-select-label-status"
