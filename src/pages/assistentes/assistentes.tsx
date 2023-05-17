@@ -37,6 +37,7 @@ import {
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
+import CPFMask from "../../shared/components/Masks/CPFMask"
 
 const Container = styled.div`
   width: 100%;
@@ -270,14 +271,17 @@ export function Assistentes() {
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
+            
+            <CPFMask />
+
+            {/* <TextField
               id="outlined-cpf"
               label="CPF"
               required={true}
               inputProps={{ maxLength: 11 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            /> */}
             <TextField
               id="outlined-dataNascimento"
               label="Data de Nascimento"
@@ -285,6 +289,7 @@ export function Assistentes() {
               {...register("nascimento")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            
             <TextField
               id="outlined-telefone"
               label="Telefone"

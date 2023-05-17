@@ -5,7 +5,6 @@ export interface AssistentesListarDTO {
   dataNascimento: string;
   telefone: string;
   email: string;
-  observacao: string;
   administrador: boolean;
   login: string;
 }
