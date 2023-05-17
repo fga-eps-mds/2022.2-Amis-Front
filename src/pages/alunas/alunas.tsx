@@ -7,7 +7,7 @@ import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
-import { AiFillEdit } from "react-icons/ai";
+import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
 
 import {
@@ -17,9 +17,11 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Modal,
+  OutlinedInput,
   Select,
   TextField,
 } from "@mui/material";
@@ -92,6 +94,8 @@ const style = {
 export function Alunas() {
   const [open, setOpen] = useState(false);
   const [aluna, setAluna] = useState(Object);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
@@ -246,27 +250,15 @@ export function Alunas() {
           <Form onSubmit={handleSubmit(cadastrarAlunas)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Nome Completo *"
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-login"
-              label="login"
-              {...register("login")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
               id="outlined-cpf"
-              label="CPF (apenas números)"
+              label="CPF *"
               inputProps={{ maxLength: 11 }}
               {...register("cpf")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="telefone"
-              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -276,17 +268,99 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-senha"
-              label="senha"
-              {...register("senha")}
+              id="outlined-telefone"
+              label="Telefone *"
+              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-email"
-              label="email"
+              label="E-mail"
               {...register("email")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            <TextField
+              id="outlined-login"
+              label="Login *"
+              {...register("login")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <FormControl
+              sx={{ width: "100%", background: "#F5F4FF" }}
+              variant="outlined"
+            >
+              <InputLabel htmlFor="outlined-adornment-password">
+                Senha *
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={showPassword ? "text" : "password"}
+                {...register("senha")}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {showPassword ? (
+                      <AiFillEyeInvisible
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowPassword(!showPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    ) : (
+                      <AiFillEye
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowPassword(!showPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    )}
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+            
+            <FormControl
+              sx={{ width: "100%", background: "#F5F4FF" }}
+              variant="outlined"
+            >
+              <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
+                Confirmar senha 
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("senha_confirmada")}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {showConfirmPassword ? (
+                      <AiFillEyeInvisible
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowConfirmPassword(!showConfirmPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    ) : (
+                      <AiFillEye
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowConfirmPassword(!showConfirmPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    )}
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
                 Status(Produção, Curso ou Inativo)
@@ -313,36 +387,19 @@ export function Alunas() {
           <Form onSubmit={handleSubmit(editAlunas)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Nome Completo *"
               defaultValue={aluna.nome}
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-login"
-              label="login"
-              required={true}
-              inputProps={{ maxLength: 120 }}
-              defaultValue={aluna.login}
-              {...register("login")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
               id="outlined-cpf"
-              label="CPF (apenas números)"
+              label="CPF *"
               required={true}
               inputProps={{ maxLength: 11 }}
               defaultValue={aluna.cpf}
               {...register("cpf")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="telefone"
-              defaultValue={aluna.telefone}
-              required={true}
-              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -354,17 +411,34 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-senha"
-              label="senha"
-              defaultValue={aluna.senha}
+              id="outlined-telefone"
+              label="Telefone *"
+              defaultValue={aluna.telefone}
               required={true}
-              {...register("senha")}
+              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-email"
-              label="email"
+              label="E-mail"
               {...register("email")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-login"
+              label="Login *"
+              required={true}
+              inputProps={{ maxLength: 120 }}
+              defaultValue={aluna.login}
+              {...register("login")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-senha"
+              label="Senha *"
+              defaultValue={aluna.senha}
+              required={true}
+              {...register("senha")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             
