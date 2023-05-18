@@ -37,7 +37,7 @@ import {
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
-import CPFMask from "../../shared/components/Masks/CPFMask"
+import CPFMask from "../../shared/components/Masks/CPFMask";
 
 const Container = styled.div`
   width: 100%;
@@ -122,7 +122,6 @@ export function Assistentes() {
       telefone: data.telefone,
       email: data.email,
       login: data.login,
-      administrador: data.administrador,
       senha: data.senha,
     } as unknown as AssistentesCadastrarDTO;
 
@@ -147,7 +146,6 @@ export function Assistentes() {
         dataNascimento: value.dataNascimento,
         telefone: value.telefone,
         email: value.email,
-        administrador: value.administrador,
         login: value.login,
       });
     });
@@ -176,7 +174,6 @@ export function Assistentes() {
     setValue("dataNascimento", assistente.dataNascimento);
     setValue("telefone", assistente.telefone);
     setValue("email", assistente.email);
-    setValue("adminEdit", assistente.administrador);
     setOpenEdit(true);
   };
 
@@ -187,7 +184,6 @@ export function Assistentes() {
       dataNascimento: data.dataNascimentoEdit,
       telefone: data.telefoneEdit,
       email: data.emailEdit,
-      administrador: data.adminEdit,
       login: data.loginEdit,
     };
 
@@ -271,7 +267,7 @@ export function Assistentes() {
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            
+
             <CPFMask />
 
             {/* <TextField
@@ -289,7 +285,7 @@ export function Assistentes() {
               {...register("nascimento")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            
+
             <TextField
               id="outlined-telefone"
               label="Telefone"
@@ -350,13 +346,14 @@ export function Assistentes() {
               />
             </FormControl>
 
-
-
             <FormControl
               sx={{ width: "100%", background: "#F5F4FF" }}
               variant="outlined"
             >
-              <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
+              <InputLabel
+                htmlFor="outlined-adornment-confirm-password"
+                required={true}
+              >
                 Confirmar senha
               </InputLabel>
               <OutlinedInput
@@ -388,24 +385,6 @@ export function Assistentes() {
                 }
                 label="Password"
               />
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel required={true} id="demo-simple-select-label">
-                Administrador (a)?
-              </InputLabel>
-              <Select
-                id="simple-select-label-admin"
-                labelId="simple-select-admin"
-                label="Administrador(a)?"
-                required={true}
-                defaultValue=""
-                {...register("administrador")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
-              </Select>
             </FormControl>
             <PrimaryButton text={"Cadastrar"} />
           </Form>
@@ -461,23 +440,6 @@ export function Assistentes() {
               {...register("loginEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Administrador(a)?
-              </InputLabel>
-              <Select
-                id="simple-select-label-admin"
-                labelId="simple-select-admin"
-                required={true}
-                label="Administrador(a)?"
-                defaultValue=""
-                {...register("adminEdit")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
-              </Select>
-            </FormControl>
             <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
