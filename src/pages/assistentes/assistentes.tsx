@@ -38,6 +38,7 @@ import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
 import CPFMask from "../../shared/components/Masks/CPFMask";
+import { Typography } from "@mui/material";
 
 const Container = styled.div`
   width: 100%;
@@ -109,12 +110,19 @@ export function Assistentes() {
   const [dataTable, setDataTable] = useState(Array<Object>);
   const {
     register,
+    trigger,
+    watch,
     handleSubmit,
     setValue,
     formState: { errors },
   } = useForm();
 
   const registerAssistentes = async (data: any) => {
+    const errors = await trigger(); // Dispara a validação de todos os campos
+    if (errors) {
+      return; // Há erros de validação, interrompe o envio dos dados
+    }
+
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
@@ -132,6 +140,14 @@ export function Assistentes() {
       queryClient.invalidateQueries("listar_assistentes");
       toast.success("Assistente cadastrado com sucesso!");
     }
+  };
+
+  const validatePassword = (value: any) => {
+    const password = watch("senha"); // Obtém o valor do campo de senha
+    if (value === password) {
+      return true; // A senha e a confirmação de senha são iguais, a validação é bem-sucedida
+    }
+    return "As senhas não correspondem"; // A senha e a confirmação de senha não são iguais, a validação falhou
   };
 
   useQuery("listar_assistentes", async () => {
@@ -297,7 +313,7 @@ export function Assistentes() {
             <TextField
               id="outlined-email"
               label="E-mail"
-              inputProps={{ maxLength: 11 }}
+              inputProps={{ maxLength: 100 }}
               {...register("email")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
@@ -359,7 +375,7 @@ export function Assistentes() {
               <OutlinedInput
                 id="outlined-adornment-confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
-                {...register("senha_confirmada")}
+                {...register("senha_confirmada", { validate: validatePassword })}
                 endAdornment={
                   <InputAdornment position="end">
                     {showConfirmPassword ? (
@@ -385,6 +401,15 @@ export function Assistentes() {
                 }
                 label="Password"
               />
+              {errors.senha_confirmada && (
+                 <Typography
+                 variant="body2"
+                 color="error"
+                 sx={{ mt: 1, mb: -3.5 }}
+               >
+                 Senha não corresponde!
+               </Typography>
+              )}
             </FormControl>
             <PrimaryButton text={"Cadastrar"} />
           </Form>
