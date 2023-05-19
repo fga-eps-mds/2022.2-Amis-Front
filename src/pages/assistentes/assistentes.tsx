@@ -37,7 +37,7 @@ import {
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
-import CPFMask from "../../shared/components/Masks/CPFMask";
+import CPFMask from "../../shared/components/Masks/ValueMask";
 import { Typography } from "@mui/material";
 
 const Container = styled.div`
@@ -142,7 +142,6 @@ export function Assistentes() {
       toast.success("Assistente cadastrado com sucesso!");
     }
   };
-
   const validatePassword = (value: any) => {
     const password = watch("senha"); // Obtém o valor do campo de senha
     if (value === password) {
@@ -288,32 +287,12 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
 
-            <CPFMask />
+            <CPFMask label="cpf"/>
 
-            {/* <TextField
-              id="outlined-cpf"
-              label="CPF"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("cpf")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            /> */}
-            <TextField
-              id="outlined-dataNascimento"
-              label="Data de Nascimento"
-              inputProps={{ maxLength: 11 }}
-              {...register("nascimento")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <CPFMask label="nascimento"/>
 
-            <TextField
-              id="outlined-telefone"
-              label="Telefone"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("telefone")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <CPFMask label="telefone"/>
+
             <TextField
               id="outlined-email"
               label="E-mail"
