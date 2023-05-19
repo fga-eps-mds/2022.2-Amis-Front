@@ -23,7 +23,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
@@ -108,6 +108,7 @@ export function Assistentes() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  const methods = useForm();
   const {
     register,
     trigger,
@@ -115,7 +116,7 @@ export function Assistentes() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = methods;
 
   const registerAssistentes = async (data: any) => {
     const errors = await trigger(); // Dispara a validação de todos os campos
@@ -274,6 +275,9 @@ export function Assistentes() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
+          <FormProvider
+            {...methods}
+          >
           <FormText>Preencha corretamente os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(registerAssistentes)}>
             <TextField
@@ -413,6 +417,7 @@ export function Assistentes() {
             </FormControl>
             <PrimaryButton text={"Cadastrar"} />
           </Form>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
