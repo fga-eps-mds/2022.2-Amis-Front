@@ -45,10 +45,10 @@ export default function AppRoutes() {
         {/* <Route path="/alunas" element={<PrivateRoute component={Alunas} />} /> */}
 
         <Route path="/alunas" element={<Alunas />} />
-        <Route path="/assistentes"element={<PrivateRoute component={Assistentes} />}
+        <Route path="/assistentes"element={<Assistentes />}
         />
         <Route path="/professores" element={<Professores />} />
-        <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
+        <Route path="/turmas" element={<Turmas />} />
         <Route path="/login" element={<Login />} />
         <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />
