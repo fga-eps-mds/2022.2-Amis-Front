@@ -77,21 +77,32 @@ describe("Alunas", () => {
     // Simula o preenchimento dos campos de cadastro
     const nomeInput = screen.getByLabelText("Nome Completo *"); // Supondo que você tenha um label associado ao campo CPF
     const inputCpf = screen.getByLabelText("CPF *");
-    const inputDataNascimento = screen.getByLabelText("Data de Nascimento");
+    const inputDataNascimento = screen.getByLabelText("Data de Nascimento *");
     const inputLogin = screen.getByLabelText("Login *");
     const inputTelefone = screen.getByLabelText("Telefone *");
     const inputEmail = screen.getByLabelText("E-mail");
     const inputSenha = screen.getByLabelText("Senha *");
     const inputConfirmarSenha = screen.getByLabelText("Confirmar senha *");
+    const inputBairro = screen.getByLabelText("Bairro *");
+    const inputCidade = screen.getByLabelText("Cidade *");
+    const inputdEndereco = screen.getByLabelText("Descricao Endereco *");
+    const inputCep = screen.getByLabelText("CEP *");
+    //const inputDeficiencia = screen.getByRole('button', { name: 'Possui deficiência? ​' });
+    //const inputStatus = screen.getByRole('button', { name: 'Possui deficiência? ​' });
+    
 
-    fireEvent.change(nomeInput, { target: { value: 'Pedro' } });
-    fireEvent.change(inputCpf, { target: { value: '06951977119' } });
-    fireEvent.change(inputDataNascimento, { target: { value: '09062001' } });
-    fireEvent.change(inputTelefone, { target: { value: '61991812098' } });
+    fireEvent.change(nomeInput, { target: { value: 'Alejandra' } });
+    fireEvent.change(inputCpf, { target: { value: '00011122233' } });
+    fireEvent.change(inputDataNascimento, { target: { value: '09012001' } });
+    fireEvent.change(inputTelefone, { target: { value: '61999999999' } });
     fireEvent.change(inputEmail, { target: { value: 'pedro@gmail.com' } });
     fireEvent.change(inputSenha, { target: { value: '1234' } });
     fireEvent.change(inputConfirmarSenha, { target: { value: '1234' } });
     fireEvent.change(inputLogin, { target: { value: 'pedro' } });
+    fireEvent.change(inputBairro, { target: { value: 'Recanto das Emas' } });
+    fireEvent.change(inputCidade, { target: { value: 'Brasilia' } });
+    fireEvent.change(inputdEndereco, { target: { value: 'qd 111 cj 22 cs 33' } });
+    fireEvent.change(inputCep, { target: { value: '72610518' } });
 
     const submitButton = screen.getByRole('button', { name: 'Confirmar' });
 

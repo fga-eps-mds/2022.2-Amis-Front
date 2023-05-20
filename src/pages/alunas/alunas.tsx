@@ -9,7 +9,7 @@ import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 import { Typography } from "@mui/material";
 import CPFMask from "../../shared/components/Masks/ValueMask";
 
@@ -285,7 +285,7 @@ export function Alunas() {
               />
               <CPFMask label="cpf"/>
 
-              <FormControl sx={{ width: '100%', background: '#F5F4FF' }} required={true}>
+              <FormControl sx={{ width: '100%', background: '#F5F4FF' }}>
                 <InputLabel id="select-deficiencia-label">Possui deficiência?</InputLabel>
                 <Select
                   labelId="select-deficiencia-label"
