@@ -10,6 +10,5 @@ const mock = new MockAdapter(api);
 mock.onPost('/alunas/').reply(201);
 
 export const cadastraAlunaMock = async (payload: AlunasCadastrarDTO) => {
-  console.log("Estou sendo chamado")
   return await api.post('/alunas/', payload).then((response: any) => response);
 };

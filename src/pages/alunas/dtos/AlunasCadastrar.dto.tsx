@@ -8,4 +8,9 @@ export interface AlunasCadastrarDTO {
   email: string;
   status: boolean;
   idEndereco: number;
+  deficiencia: boolean,
+  bairro: string,
+  cidade: string,
+  cep:string,
+  descricao_endereco: string,
 }

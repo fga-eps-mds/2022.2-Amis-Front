@@ -11,7 +11,7 @@ import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
 import { Typography } from "@mui/material";
-import CPFMask from "../../shared/components/Masks/CPFMask"
+import CPFMask from "../../shared/components/Masks/ValueMask";
 
 import {
   Box,
@@ -130,7 +130,11 @@ export function Alunas() {
       telefone: data.telefone,
       dNascimento: data.dNascimento,
       senha: data.senha,
-      
+      bairro: data.bairro,
+      cidade: data.cidade,
+      cep:data.cep,
+      descricao_endereco: data.descricao_endereco,
+      deficiencia:data.deficiencia,
       status: data.status,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
@@ -274,24 +278,31 @@ export function Alunas() {
             <Form onSubmit={handleSubmit(cadastrarAlunas)}>
               <TextField
                 id="outlined-nome"
-                label="Nome Completo *"
+                required={true}
+                label="Nome Completo"
                 {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              <CPFMask 
-              />
-              <TextField
-                id="outlined-dNascimento"
-                label="Data de Nascimento"
-                {...register("dNascimento")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              <TextField
-                id="outlined-telefone"
-                label="Telefone *"
-                {...register("telefone")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
+              <CPFMask label="cpf"/>
+
+              <FormControl sx={{ width: '100%', background: '#F5F4FF' }} required={true}>
+                <InputLabel id="select-deficiencia-label">Possui deficiência?</InputLabel>
+                <Select
+                  labelId="select-deficiencia-label"
+                  id="select-deficiencia"
+                  defaultValue={aluna.deficiencia}
+                  {...register('deficiencia')}
+                  label="Possui deficiência?"
+                >
+                  <MenuItem value="sim">Sim</MenuItem>
+                  <MenuItem value="nao">Não</MenuItem>
+                </Select>
+              </FormControl>
+
+              <CPFMask label="nascimento"/>
+
+              <CPFMask label="telefone"/>
+
               <TextField
                 id="outlined-email"
                 label="E-mail"
@@ -300,7 +311,8 @@ export function Alunas() {
               />
               <TextField
                 id="outlined-login"
-                label="Login *"
+                required={true}
+                label="Login"
                 {...register("login")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
@@ -308,8 +320,8 @@ export function Alunas() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 variant="outlined"
               >
-                <InputLabel htmlFor="outlined-adornment-password">
-                  Senha *
+                <InputLabel htmlFor="outlined-adornment-password" required={true}>
+                  Senha
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-password"
@@ -380,13 +392,45 @@ export function Alunas() {
                 />
                 {errors.senha_confirmada && (
                   <Typography
-                  variant="body2"
-                  color="error"
-                  sx={{ mt: 1, mb: -3.5 }}
-                >Senha não corresponde!
-                </Typography>
+                      variant="body2"
+                      color="error"
+                      sx={{ mt: 1, mb: -3.5 }}
+                    >Senha não corresponde!
+                  </Typography>
                 )}
               </FormControl>
+
+              <TextField
+                id="outlined-bairro"
+                required={true}
+                label="Bairro"
+                {...register("bairro")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+
+              <TextField
+                id="outlined-cidade"
+                required={true}
+                label="Cidade"
+                {...register("cidade")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+
+              <TextField
+                id="outlined-descricao_endereco"
+                required={true}
+                label="Descricao Endereco"
+                {...register("descricao_endereco")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+
+              <TextField
+                id="outlined-cep"
+                required={true}
+                label="CEP"
+                {...register("cep")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
 
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
@@ -404,11 +448,13 @@ export function Alunas() {
                   <MenuItem value={3 as any}>Inativo</MenuItem>
                 </Select>
               </FormControl>
+              
               <PrimaryButton text={"Confirmar"}/>
             </Form>
           </FormProvider>
         </Box>
       </Modal>
+
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
           <FormText>Altere os dados da aluna.</FormText>
@@ -438,6 +484,7 @@ export function Alunas() {
               {...register("dNascimento")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            
             <TextField
               id="outlined-telefone"
               label="Telefone *"

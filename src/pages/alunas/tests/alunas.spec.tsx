@@ -25,8 +25,6 @@ import { queryClient } from "../../../services/queryClient";
 
 const cadastraAlunaSpy = jest.spyOn(alunasService, 'cadastraAluna');
 
-
-
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
@@ -71,7 +69,6 @@ describe("Alunas", () => {
     cadastraAlunaSpy.mockImplementation(cadastraAlunaMock);
 
 
-
     renderComponent();
     
     const cadastrarButton = screen.getByText('Cadastrar');
@@ -99,20 +96,18 @@ describe("Alunas", () => {
     const submitButton = screen.getByRole('button', { name: 'Confirmar' });
 
     fireEvent.click(submitButton);
+
     // Simule a resposta do status 201
     const response = { status: 201 };
 
     if (response.status === 201) {
-      console.log("Aluna cadastrada com sucesso!");
       toast.success("Aluna cadastrada com sucesso!");
     }
 
     // Verifique se o spy foi chamado corretamente
     expect(toastSuccessSpy).toHaveBeenCalledWith("Aluna cadastrada com sucesso!");
-  });
-
-  test('exibe notificação de falha após cadastro inválido', async () => {
-  
+    // Restaure o spy para seu estado original após o teste
+    toastSuccessSpy.mockRestore();
   });
 
 });
