@@ -111,6 +111,17 @@ export function Sidebar() {
         />
       ),
     },
+    {
+      id: 6,
+      name: "Professores",
+      path: "/professores",
+      icon: (
+        <BiUser
+          color={pathname === "/professores" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+    },
     // {
     //   id: 6,
     //   name: "Configurações",
