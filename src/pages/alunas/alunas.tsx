@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
@@ -28,7 +29,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from 'react-hook-form';
 import { AlunasListarDTO } from "./dtos/AlunasListar.dto";
 import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrar.dto";
 import {
@@ -100,25 +101,28 @@ export function Alunas() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [dataTable, setDataTable] = useState(Array<Object>);
+  const [dataTable, setDataTable] = useState<Object[]>([]);
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
+
+  const methods = useForm();
+
   const {
     register,
     trigger,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm();
+  } = methods;
 
   const cadastrarAlunas = async (data: any) => {
-    const errors = await trigger(); // Dispara a validação de todos os campos
-    if (errors) {
-      return; // Há erros de validação, interrompe o envio dos dados
-    }
+    //const errors = await trigger(); // Dispara a validação de todos os campos
+    //if (errors) {
+    //  return; // Há erros de validação, interrompe o envio dos dados
+    //}
     const aluna = {
       nome: data.nome,
       login: data.login,
@@ -131,11 +135,15 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
+    //console.log("senha: " +data.senha)
+
     const response = await cadastraAluna(aluna);
     if (response.status === 201) {
+      console.log("Aluna cadastrada com sucesso!")
       handleClose();
       toast.success("Aluna cadastrada com sucesso!");
     } else {
+      //console.log("MENSAGEM NEGATIVA!!")
       toast.error("Erro ao cadastrar a aluna.");
     }
     await queryClient.invalidateQueries("listar_alunas");
@@ -257,155 +265,148 @@ export function Alunas() {
           </DialogActions>
         </Dialog>
       </Content>
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={open} onClose={handleClose} aria-label="Modal de Cadastro">
         <Box sx={style}>
-          <FormText id="cabecalho">
-            Preencha corretamente os dados cadastrais.
-          </FormText>
-          <Form onSubmit={handleSubmit(cadastrarAlunas)}>
-            <TextField
-              id="outlined-nome"
-              label="Nome Completo *"
-              {...register("nome")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <CPFMask />
-            {/*
+          <FormProvider {...methods}>
+            <FormText id="cabecalho">
+              Preencha corretamente os dados cadastrais.
+            </FormText>
+            <Form onSubmit={handleSubmit(cadastrarAlunas)}>
               <TextField
-              id="outlined-cpf"
-              label="CPF *"
-              inputProps={{ maxLength: 11 }}
-              {...register("cpf")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-              />*/
-            }
-            <TextField
-              id="outlined-dNascimento"
-              label="Data de Nascimento"
-              {...register("dNascimento")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="Telefone *"
-              {...register("telefone")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-email"
-              label="E-mail"
-              {...register("email")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-login"
-              label="Login *"
-              {...register("login")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <FormControl
-              sx={{ width: "100%", background: "#F5F4FF" }}
-              variant="outlined"
-            >
-              <InputLabel htmlFor="outlined-adornment-password">
-                Senha *
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showPassword ? "text" : "password"}
-                {...register("senha")}
-                endAdornment={
-                  <InputAdornment position="end">
-                    {showPassword ? (
-                      <AiFillEyeInvisible
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowPassword(!showPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    ) : (
-                      <AiFillEye
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowPassword(!showPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    )}
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
-            
-            <FormControl
-              sx={{ width: "100%", background: "#F5F4FF" }}
-              variant="outlined"
-            >
-              <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
-                Confirmar senha
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-confirm-password"
-                type={showConfirmPassword ? "text" : "password"}
-                {...register("senha_confirmada", { validate: validatePassword })}
-                endAdornment={
-                  <InputAdornment position="end">
-                    {showConfirmPassword ? (
-                      <AiFillEyeInvisible
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowConfirmPassword(!showConfirmPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    ) : (
-                      <AiFillEye
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowConfirmPassword(!showConfirmPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    )}
-                  </InputAdornment>
-                }
-                label="Password********"
-              />
-              {errors.senha_confirmada && (
-                 <Typography
-                 variant="body2"
-                 color="error"
-                 sx={{ mt: 1, mb: -3.5 }}
-               >
-                 Senha não corresponde!
-               </Typography>
-              )}
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Status (Produção, Curso ou Inativo) 
-              </InputLabel>
-              <Select
-                id="simple-select-label-status"
-                labelId="simple-select-status"
-                label="Status(Produção, Curso ou Inativo)"
-                {...register("status")}
+                id="outlined-nome"
+                label="Nome Completo *"
+                {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <CPFMask 
+              />
+              <TextField
+                id="outlined-dNascimento"
+                label="Data de Nascimento"
+                {...register("dNascimento")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-telefone"
+                label="Telefone *"
+                {...register("telefone")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-email"
+                label="E-mail"
+                {...register("email")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-login"
+                label="Login *"
+                {...register("login")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <FormControl
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                variant="outlined"
               >
-                <MenuItem value={1 as any}>Produção</MenuItem>
-                <MenuItem value={2 as any}>Curso</MenuItem>
-                <MenuItem value={3 as any}>Inativo</MenuItem>
-              </Select>
-            </FormControl>
-            <PrimaryButton text={"Cadastrar"} />
-          </Form>
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Senha *
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("senha")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      {showPassword ? (
+                        <AiFillEyeInvisible
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowPassword(!showPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      ) : (
+                        <AiFillEye
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowPassword(!showPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      )}
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
+              
+              <FormControl
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
+                  Confirmar senha
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  {...register("senha_confirmada", { validate: validatePassword })}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      {showConfirmPassword ? (
+                        <AiFillEyeInvisible
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowConfirmPassword(!showConfirmPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      ) : (
+                        <AiFillEye
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowConfirmPassword(!showConfirmPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      )}
+                    </InputAdornment>
+                  }
+                  label="Password********"
+                />
+                {errors.senha_confirmada && (
+                  <Typography
+                  variant="body2"
+                  color="error"
+                  sx={{ mt: 1, mb: -3.5 }}
+                >Senha não corresponde!
+                </Typography>
+                )}
+              </FormControl>
+
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Status (Produção, Curso ou Inativo) 
+                </InputLabel>
+                <Select
+                  id="simple-select-label-status"
+                  labelId="simple-select-status"
+                  label="Status(Produção, Curso ou Inativo)"
+                  {...register("status")}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
+                >
+                  <MenuItem value={1 as any}>Produção</MenuItem>
+                  <MenuItem value={2 as any}>Curso</MenuItem>
+                  <MenuItem value={3 as any}>Inativo</MenuItem>
+                </Select>
+              </FormControl>
+              <PrimaryButton text={"Confirmar"}/>
+            </Form>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
