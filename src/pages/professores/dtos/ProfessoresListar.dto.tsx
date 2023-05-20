@@ -3,4 +3,5 @@ export interface ProfessoresListarDTO {
   nome: string;
   cpf: string;
   dNascimento: string;
+  
 }
