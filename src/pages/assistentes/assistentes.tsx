@@ -394,7 +394,7 @@ export function Assistentes() {
                </Typography>
               )}
             </FormControl>
-            <PrimaryButton text={"Cadastrar"} />
+            <PrimaryButton text={"Confirmar"} />
           </Form>
           </FormProvider>
         </Box>
