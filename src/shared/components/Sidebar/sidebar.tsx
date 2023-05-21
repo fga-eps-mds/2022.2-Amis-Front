@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
 import { BiLogOut, BiUser } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
@@ -116,7 +117,7 @@ export function Sidebar() {
       name: "Professores",
       path: "/professores",
       icon: (
-        <BiUser
+        <FaChalkboardTeacher
           color={pathname === "/professores" ? "#da4d3d" : "#525252"}
           size={22}
         />
