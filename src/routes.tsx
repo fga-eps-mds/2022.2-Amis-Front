@@ -14,7 +14,7 @@ import { Turmas } from "./pages/turmas/turmas";
 import { AuthContext } from "./context/AuthProvider";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
-import { Curso } from "./pages/curso/curso";
+import { Curso } from "./pages/curso/cursos";
 
 interface Props {
   component: React.ComponentType;

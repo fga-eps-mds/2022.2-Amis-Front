@@ -2,12 +2,23 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
-import { BiLogOut, BiUser } from "react-icons/bi";
+import {
+  BiBook,
+  BiBookAdd,
+  BiBookAlt,
+  BiBookBookmark,
+  BiBookHeart,
+  BiBookOpen,
+  BiBookmarkAltPlus,
+  BiLogOut,
+  BiUser,
+} from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
 import { AuthContext } from "../../../context/AuthProvider";
+import { BsFillBookmarkStarFill } from "react-icons/bs";
 
 const Container = styled.div`
   width: 200px;
@@ -136,6 +147,17 @@ export function Sidebar() {
         auth.logout();
         navigate("/");
       },
+    },
+    {
+      id: 8,
+      name: "Cursos",
+      path: "/curso",
+      icon: (
+        <BiBookHeart
+          color={pathname === "/curso" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
     },
   ];
 
