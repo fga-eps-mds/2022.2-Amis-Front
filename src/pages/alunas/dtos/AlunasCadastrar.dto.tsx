@@ -3,7 +3,7 @@ export interface AlunasCadastrarDTO {
   login: string;
   cpf: string;
   telefone: string;
-  dNascimento: string;
+  data_nascimento: string;
   senha: string;
   email: string;
   status: boolean;

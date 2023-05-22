@@ -1,6 +1,7 @@
 export interface AlunasListarDTO {
-  id: string;
+  id: number;
+  login: string;
   nome: string;
   cpf: string;
-  dNascimento: string;
+  data_nascimento: string;
 }

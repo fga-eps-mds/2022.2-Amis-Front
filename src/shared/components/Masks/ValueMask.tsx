@@ -8,7 +8,7 @@ interface Props {
 
 interface Value {
   cpf: string;
-  dNascimento: string;
+  data_nascimento: string;
   telefone: string;
   cep: string;
 }
@@ -16,7 +16,7 @@ interface Value {
 const ValueMask: React.FC<Props> = ({ label }) => {
   const value: Value = {
     cpf: 'CPF',
-    dNascimento: 'Data de Nascimento',
+    data_nascimento: 'Data de Nascimento',
     telefone: 'Telefone',
     cep: 'CEP'
   };
@@ -40,7 +40,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       }
       return formattedValue;
     }
-    if(label === 'dNascimento'){
+    if(label === 'data_nascimento'){
       // Aplica a máscara de data de nascimento
       const dataNascimentoRegex = /^(\d{0,2})(\d{0,2})(\d{0,4})$/;
       const parts = numericValue.match(dataNascimentoRegex);

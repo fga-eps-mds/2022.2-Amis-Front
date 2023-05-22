@@ -99,10 +99,12 @@ export function Alunas() {
   const [aluna, setAluna] = useState(Object);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordError, setShowPasswordError] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState<Object[]>([]);
   const [id, setId] = useState<GridRowId>(0);
+  const [selectedAluna, setSelectedAluna] = useState(null);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
@@ -126,16 +128,13 @@ export function Alunas() {
   }
 
   const cadastrarAlunas = async (data: any) => {
-    //const errors = await trigger(); // Dispara a validação de todos os campos
-    //if (errors) {
-    //  return; // Há erros de validação, interrompe o envio dos dados
-    //}
+
     const aluna = {
       nome: data.nome,
       login: data.login,
       cpf: data.cpf,
       telefone: data.telefone,
-      dNascimento: data.dNascimento,
+      data_nascimento: data.data_nascimento,
       senha: data.senha,
       bairro: data.bairro,
       cidade: data.cidade,
@@ -143,18 +142,14 @@ export function Alunas() {
       descricao_endereco: data.descricao_endereco,
       deficiencia:data.deficiencia,
       status: data.status,
+      email: data.email,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
     aluna.cpf=removeSpecialCharacters(aluna.cpf)
     aluna.telefone=removeSpecialCharacters(aluna.telefone)
-    aluna.dNascimento=removeSpecialCharacters(aluna.dNascimento)
+    aluna.data_nascimento=removeSpecialCharacters(aluna.data_nascimento)
     aluna.cep=removeSpecialCharacters(aluna.cep)
-
-
-    //console.log(aluna.cpf)
-    //console.log(aluna.telefone)
-    //console.log(aluna.dNascimento)
 
     const response = await cadastraAluna(aluna);
     if (response.status === 201) {
@@ -179,27 +174,36 @@ export function Alunas() {
   useQuery("listar_alunas", async () => {
     const response = await listaAlunas();
     const temp: AlunasListarDTO[] = [];
-    response.data.forEach((value: AlunasListarDTO) => {
+    response.data.forEach((value: AlunasListarDTO, index: number) => {
       temp.push({
-        id: value.id,
+        id: index, // Adiciona um id único com base no índice
+        login: value.login,
         nome: value.nome,
         cpf: value.cpf,
-        dNascimento: value.dNascimento,
+        data_nascimento: value.data_nascimento,
       });
     });
     setDataTable(temp);
   });
+  
 
   const deleteAlunas = async () => {
-    const response = await apagaAluna(id.toString());
-    if (response.status === 204) {
-      toast.success("Aluna excluída com sucesso!");
-    } else {
-      toast.error("Erro ao excluir a aluna.");
+    const selectedAluna = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
+    if (selectedAluna) {
+      const login = (selectedAluna as any).login; // Obtém o login da aluna
+      const response = await apagaAluna(login); // Passa o login para a função apagaAluna
+  
+      if (response.status === 204) {
+        toast.success("Aluna excluída com sucesso!");
+      } else {
+        toast.error("Erro ao excluir a aluna.");
+      }
+  
+      handleCloseConfirmation();
+      await queryClient.invalidateQueries("listar_alunas");
     }
-    handleCloseConfirmation();
-    await queryClient.invalidateQueries("listar_alunas");
   };
+  
 
   const editAlunas = async (data: any) => {
     // eslint-disable-next-line array-callback-return
@@ -208,7 +212,7 @@ export function Alunas() {
       login: data.login,
       cpf: data.cpf,
       telefone: data.telefone,
-      dNascimento: data.dNascimento,
+      data_nascimento: data.data_nascimento,
       senha: data.senha,
       email: data.email,
       status: data.status,
@@ -228,7 +232,7 @@ export function Alunas() {
   const columnsTable = [
     { field: "nome", headerName: "Nome", flex: 2 },
     { field: "cpf", headerName: "CPF", flex: 2 },
-    { field: "dNascimento", headerName: "Data Nascimento", flex: 2 },
+    { field: "data_nascimento", headerName: "Data Nascimento", flex: 2 },
     {
       field: "actions",
       headerName: "Ações",
@@ -250,9 +254,13 @@ export function Alunas() {
           label="Deletar"
           onClick={() => {
             setId(params.id);
-            handleOpenConfirmation();
-          }}
-        />,
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            if (selectedRow) {
+              setSelectedAluna((selectedRow as any).login);
+              handleOpenConfirmation();
+            }
+        }}
+      />,
       ],
     },
   ];
@@ -274,7 +282,7 @@ export function Alunas() {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Você tem certeza que deseja excluir esta aluna?"}
+            {`Você tem certeza que deseja excluir a aluna ${selectedAluna}?`}
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleCloseConfirmation}>Não</Button>
@@ -309,12 +317,12 @@ export function Alunas() {
                   {...register('deficiencia')}
                   label="Possui deficiência?"
                 >
-                  <MenuItem value="sim">Sim</MenuItem>
-                  <MenuItem value="nao">Não</MenuItem>
+                  <MenuItem value={true as any}>Sim</MenuItem>
+                  <MenuItem value={false as any}>Não</MenuItem>
                 </Select>
               </FormControl>
 
-              <CPFMask label="dNascimento"/>
+              <CPFMask label="data_nascimento"/>
 
               <CPFMask label="telefone"/>
 
@@ -409,12 +417,11 @@ export function Alunas() {
                   <Typography
                       variant="body2"
                       color="error"
-                      sx={{ mt: 1, mb: -3.5 }}
+                      sx={{ mt: 0.4, mb: -3 }}
                     >Senha não corresponde!
                   </Typography>
                 )}
               </FormControl>
-
               <TextField
                 id="outlined-bairro"
                 required={true}
@@ -486,11 +493,11 @@ export function Alunas() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-dNascimento"
+              id="outlined-data_nascimento"
               label="Data de Nascimento"
-              defaultValue={aluna.dNascimento}
+              defaultValue={aluna.data_nascimento}
               required={true}
-              {...register("dNascimento")}
+              {...register("data_nascimento")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             
