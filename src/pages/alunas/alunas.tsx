@@ -118,6 +118,13 @@ export function Alunas() {
     formState: { errors },
   } = methods;
 
+  function removeSpecialCharacters(string:any) {
+    if (typeof string === 'string' || string instanceof String) {
+      return string.replace(/[./\-\(\) ]/g, "");
+    }
+    return "";
+  }
+
   const cadastrarAlunas = async (data: any) => {
     //const errors = await trigger(); // Dispara a validação de todos os campos
     //if (errors) {
@@ -139,11 +146,18 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    //console.log("senha: " +data.senha)
+    aluna.cpf=removeSpecialCharacters(aluna.cpf)
+    aluna.telefone=removeSpecialCharacters(aluna.telefone)
+    aluna.dNascimento=removeSpecialCharacters(aluna.dNascimento)
+
+
+    //console.log(aluna.cpf)
+    //console.log(aluna.telefone)
+    //console.log(aluna.dNascimento)
 
     const response = await cadastraAluna(aluna);
     if (response.status === 201) {
-      console.log("Aluna cadastrada com sucesso!")
+      //console.log("Aluna cadastrada com sucesso!")
       handleClose();
       toast.success("Aluna cadastrada com sucesso!");
     } else {
@@ -299,7 +313,7 @@ export function Alunas() {
                 </Select>
               </FormControl>
 
-              <CPFMask label="nascimento"/>
+              <CPFMask label="dNascimento"/>
 
               <CPFMask label="telefone"/>
 

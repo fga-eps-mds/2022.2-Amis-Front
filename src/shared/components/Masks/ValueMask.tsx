@@ -8,14 +8,14 @@ interface Props {
 
 interface Value {
   cpf: string;
-  nascimento: string;
+  dNascimento: string;
   telefone: string;
 }
 
 const ValueMask: React.FC<Props> = ({ label }) => {
   const value: Value = {
     cpf: 'CPF',
-    nascimento: 'Data de Nascimento',
+    dNascimento: 'Data de Nascimento',
     telefone: 'Telefone'
   };
   const { register, setValue } = useFormContext();
@@ -38,7 +38,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       }
       return formattedValue;
     }
-    if(label === 'nascimento'){
+    if(label === 'dNascimento'){
       // Aplica a máscara de data de nascimento
       const dataNascimentoRegex = /^(\d{0,2})(\d{0,2})(\d{0,4})$/;
       const parts = numericValue.match(dataNascimentoRegex);
