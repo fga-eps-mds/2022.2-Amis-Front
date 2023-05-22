@@ -10,13 +10,15 @@ interface Value {
   cpf: string;
   dNascimento: string;
   telefone: string;
+  cep: string;
 }
 
 const ValueMask: React.FC<Props> = ({ label }) => {
   const value: Value = {
     cpf: 'CPF',
     dNascimento: 'Data de Nascimento',
-    telefone: 'Telefone'
+    telefone: 'Telefone',
+    cep: 'CEP'
   };
   const { register, setValue } = useFormContext();
 
@@ -64,6 +66,20 @@ const ValueMask: React.FC<Props> = ({ label }) => {
     return formattedValue;
     }
 
+    if (label === 'cep') {
+      const cepRegex = /^(\d{0,2})(\d{0,3})(\d{0,3})$/;
+      const parts = numericValue.match(cepRegex);
+    
+      if (parts) {
+        const bloco1 = parts[1] ? `${parts[1]}` : '';
+        const bloco2 = parts[2] ? `.${parts[2]}` : '';
+        const bloco3 = parts[3] ? `-${parts[3]}` : '';
+    
+        formattedValue = `${bloco1}${bloco2}${bloco3}`;
+      }
+    
+      return formattedValue;
+    }
 
   };
 

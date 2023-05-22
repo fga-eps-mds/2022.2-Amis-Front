@@ -149,6 +149,7 @@ export function Alunas() {
     aluna.cpf=removeSpecialCharacters(aluna.cpf)
     aluna.telefone=removeSpecialCharacters(aluna.telefone)
     aluna.dNascimento=removeSpecialCharacters(aluna.dNascimento)
+    aluna.cep=removeSpecialCharacters(aluna.cep)
 
 
     //console.log(aluna.cpf)
@@ -438,13 +439,7 @@ export function Alunas() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <TextField
-                id="outlined-cep"
-                required={true}
-                label="CEP"
-                {...register("cep")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
+              <CPFMask label="cep"/>
 
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
