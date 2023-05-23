@@ -40,6 +40,7 @@ import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { toast } from "react-toastify";
 import { queryClient } from "../../services/queryClient";
+import { cadastrarCurso } from '../../services/cursos';
 
 const Container = styled.div`
   width: 100%;
@@ -101,6 +102,29 @@ export function Curso(this: any) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
+
+  const registerCurso = async (data: any) => {
+    const curso = {
+      codigo: data.codigo,
+      nomeCurso: data.nomeCurso,
+      descricao: data.descricao,
+      duracao: data.duracao,
+    } as CursosCadastrarDTO;
+
+    const response = await cadastrarCurso(curso);
+
+    if (response.status === 201) {
+      setOpen(false);
+      queryClient.invalidateQueries("listar_curso");
+      toast.success("Curso cadastrado com sucesso!");
+    }
+  };
 
   const columnsTableCursos = [
     { field: "codigo", headerName: "Codigo da turma", flex: 1 },
@@ -121,6 +145,44 @@ export function Curso(this: any) {
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTableCursos} />
       </Content>
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={style}>
+          <FormText>Preencha corretamente os dados cadastrais.</FormText>
+          <Form onSubmit={handleSubmit(registerCurso)}>
+            <TextField
+              id="outlined-codigo"
+              label="Codigo"
+              required={true}
+              inputProps={{ maxLength: 11 }}
+              {...register("codigo")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nomCurso"
+              label="Nome do Curso"
+              required={true}
+              inputProps={{ maxLength: 70 }}
+              {...register("nomeCurso")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-descricao"
+              label="Descrição"
+              required={true}
+              inputProps={{ maxLength: 300 }}
+              {...register("descricao")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-duracao"
+              label="Duração em horas"
+              {...register("duracao")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <PrimaryButton text={"Cadastrar"} />
+          </Form>
+        </Box>
+      </Modal>
     </Container>
   );
 }
