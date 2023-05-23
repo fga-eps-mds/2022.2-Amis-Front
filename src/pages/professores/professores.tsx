@@ -7,8 +7,9 @@ import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
-import { AiFillEdit } from "react-icons/ai";
+import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
+import ValueMask from "../../shared/components/Masks/ValueMask";
 
 import {
   Box,
@@ -23,12 +24,15 @@ import {
   Select,
   TextField,
   Autocomplete,
+  Typography,
+  OutlinedInput,
+  InputAdornment,
 } from "@mui/material";
 
 import { ProfessoresListarDTO } from "./dtos/ProfessoresListar.dto";
 import { ProfessoresCadastrarDTO } from "./dtos/ProfessoresCadastrar.dto";
 import { useQuery } from "react-query";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import {
   cadastraProfessor,
   listaProfessores,
@@ -94,6 +98,9 @@ const style = {
 export function Professores() {
   const [open, setOpen] = useState(false);
   const [professor, setProfessor] = useState(Object);
+  // const [showPassword, setShowPassword] = useState(false);
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [showPasswordError, setShowPasswordError] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
@@ -102,23 +109,25 @@ export function Professores() {
   const [openEdit, setOpenEdit] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
+  const methods = useForm<ProfessoresCadastrarDTO>();
+
   const {
     register,
+    trigger,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<ProfessoresCadastrarDTO>();
+  } = methods;
+
+  function removeSpecialCharacters(string: any) {
+    if (typeof string === "string" || string instanceof String) {
+      return string.replace(/[.\\/\\\-() ]/g, "");
+    }
+    return "";
+  }
 
   const cadastrarProfessores = async (professor: ProfessoresCadastrarDTO) => {
-    if (
-      !professor.nome ||
-      !professor.cpf ||
-      !professor.dNascimento ||
-      !professor.telefone
-    ) {
-      toast.error("Por favor, preencha todos os campos obrigatórios.");
-      return;
-    }
+    console.log(professor.telefone);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(professor.email)) {
@@ -127,12 +136,12 @@ export function Professores() {
     }
 
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-    if (!dateRegex.test(professor.dNascimento)) {
+    if (!dateRegex.test(professor.data_nascimento)) {
       toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
       return;
     }
 
-    const matchResult = professor.dNascimento.match(dateRegex);
+    const matchResult = professor.data_nascimento.match(dateRegex);
     if (!matchResult) {
       toast.error("Data de nascimento inválida.");
       return;
@@ -140,6 +149,7 @@ export function Professores() {
     const [, dia, mes, ano] = matchResult;
 
     const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
     if (
       dataNascimento.getFullYear() !== Number(ano) ||
       dataNascimento.getMonth() !== Number(mes) - 1 ||
@@ -169,71 +179,11 @@ export function Professores() {
       return;
     }
 
-    const validarTelefone = (telefone: string): boolean => {
-      telefone = telefone.replace(/[^\d]+/g, "");
-
-      if (telefone.length !== 11) {
-        return false;
-      }
-
-      const ddd = telefone.substr(0, 2);
-      if (!/^\d{2}$/.test(ddd)) {
-        return false;
-      }
-
-      const numero = telefone.substr(2);
-      if (!/^\d{9}$/.test(numero)) {
-        return false;
-      }
-
-      return true;
-    };
-
-    if (!validarTelefone(professor.telefone)) {
-      toast.error("Telefone inválido.");
-      return;
-    }
-
-    const validarCPF = (cpf: string): boolean => {
-      cpf = cpf.replace(/[^\d]+/g, "");
-
-      if (cpf.length !== 11) {
-        return false;
-      }
-
-      if (/^(\d)\1+$/.test(cpf)) {
-        return false;
-      }
-
-      let sum = 0;
-      for (let i = 0; i < 9; i++) {
-        sum += parseInt(cpf.charAt(i)) * (10 - i);
-      }
-      let remainder = 11 - (sum % 11);
-      let digit = remainder < 10 ? remainder : 0;
-
-      if (parseInt(cpf.charAt(9)) !== digit) {
-        return false;
-      }
-
-      sum = 0;
-      for (let i = 0; i < 10; i++) {
-        sum += parseInt(cpf.charAt(i)) * (11 - i);
-      }
-      remainder = 11 - (sum % 11);
-      digit = remainder < 10 ? remainder : 0;
-
-      if (parseInt(cpf.charAt(10)) !== digit) {
-        return false;
-      }
-
-      return true;
-    };
-
-    if (!validarCPF(professor.cpf)) {
-      toast.error("CPF inválido.");
-      return;
-    }
+    professor.cpf = removeSpecialCharacters(professor.cpf);
+    professor.telefone = removeSpecialCharacters(professor.telefone);
+    professor.data_nascimento = removeSpecialCharacters(
+      professor.data_nascimento
+    );
 
     const response = await cadastraProfessor(professor);
     if (response.status === 201) {
@@ -245,6 +195,14 @@ export function Professores() {
     await queryClient.invalidateQueries("listar_professores");
   };
 
+  //  const validatePassword = (value: any) => {
+  //    const password = watch("senha");
+  //    if (value === password) {
+  //      return true;
+  //   }
+  //   return "As senhas não correspondem";
+  // };
+
   useQuery("listar_professores", async () => {
     const response = await listaProfessores();
     const temp: ProfessoresListarDTO[] = [];
@@ -253,7 +211,7 @@ export function Professores() {
         id: value.id,
         nome: value.nome,
         cpf: value.cpf,
-        dNascimento: value.dNascimento,
+        data_nascimento: value.data_nascimento,
       });
     });
     setDataTable(temp);
@@ -276,7 +234,7 @@ export function Professores() {
       nome: data.nome,
       cpf: data.cpf,
       email: data.email,
-      dNascimento: data.dNascimento,
+      data_nascimento: data.data_nascimento,
       telefone: data.telefone,
     } as ProfessoresCadastrarDTO;
 
@@ -293,7 +251,7 @@ export function Professores() {
   const columnsTable = [
     { field: "nome", headerName: "Nome", flex: 2 },
     { field: "cpf", headerName: "CPF", flex: 2 },
-    { field: "dNascimento", headerName: "Data Nascimento", flex: 2 },
+    { field: "data_nascimento", headerName: "Data Nascimento", flex: 2 },
     {
       field: "actions",
       headerName: "Ações",
@@ -351,56 +309,156 @@ export function Professores() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormText id="cabecalho">
-            Preencha corretamente os dados cadastrais.
-          </FormText>
-          <Form onSubmit={handleSubmit(cadastrarProfessores)}>
-            <TextField
-              id="outlined-nome"
-              label="Nome*"
-              {...register("nome")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-cpf"
-              label="CPF (apenas números)*"
-              inputProps={{ maxLength: 11 }}
-              {...register("cpf")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dNascimento"
-              label="Data de Nascimento*"
-              {...register("dNascimento")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="Telefone*"
-              defaultValue={professor.telefone}
-              {...register("telefone")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-email"
-              label="Email"
-              defaultValue={professor.email}
-              required={false}
-              {...register("email")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <Autocomplete
-              multiple
-              disablePortal
-              id="combo-box-demo"
-              options={["curso 1", "curso 2", "curso 3"]}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-              required={false}
-              {...register("curso")}
-              renderInput={(params) => <TextField {...params} label="Curso" />}
-            />
-            <PrimaryButton text={"Cadastrar"} />
-          </Form>
+          <FormProvider {...methods}>
+            <FormText id="cabecalho">
+              Preencha corretamente os dados cadastrais.
+            </FormText>
+            <Form onSubmit={handleSubmit(cadastrarProfessores)}>
+              <TextField
+                id="outlined-nome"
+                label="Nome"
+                required={true}
+                {...register("nome")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              {/* <TextField
+                id="outlined-cpf"
+                label="CPF (apenas números)"
+                inputProps={{ maxLength: 11 }}
+                required={true}
+                {...register("cpf")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              /> */}
+              <ValueMask label="cpf" />
+              {/* <TextField
+                id="outlined-data_nascimento"
+                label="Data de Nascimento"
+                required={true}
+                {...register("data_nascimento")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              /> */}
+              <ValueMask label="data_nascimento" />
+              {/* <TextField
+                id="outlined-telefone"
+                label="Telefone"
+                defaultValue={professor.telefone}
+                required={true}
+                {...register("telefone")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              /> */}
+              <ValueMask label="telefone" />
+              <TextField
+                id="outlined-email"
+                label="Email"
+                defaultValue={professor.email}
+                required={false}
+                {...register("email")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              {/* <FormControl
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="outlined-adornment-password" required={true}>
+                  Senha
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("senha")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      {showPassword ? (
+                        <AiFillEyeInvisible
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowPassword(!showPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      ) : (
+                        <AiFillEye
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowPassword(!showPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      )}
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
+              <FormControl
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                variant="outlined"
+              >
+                <InputLabel
+                  htmlFor="outlined-adornment-confirm-password"
+                  required={true}
+                >
+                  Confirmar senha
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  {...register("senha_confirmada", {
+                    validate: validatePassword,
+                  })}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      {showConfirmPassword ? (
+                        <AiFillEyeInvisible
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowConfirmPassword(!showConfirmPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      ) : (
+                        <AiFillEye
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowConfirmPassword(!showConfirmPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      )}
+                    </InputAdornment>
+                  }
+                  label="Password********"
+                />
+                {errors.senha_confirmada && (
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    sx={{ mt: 0.4, mb: -3 }}
+                  >
+                    {" "}
+                    Senha não corresponde!
+                  </Typography>
+                )}
+              </FormControl> */}
+              <Autocomplete
+                multiple
+                disablePortal
+                id="combo-box-demo"
+                options={["curso 1", "curso 2", "curso 3"]}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                required={false}
+                {...register("curso")}
+                renderInput={(params) => (
+                  <TextField {...params} label="Curso" />
+                )}
+              />
+              <PrimaryButton text={"Cadastrar"} />
+            </Form>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
@@ -423,9 +481,9 @@ export function Professores() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-dNascimento"
+              id="outlined-data_nascimento"
               label="Data de Nascimento"
-              {...register("dNascimento")}
+              {...register("data_nascimento")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
