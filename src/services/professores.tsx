@@ -2,7 +2,9 @@ import { ProfessoresCadastrarDTO } from "../pages/professores/dtos/ProfessoresCa
 import api from "./api";
 
 export const cadastraProfessor = async (payload: ProfessoresCadastrarDTO) => {
-  return await api.post("/professores/", payload).then((response: any) => response);
+  return await api
+    .post("/professores/", payload)
+    .then((response: any) => response);
 };
 
 export const listaProfessores = async () => {

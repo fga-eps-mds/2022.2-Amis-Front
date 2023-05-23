@@ -110,12 +110,137 @@ export function Professores() {
   } = useForm<ProfessoresCadastrarDTO>();
 
   const cadastrarProfessores = async (professor: ProfessoresCadastrarDTO) => {
+    if (
+      !professor.nome ||
+      !professor.cpf ||
+      !professor.dNascimento ||
+      !professor.telefone
+    ) {
+      toast.error("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(professor.email)) {
+      toast.error("E-mail inválido.");
+      return;
+    }
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if (!dateRegex.test(professor.dNascimento)) {
+      toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
+      return;
+    }
+
+    const matchResult = professor.dNascimento.match(dateRegex);
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+    if (
+      dataNascimento.getFullYear() !== Number(ano) ||
+      dataNascimento.getMonth() !== Number(mes) - 1 ||
+      dataNascimento.getDate() !== Number(dia)
+    ) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+
+    if (professor.nome.length > 70) {
+      toast.error("Nome inválido.");
+      return;
+    }
+
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+    const mesAtual = hoje.getMonth();
+    const mesNascimento = dataNascimento.getMonth();
+    if (
+      mesAtual < mesNascimento ||
+      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
+    ) {
+      idade--;
+    }
+    if (idade < 18) {
+      toast.error("É necessário ter mais de 18 anos para este cadastro.");
+      return;
+    }
+
+    const validarTelefone = (telefone: string): boolean => {
+      telefone = telefone.replace(/[^\d]+/g, "");
+
+      if (telefone.length !== 11) {
+        return false;
+      }
+
+      const ddd = telefone.substr(0, 2);
+      if (!/^\d{2}$/.test(ddd)) {
+        return false;
+      }
+
+      const numero = telefone.substr(2);
+      if (!/^\d{9}$/.test(numero)) {
+        return false;
+      }
+
+      return true;
+    };
+
+    if (!validarTelefone(professor.telefone)) {
+      toast.error("Telefone inválido.");
+      return;
+    }
+
+    const validarCPF = (cpf: string): boolean => {
+      cpf = cpf.replace(/[^\d]+/g, "");
+
+      if (cpf.length !== 11) {
+        return false;
+      }
+
+      if (/^(\d)\1+$/.test(cpf)) {
+        return false;
+      }
+
+      let sum = 0;
+      for (let i = 0; i < 9; i++) {
+        sum += parseInt(cpf.charAt(i)) * (10 - i);
+      }
+      let remainder = 11 - (sum % 11);
+      let digit = remainder < 10 ? remainder : 0;
+
+      if (parseInt(cpf.charAt(9)) !== digit) {
+        return false;
+      }
+
+      sum = 0;
+      for (let i = 0; i < 10; i++) {
+        sum += parseInt(cpf.charAt(i)) * (11 - i);
+      }
+      remainder = 11 - (sum % 11);
+      digit = remainder < 10 ? remainder : 0;
+
+      if (parseInt(cpf.charAt(10)) !== digit) {
+        return false;
+      }
+
+      return true;
+    };
+
+    if (!validarCPF(professor.cpf)) {
+      toast.error("CPF inválido.");
+      return;
+    }
+
     const response = await cadastraProfessor(professor);
     if (response.status === 201) {
       handleClose();
-      toast.success("Professor cadastrada com sucesso!");
+      toast.success("Professor cadastrado com sucesso!");
     } else {
-      toast.error("Erro ao cadastrar a professor.");
+      toast.error("Erro ao cadastrar o professor.");
     }
     await queryClient.invalidateQueries("listar_professores");
   };
@@ -232,37 +357,36 @@ export function Professores() {
           <Form onSubmit={handleSubmit(cadastrarProfessores)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Nome*"
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
-              label="CPF (apenas números)"
+              label="CPF (apenas números)*"
               inputProps={{ maxLength: 11 }}
               {...register("cpf")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-dNascimento"
-              label="Data de Nascimento"
+              label="Data de Nascimento*"
               {...register("dNascimento")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-telefone"
+              label="Telefone*"
+              defaultValue={professor.telefone}
+              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-email"
               label="Email"
               defaultValue={professor.email}
-              required={true}
+              required={false}
               {...register("email")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="Telefone"
-              defaultValue={professor.telefone}
-              required={true}
-              {...register("telefone")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <Autocomplete
@@ -271,6 +395,7 @@ export function Professores() {
               id="combo-box-demo"
               options={["curso 1", "curso 2", "curso 3"]}
               sx={{ width: "100%", background: "#F5F4FF" }}
+              required={false}
               {...register("curso")}
               renderInput={(params) => <TextField {...params} label="Curso" />}
             />
@@ -286,14 +411,12 @@ export function Professores() {
               id="outlined-nome"
               label="Nome"
               defaultValue={professor.nome}
-              required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
               label="CPF (apenas números)"
-              required={true}
               inputProps={{ maxLength: 11 }}
               defaultValue={professor.cpf}
               {...register("cpf")}
@@ -302,10 +425,33 @@ export function Professores() {
             <TextField
               id="outlined-dNascimento"
               label="Data de Nascimento"
-              defaultValue={professor.dNascimento}
-              required={true}
               {...register("dNascimento")}
               sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-telefone"
+              label="Telefone"
+              defaultValue={professor.telefone}
+              required={true}
+              {...register("telefone")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-email"
+              label="Email"
+              defaultValue={professor.email}
+              required={true}
+              {...register("email")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <Autocomplete
+              multiple
+              disablePortal
+              id="combo-box-demo"
+              options={["curso 1", "curso 2", "curso 3"]}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+              {...register("curso")}
+              renderInput={(params) => <TextField {...params} label="Curso" />}
             />
             <PrimaryButton text={"Editar"} />
           </Form>

@@ -17,6 +17,7 @@
     "@mui/x-data-grid": "^5.17.14",
     "@mui/x-date-pickers": "^5.0.13",
     "axios": "^1.2.1",
+    "date-fns": "^2.30.0",
     "dayjs": "^1.11.7",
     "jest-junit": "^15.0.0",
     "jest-sonar": "^0.2.15",
