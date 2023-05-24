@@ -23,7 +23,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
@@ -37,6 +37,8 @@ import {
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
+import CPFMask from "../../shared/components/Masks/ValueMask";
+import { Typography } from "@mui/material";
 
 const Container = styled.div`
   width: 100%;
@@ -93,34 +95,56 @@ const style = {
   overflowY: "scroll",
 };
 
+
 export function Assistentes() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [open, setOpen] = useState(false);
   const [assistente, setAssistente] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [selectedAssistente, setSelectedAssistente] = useState(null);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  const methods = useForm();
   const {
     register,
+    trigger,
+    watch,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = methods;
 
   const registerAssistentes = async (data: any) => {
+
+    function removeSpecialCharacters(string:any) {
+      if (typeof string === 'string' || string instanceof String) {
+        return string.replace(/[./\-\(\) ]/g, "");
+      }
+      return "";
+    }
+
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
+      dNascimento: data.dNascimento,
+      telefone: data.telefone,
+      email: data.email,
       login: data.login,
-      observacao: data.observacao,
-      administrador: data.administrador,
       senha: data.senha,
+      observacao: data.observacao,
+      administrador: true,
     } as AssistentesCadastrarDTO;
+
+    assistente.cpf=removeSpecialCharacters(assistente.cpf);
+    assistente.telefone=removeSpecialCharacters(assistente.telefone);
+    assistente.dNascimento=assistente.dNascimento.split("/").reverse().join("-");
+    console.log(assistente.dNascimento)
 
     const response = await cadastrarAssistente(assistente);
 
@@ -130,30 +154,50 @@ export function Assistentes() {
       toast.success("Assistente cadastrado com sucesso!");
     }
   };
+  
+  const validatePassword = (value: any) => {
+    const password = watch("senha"); // Obtém o valor do campo de senha
+    if (value === password) {
+      return true; // A senha e a confirmação de senha são iguais, a validação é bem-sucedida
+    }
+    return "As senhas não correspondem"; // A senha e a confirmação de senha não são iguais, a validação falhou
+  };
 
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
+    console.log(response.data)
     const temp: AssistentesListarDTO[] = [];
-    response.data.forEach((value: AssistentesListarDTO) => {
+    response.data.forEach((value: AssistentesListarDTO, index: number) => {
       temp.push({
-        id: value.id,
+        id: index,
         nome: value.nome,
         cpf: value.cpf,
-        observacao: value.observacao,
-        administrador: value.administrador,
+        dNascimento: value.dNascimento,
+        telefone: value.telefone,
+        email: value.email,
         login: value.login,
+        observacao: value.observacao,
+        administrador: value.administrador
       });
     });
     setDataTable(temp);
   });
 
   const deleteAssistentes = async () => {
-    const response = await excluirAssistente(id.toString());
-    if (response.status === 204) {
+    const selectedAssistente = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
+    if (selectedAssistente) {
+      const login = (selectedAssistente as any).login; // Obtém o login da aluna
+      const response = await excluirAssistente(login); // Passa o login para a função apagaAluna
+
+      if (response.status === 204) {
+        toast.success("Assistente excluída com sucesso!");
+      } else {
+        toast.error("Erro ao excluir a Assistente.");
+      }
+
       handleCloseConfirmation();
-      queryClient.invalidateQueries("listar_assistentes");
-      toast.success("Assistente excluído com sucesso!");
+      await queryClient.invalidateQueries("listar_assistente");
     }
   };
 
@@ -167,7 +211,9 @@ export function Assistentes() {
     setAssistente(assistente);
     setValue("nomeEdit", assistente.nome);
     setValue("cpfEdit", assistente.cpf);
-    setValue("adminEdit", assistente.administrador);
+    setValue("dNascimento", assistente.dNascimento);
+    setValue("telefone", assistente.telefone);
+    setValue("email", assistente.email);
     setOpenEdit(true);
   };
 
@@ -175,9 +221,11 @@ export function Assistentes() {
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
-      administrador: data.adminEdit,
+      dNascimento: data.dataNascimentoEdit,
+      telefone: data.telefoneEdit,
+      email: data.emailEdit,
       login: data.loginEdit,
-      observacao: data.observacaoEdit,
+      observacao: data.observacao
     };
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
@@ -251,21 +299,30 @@ export function Assistentes() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
+          <FormProvider
+            {...methods}
+          >
           <FormText>Preencha corretamente os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(registerAssistentes)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Nome Completo"
               required={true}
               {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+
+            <CPFMask label="cpf"/>
+
+            <CPFMask label="dNascimento"/>
+
+            <CPFMask label="telefone"/>
+
             <TextField
-              id="outlined-cpf"
-              label="CPF (apenas números)"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("cpf")}
+              id="outlined-email"
+              label="E-mail"
+              inputProps={{ maxLength: 100 }}
+              {...register("email")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -279,7 +336,7 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
               variant="outlined"
             >
-              <InputLabel htmlFor="outlined-adornment-password">
+              <InputLabel htmlFor="outlined-adornment-password" required={true}>
                 Senha
               </InputLabel>
               <OutlinedInput
@@ -312,31 +369,66 @@ export function Assistentes() {
                 label="Password"
               />
             </FormControl>
+
+            <FormControl
+              sx={{ width: "100%", background: "#F5F4FF" }}
+              variant="outlined"
+            >
+              <InputLabel
+                htmlFor="outlined-adornment-confirm-password"
+                required={true}
+              >
+                Confirmar senha
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("senha_confirmada", { validate: validatePassword })}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {showConfirmPassword ? (
+                      <AiFillEyeInvisible
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowConfirmPassword(!showConfirmPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    ) : (
+                      <AiFillEye
+                        aria-label="toggle password visibility"
+                        onClick={() => {
+                          setShowConfirmPassword(!showConfirmPassword);
+                        }}
+                        cursor="pointer"
+                        size={20}
+                      />
+                    )}
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+              {errors.senha_confirmada && (
+                 <Typography
+                 variant="body2"
+                 color="error"
+                 sx={{ mt: 1, mb: -3.5 }}
+               >
+                 Senha não corresponde!
+               </Typography>
+              )}
+            </FormControl>
             <TextField
-              id="outlined-Observações"
-              label="Observações"
+              id="outlined-observacao"
+              label="Observação"
+              required={false}
               {...register("observacao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <FormControl fullWidth>
-              <InputLabel required={true} id="demo-simple-select-label">
-                Administrador (a)?
-              </InputLabel>
-              <Select
-                id="simple-select-label-admin"
-                labelId="simple-select-admin"
-                label="Administrador(a)?"
-                required={true}
-                defaultValue=""
-                {...register("administrador")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
-              </Select>
-            </FormControl>
-            <PrimaryButton text={"Cadastrar"} />
+            <PrimaryButton text={"Confirmar"} />
           </Form>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
@@ -345,17 +437,40 @@ export function Assistentes() {
           <Form onSubmit={handleSubmit(editAssistentes)}>
             <TextField
               id="outlined-nome"
-              label="Nome"
+              label="Nome Completo"
               required={true}
               {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
-              label="CPF (apenas números)"
+              label="CPF"
               required={true}
               inputProps={{ maxLength: 11 }}
               {...register("cpfEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-dataNascimento"
+              label="Data de Nascimento"
+              required={true}
+              inputProps={{ maxLength: 11 }}
+              {...register("nascimentoEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-telefone"
+              label="Telefone"
+              required={true}
+              inputProps={{ maxLength: 11 }}
+              {...register("telefoneEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-email"
+              label="E-mail"
+              inputProps={{ maxLength: 11 }}
+              {...register("emailEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -366,34 +481,12 @@ export function Assistentes() {
               {...register("loginEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-observacao"
-              label="Observações"
-              required={true}
-              {...register("observacaoEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Administrador(a)?
-              </InputLabel>
-              <Select
-                id="simple-select-label-admin"
-                labelId="simple-select-admin"
-                required={true}
-                label="Administrador(a)?"
-                defaultValue=""
-                {...register("adminEdit")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={false as any}>Não</MenuItem>
-                <MenuItem value={true as any}>Sim</MenuItem>
-              </Select>
-            </FormControl>
             <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
       </Modal>
+
+      
     </Container>
   );
 }
