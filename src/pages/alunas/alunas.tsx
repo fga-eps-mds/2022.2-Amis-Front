@@ -120,11 +120,17 @@ export function Alunas() {
     formState: { errors },
   } = methods;
 
-  function removeSpecialCharacters(string:any) {
+  function removeSpecialCharacters(string: any) {
     if (typeof string === 'string' || string instanceof String) {
       return string.replace(/[./\-\(\) ]/g, "");
     }
     return "";
+  }
+
+  function transformDate(date: any) {
+    const parts = date.split('/');
+    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return transformedDate;
   }
 
   const cadastrarAlunas = async (data: any) => {
@@ -138,18 +144,18 @@ export function Alunas() {
       senha: data.senha,
       bairro: data.bairro,
       cidade: data.cidade,
-      cep:data.cep,
+      cep: data.cep,
       descricao_endereco: data.descricao_endereco,
-      deficiencia:data.deficiencia,
+      deficiencia: data.deficiencia,
       status: data.status,
       email: data.email,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    aluna.cpf=removeSpecialCharacters(aluna.cpf)
-    aluna.telefone=removeSpecialCharacters(aluna.telefone)
-    aluna.data_nascimento=removeSpecialCharacters(aluna.data_nascimento)
-    aluna.cep=removeSpecialCharacters(aluna.cep)
+    aluna.cpf = removeSpecialCharacters(aluna.cpf);
+    aluna.telefone = removeSpecialCharacters(aluna.telefone);
+    aluna.cep = removeSpecialCharacters(aluna.cep);
+    aluna.data_nascimento=transformDate(aluna.data_nascimento);
 
     const response = await cadastraAluna(aluna);
     if (response.status === 201) {
@@ -185,25 +191,25 @@ export function Alunas() {
     });
     setDataTable(temp);
   });
-  
+
 
   const deleteAlunas = async () => {
     const selectedAluna = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
     if (selectedAluna) {
       const login = (selectedAluna as any).login; // Obtém o login da aluna
       const response = await apagaAluna(login); // Passa o login para a função apagaAluna
-  
+
       if (response.status === 204) {
         toast.success("Aluna excluída com sucesso!");
       } else {
         toast.error("Erro ao excluir a aluna.");
       }
-  
+
       handleCloseConfirmation();
       await queryClient.invalidateQueries("listar_alunas");
     }
   };
-  
+
 
   const editAlunas = async (data: any) => {
     // eslint-disable-next-line array-callback-return
@@ -259,8 +265,8 @@ export function Alunas() {
               setSelectedAluna((selectedRow as any).login);
               handleOpenConfirmation();
             }
-        }}
-      />,
+          }}
+        />,
       ],
     },
   ];
@@ -306,7 +312,7 @@ export function Alunas() {
                 {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              <CPFMask label="cpf"/>
+              <CPFMask label="cpf" />
 
               <FormControl sx={{ width: '100%', background: '#F5F4FF' }}>
                 <InputLabel id="select-deficiencia-label">Possui deficiência?</InputLabel>
@@ -322,9 +328,9 @@ export function Alunas() {
                 </Select>
               </FormControl>
 
-              <CPFMask label="data_nascimento"/>
+              <CPFMask label="data_nascimento" />
 
-              <CPFMask label="telefone"/>
+              <CPFMask label="telefone" />
 
               <TextField
                 id="outlined-email"
@@ -376,7 +382,7 @@ export function Alunas() {
                   label="Password"
                 />
               </FormControl>
-              
+
               <FormControl
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 variant="outlined"
@@ -415,10 +421,10 @@ export function Alunas() {
                 />
                 {errors.senha_confirmada && (
                   <Typography
-                      variant="body2"
-                      color="error"
-                      sx={{ mt: 0.4, mb: -3 }}
-                    >Senha não corresponde!
+                    variant="body2"
+                    color="error"
+                    sx={{ mt: 0.4, mb: -3 }}
+                  >Senha não corresponde!
                   </Typography>
                 )}
               </FormControl>
@@ -446,11 +452,11 @@ export function Alunas() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <CPFMask label="cep"/>
+              <CPFMask label="cep" />
 
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
-                  Status (Produção, Curso ou Inativo) 
+                  Status (Produção, Curso ou Inativo)
                 </InputLabel>
                 <Select
                   id="simple-select-label-status"
@@ -464,8 +470,8 @@ export function Alunas() {
                   <MenuItem value={3 as any}>Inativo</MenuItem>
                 </Select>
               </FormControl>
-              
-              <PrimaryButton text={"Confirmar"}/>
+
+              <PrimaryButton text={"Confirmar"} />
             </Form>
           </FormProvider>
         </Box>
@@ -500,7 +506,7 @@ export function Alunas() {
               {...register("data_nascimento")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            
+
             <TextField
               id="outlined-telefone"
               label="Telefone *"
@@ -532,10 +538,10 @@ export function Alunas() {
               {...register("senha")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            
+
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
-              Status(Produção, Curso ou Inativo)
+                Status(Produção, Curso ou Inativo)
               </InputLabel>
               <Select
                 id="simple-select-label-status"
