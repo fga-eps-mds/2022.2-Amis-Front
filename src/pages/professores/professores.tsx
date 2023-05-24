@@ -107,6 +107,7 @@ export function Professores() {
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [nextId, setNextId] = useState(1); // Variável de estado para o próximo ID
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const methods = useForm<ProfessoresCadastrarDTO>();
@@ -126,8 +127,18 @@ export function Professores() {
     return "";
   }
 
+  function transformDate(date: any) {
+    const parts = date.split('/');
+    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return transformedDate;
+  }
+
   const cadastrarProfessores = async (professor: ProfessoresCadastrarDTO) => {
-    console.log(professor.telefone);
+    professor.codigo = nextId;
+    setNextId(nextId + 1);
+
+    console.log(professor.codigo)
+    professor.cursos='';
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(professor.email)) {
@@ -181,9 +192,13 @@ export function Professores() {
 
     professor.cpf = removeSpecialCharacters(professor.cpf);
     professor.telefone = removeSpecialCharacters(professor.telefone);
-    professor.data_nascimento = removeSpecialCharacters(
-      professor.data_nascimento
-    );
+    //professor.data_nascimento = removeSpecialCharacters(
+    //  professor.data_nascimento
+    //);
+
+    professor.data_nascimento=transformDate(professor.data_nascimento);
+
+    console.log("A data eh",professor.data_nascimento);
 
     const response = await cadastraProfessor(professor);
     if (response.status === 201) {
@@ -206,9 +221,9 @@ export function Professores() {
   useQuery("listar_professores", async () => {
     const response = await listaProfessores();
     const temp: ProfessoresListarDTO[] = [];
-    response.data.forEach((value: ProfessoresListarDTO) => {
+    response.data.forEach((value: ProfessoresListarDTO, index: number) => {
       temp.push({
-        id: value.id,
+        id: index,
         nome: value.nome,
         cpf: value.cpf,
         data_nascimento: value.data_nascimento,
@@ -216,6 +231,7 @@ export function Professores() {
     });
     setDataTable(temp);
   });
+
 
   const deleteProfessores = async () => {
     const response = await apagaProfessor(id.toString());
@@ -451,7 +467,7 @@ export function Professores() {
                 options={["curso 1", "curso 2", "curso 3"]}
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 required={false}
-                {...register("curso")}
+                {...register("cursos")}
                 renderInput={(params) => (
                   <TextField {...params} label="Curso" />
                 )}
@@ -508,7 +524,7 @@ export function Professores() {
               id="combo-box-demo"
               options={["curso 1", "curso 2", "curso 3"]}
               sx={{ width: "100%", background: "#F5F4FF" }}
-              {...register("curso")}
+              {...register("cursos")}
               renderInput={(params) => <TextField {...params} label="Curso" />}
             />
             <PrimaryButton text={"Editar"} />

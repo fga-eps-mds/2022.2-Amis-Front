@@ -1,5 +1,5 @@
 export interface ProfessoresListarDTO {
-  id: string;
+  id: number;
   nome: string;
   cpf: string;
   data_nascimento: string;
