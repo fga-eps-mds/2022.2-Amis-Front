@@ -126,7 +126,48 @@ export function Assistentes() {
     return transformedDate;
   }
 
-  const registerAssistentes = async (data: any) => {
+     // Função para verificar se um CPF é válido
+    const validarCPF = (cpf:any) => {
+      cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
+
+      // Verifica se o CPF possui 11 dígitos
+      if (cpf.length !== 11) {
+        return false;
+      }
+
+      // Verifica se todos os dígitos são iguais (ex: 11111111111)
+      if (/^(\d)\1+$/.test(cpf)) {
+        return false;
+      }
+
+      // Calcula o primeiro dígito verificador
+      let sum = 0;
+      for (let i = 0; i < 9; i++) {
+        sum += parseInt(cpf.charAt(i)) * (10 - i);
+      }
+      let remainder = (sum * 10) % 11;
+      if (remainder === 10 || remainder === 11) {
+        remainder = 0;
+      }
+      if (remainder !== parseInt(cpf.charAt(9))) {
+        return false;
+      }
+
+      // Calcula o segundo dígito verificador
+      sum = 0;
+      for (let i = 0; i < 10; i++) {
+        sum += parseInt(cpf.charAt(i)) * (11 - i);
+      }
+      remainder = (sum * 10) % 11;
+      if (remainder === 10 || remainder === 11) {
+        remainder = 0;
+      }
+      if (remainder !== parseInt(cpf.charAt(10))) {
+        return false;
+      }
+
+      return true; // CPF válido
+    };
 
     function removeSpecialCharacters(string: any) {
       if (typeof string === 'string' || string instanceof String) {
@@ -135,7 +176,7 @@ export function Assistentes() {
       return "";
     }
 
-
+  const registerAssistentes = async (data: any) => {
 
     const assistente = {
       nome: data.nome,
@@ -152,7 +193,79 @@ export function Assistentes() {
 
     ////console.log(assistente.dNascimento);
 
-    assistente.cpf = removeSpecialCharacters(assistente.cpf);
+    const cpfEhValido = validarCPF(assistente.cpf);
+    if (cpfEhValido === false){
+      toast.error("O CPF informado é invalido.");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(assistente.email)) {
+       toast.error("E-mail inválido.");
+       return;
+    }
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if (!dateRegex.test(assistente.dNascimento)) {
+      toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
+      return;
+    }
+
+    const matchResult = assistente.dNascimento.match(dateRegex);
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    if (
+      dataNascimento.getFullYear() !== Number(ano) ||
+      dataNascimento.getMonth() !== Number(mes) - 1 ||
+      dataNascimento.getDate() !== Number(dia)
+    ) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+
+    if (assistente.nome.length > 70) {
+      toast.error("Nome inválido.");
+      return;
+    }
+
+    if (assistente.login.length < 8) {
+      toast.error("Login muito pequeno.");
+      return;
+    }
+
+    if (assistente.senha.length < 8) {
+      toast.error("Senha muito pequena.");
+      return;
+    }
+
+    if (assistente.senha.length < 8) {
+      toast.error("Senha muito pequena.");
+      return;
+    }
+
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+    const mesAtual = hoje.getMonth();
+    const mesNascimento = dataNascimento.getMonth();
+    if (
+      mesAtual < mesNascimento ||
+      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
+    ) {
+      idade--;
+    }
+    if (idade < 18) {
+      toast.error("É necessário ter mais de 18 anos para este cadastro.");
+      return;
+    }
+
+
+
+    assistente.cpf=removeSpecialCharacters(assistente.cpf);
     assistente.telefone = removeSpecialCharacters(assistente.telefone);
     assistente.dNascimento = transformDate(assistente.dNascimento);
 
@@ -424,7 +537,7 @@ export function Assistentes() {
                       )}
                     </InputAdornment>
                   }
-                  label="Password"
+                  label="Password********"
                 />
                 {errors.senha_confirmada && (
                   <Typography
