@@ -95,6 +95,7 @@ const style = {
   overflowY: "scroll",
 };
 
+
 export function Assistentes() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -119,20 +120,30 @@ export function Assistentes() {
   } = methods;
 
   const registerAssistentes = async (data: any) => {
-    const errors = await trigger(); // Dispara a validação de todos os campos
-    if (errors) {
-      return; // Há erros de validação, interrompe o envio dos dados
+
+    function removeSpecialCharacters(string:any) {
+      if (typeof string === 'string' || string instanceof String) {
+        return string.replace(/[./\-\(\) ]/g, "");
+      }
+      return "";
     }
 
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
-      dataNascimento: data.dataNascimento,
+      dNascimento: data.dNascimento,
       telefone: data.telefone,
       email: data.email,
       login: data.login,
       senha: data.senha,
-    } as unknown as AssistentesCadastrarDTO;
+      observacao: data.observacao,
+      administrador: true,
+    } as AssistentesCadastrarDTO;
+
+    assistente.cpf=removeSpecialCharacters(assistente.cpf);
+    assistente.telefone=removeSpecialCharacters(assistente.telefone);
+    assistente.dNascimento=assistente.dNascimento.split("/").reverse().join("-");
+    console.log(assistente.dNascimento)
 
     const response = await cadastrarAssistente(assistente);
 
@@ -142,6 +153,7 @@ export function Assistentes() {
       toast.success("Assistente cadastrado com sucesso!");
     }
   };
+  
   const validatePassword = (value: any) => {
     const password = watch("senha"); // Obtém o valor do campo de senha
     if (value === password) {
@@ -153,16 +165,19 @@ export function Assistentes() {
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
+    console.log(response.data)
     const temp: AssistentesListarDTO[] = [];
-    response.data.forEach((value: AssistentesListarDTO) => {
+    response.data.forEach((value: AssistentesListarDTO, index: number) => {
       temp.push({
-        id: value.id,
+        id: index,
         nome: value.nome,
         cpf: value.cpf,
-        dataNascimento: value.dataNascimento,
+        dNascimento: value.dNascimento,
         telefone: value.telefone,
         email: value.email,
         login: value.login,
+        observacao: value.observacao,
+        administrador: value.administrador
       });
     });
     setDataTable(temp);
@@ -187,7 +202,7 @@ export function Assistentes() {
     setAssistente(assistente);
     setValue("nomeEdit", assistente.nome);
     setValue("cpfEdit", assistente.cpf);
-    setValue("dataNascimento", assistente.dataNascimento);
+    setValue("dNascimento", assistente.dNascimento);
     setValue("telefone", assistente.telefone);
     setValue("email", assistente.email);
     setOpenEdit(true);
@@ -197,10 +212,11 @@ export function Assistentes() {
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
-      dataNascimento: data.dataNascimentoEdit,
+      dNascimento: data.dataNascimentoEdit,
       telefone: data.telefoneEdit,
       email: data.emailEdit,
       login: data.loginEdit,
+      observacao: data.observacao
     };
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
@@ -289,7 +305,7 @@ export function Assistentes() {
 
             <CPFMask label="cpf"/>
 
-            <CPFMask label="nascimento"/>
+            <CPFMask label="dNascimento"/>
 
             <CPFMask label="telefone"/>
 
@@ -394,6 +410,13 @@ export function Assistentes() {
                </Typography>
               )}
             </FormControl>
+            <TextField
+              id="outlined-observacao"
+              label="Observação"
+              required={false}
+              {...register("observacao")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
             <PrimaryButton text={"Confirmar"} />
           </Form>
           </FormProvider>
@@ -453,6 +476,8 @@ export function Assistentes() {
           </Form>
         </Box>
       </Modal>
+
+      
     </Container>
   );
 }

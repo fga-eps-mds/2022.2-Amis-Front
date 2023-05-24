@@ -1,9 +1,11 @@
 export interface AssistentesListarDTO {
-  id: string;
+  id: number;
   nome: string;
   cpf: string;
-  dataNascimento: string;
+  dNascimento: string;
   telefone: string;
   email: string;
   login: string;
+  observacao: string;
+  administrador: true;
 }
