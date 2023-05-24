@@ -104,6 +104,7 @@ export function Assistentes() {
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [selectedAssistente, setSelectedAssistente] = useState(null);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
@@ -184,11 +185,19 @@ export function Assistentes() {
   });
 
   const deleteAssistentes = async () => {
-    const response = await excluirAssistente(id.toString());
-    if (response.status === 204) {
+    const selectedAssistente = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
+    if (selectedAssistente) {
+      const login = (selectedAssistente as any).login; // Obtém o login da aluna
+      const response = await excluirAssistente(login); // Passa o login para a função apagaAluna
+
+      if (response.status === 204) {
+        toast.success("Assistente excluída com sucesso!");
+      } else {
+        toast.error("Erro ao excluir a Assistente.");
+      }
+
       handleCloseConfirmation();
-      queryClient.invalidateQueries("listar_assistentes");
-      toast.success("Assistente excluído com sucesso!");
+      await queryClient.invalidateQueries("listar_assistente");
     }
   };
 
