@@ -23,12 +23,12 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
-const listarAssistenteSpy = jest.spyOn(assistentesService, 'listarAssistentes');
-jest.mock('react-toastify', () => ({
-  toast: {
-    success: jest.fn(),
-  },
-}));
+//const listarAssistenteSpy = jest.spyOn(assistentesService, 'listarAssistentes');
+//jest.mock('react-toastify', () => ({
+//  toast: {
+//    success: jest.fn(),
+//  },
+//}));
 
 
 const renderComponent = async()=> {
@@ -64,7 +64,7 @@ describe("Assistentes", () => {
     const toastSuccessSpy = jest.spyOn(toast, 'success');
 
     cadastraAssistenteSpy.mockImplementation(CadastrarAssistenteMock);
-    listarAssistenteSpy.mockImplementation(GetAssistenteMock);
+    //listarAssistenteSpy.mockImplementation(GetAssistenteMock);
 
     renderComponent();
     
@@ -97,7 +97,7 @@ describe("Assistentes", () => {
     const response = { status: 201 };
 
     if (response.status === 201) {
-      console.log("Assistente cadastrado com sucesso!");
+      //console.log("Assistente cadastrado com sucesso!");
       toast.success("Assistente cadastrado com sucesso!");
     }
 

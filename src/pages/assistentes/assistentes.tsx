@@ -180,19 +180,24 @@ export function Assistentes() {
 
     //console.log(response.data)
     const temp: AssistentesListarDTO[] = [];
-    response.data.forEach((value: AssistentesListarDTO, index: number) => {
-      temp.push({
-        id: index,
-        nome: value.nome,
-        cpf: value.cpf,
-        dNascimento: value.dNascimento,
-        telefone: value.telefone,
-        email: value.email,
-        login: value.login,
-        observacao: value.observacao,
-        administrador: value.administrador
+    if (response.data && Array.isArray(response.data)) {
+      response.data.forEach((value: AssistentesListarDTO, index: number) => {
+        temp.push({
+          id: index,
+          nome: value.nome,
+          cpf: value.cpf,
+          dNascimento: value.dNascimento,
+          telefone: value.telefone,
+          email: value.email,
+          login: value.login,
+          observacao: value.observacao,
+          administrador: value.administrador
+        });
       });
-    });
+    } else {
+      //console.error("Invalid response data:", response.data);
+      // Handle the error or provide a default value for `temp`
+    }
     setDataTable(temp);
   });
 
