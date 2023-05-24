@@ -120,19 +120,28 @@ export function Assistentes() {
     formState: { errors },
   } = methods;
 
+  function transformDate(date: any) {
+    const parts = date.split('/');
+    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return transformedDate;
+  }
+
   const registerAssistentes = async (data: any) => {
 
-    function removeSpecialCharacters(string:any) {
+    function removeSpecialCharacters(string: any) {
       if (typeof string === 'string' || string instanceof String) {
         return string.replace(/[./\-\(\) ]/g, "");
       }
       return "";
     }
 
+
+
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
-      dNascimento: data.dNascimento,
+      data_nascimento: data.data_nascimento,
+      dNascimento:data.data_nascimento,
       telefone: data.telefone,
       email: data.email,
       login: data.login,
@@ -141,10 +150,13 @@ export function Assistentes() {
       administrador: true,
     } as AssistentesCadastrarDTO;
 
-    assistente.cpf=removeSpecialCharacters(assistente.cpf);
-    assistente.telefone=removeSpecialCharacters(assistente.telefone);
-    assistente.dNascimento=assistente.dNascimento.split("/").reverse().join("-");
-    console.log(assistente.dNascimento)
+    console.log(assistente.dNascimento);
+
+    assistente.cpf = removeSpecialCharacters(assistente.cpf);
+    assistente.telefone = removeSpecialCharacters(assistente.telefone);
+    assistente.dNascimento = transformDate(assistente.dNascimento);
+
+    console.log(assistente.dNascimento);
 
     const response = await cadastrarAssistente(assistente);
 
@@ -154,7 +166,7 @@ export function Assistentes() {
       toast.success("Assistente cadastrado com sucesso!");
     }
   };
-  
+
   const validatePassword = (value: any) => {
     const password = watch("senha"); // Obtém o valor do campo de senha
     if (value === password) {
@@ -302,132 +314,132 @@ export function Assistentes() {
           <FormProvider
             {...methods}
           >
-          <FormText>Preencha corretamente os dados cadastrais.</FormText>
-          <Form onSubmit={handleSubmit(registerAssistentes)}>
-            <TextField
-              id="outlined-nome"
-              label="Nome Completo"
-              required={true}
-              {...register("nome")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-
-            <CPFMask label="cpf"/>
-
-            <CPFMask label="dNascimento"/>
-
-            <CPFMask label="telefone"/>
-
-            <TextField
-              id="outlined-email"
-              label="E-mail"
-              inputProps={{ maxLength: 100 }}
-              {...register("email")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-login"
-              label="Login"
-              required={true}
-              {...register("login")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <FormControl
-              sx={{ width: "100%", background: "#F5F4FF" }}
-              variant="outlined"
-            >
-              <InputLabel htmlFor="outlined-adornment-password" required={true}>
-                Senha
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showPassword ? "text" : "password"}
-                {...register("senha")}
-                endAdornment={
-                  <InputAdornment position="end">
-                    {showPassword ? (
-                      <AiFillEyeInvisible
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowPassword(!showPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    ) : (
-                      <AiFillEye
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowPassword(!showPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    )}
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
-
-            <FormControl
-              sx={{ width: "100%", background: "#F5F4FF" }}
-              variant="outlined"
-            >
-              <InputLabel
-                htmlFor="outlined-adornment-confirm-password"
+            <FormText>Preencha corretamente os dados cadastrais.</FormText>
+            <Form onSubmit={handleSubmit(registerAssistentes)}>
+              <TextField
+                id="outlined-nome"
+                label="Nome Completo"
                 required={true}
-              >
-                Confirmar senha
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-confirm-password"
-                type={showConfirmPassword ? "text" : "password"}
-                {...register("senha_confirmada", { validate: validatePassword })}
-                endAdornment={
-                  <InputAdornment position="end">
-                    {showConfirmPassword ? (
-                      <AiFillEyeInvisible
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowConfirmPassword(!showConfirmPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    ) : (
-                      <AiFillEye
-                        aria-label="toggle password visibility"
-                        onClick={() => {
-                          setShowConfirmPassword(!showConfirmPassword);
-                        }}
-                        cursor="pointer"
-                        size={20}
-                      />
-                    )}
-                  </InputAdornment>
-                }
-                label="Password"
+                {...register("nome")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              {errors.senha_confirmada && (
-                 <Typography
-                 variant="body2"
-                 color="error"
-                 sx={{ mt: 1, mb: -3.5 }}
-               >
-                 Senha não corresponde!
-               </Typography>
-              )}
-            </FormControl>
-            <TextField
-              id="outlined-observacao"
-              label="Observação"
-              required={false}
-              {...register("observacao")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <PrimaryButton text={"Confirmar"} />
-          </Form>
+
+              <CPFMask label="cpf" />
+
+              <CPFMask label="data_nascimento" />
+
+              <CPFMask label="telefone" />
+
+              <TextField
+                id="outlined-email"
+                label="E-mail"
+                inputProps={{ maxLength: 100 }}
+                {...register("email")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-login"
+                label="Login"
+                required={true}
+                {...register("login")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <FormControl
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                variant="outlined"
+              >
+                <InputLabel htmlFor="outlined-adornment-password" required={true}>
+                  Senha
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("senha")}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      {showPassword ? (
+                        <AiFillEyeInvisible
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowPassword(!showPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      ) : (
+                        <AiFillEye
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowPassword(!showPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      )}
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
+
+              <FormControl
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                variant="outlined"
+              >
+                <InputLabel
+                  htmlFor="outlined-adornment-confirm-password"
+                  required={true}
+                >
+                  Confirmar senha
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  {...register("senha_confirmada", { validate: validatePassword })}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      {showConfirmPassword ? (
+                        <AiFillEyeInvisible
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowConfirmPassword(!showConfirmPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      ) : (
+                        <AiFillEye
+                          aria-label="toggle password visibility"
+                          onClick={() => {
+                            setShowConfirmPassword(!showConfirmPassword);
+                          }}
+                          cursor="pointer"
+                          size={20}
+                        />
+                      )}
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+                {errors.senha_confirmada && (
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    sx={{ mt: 1, mb: -3.5 }}
+                  >
+                    Senha não corresponde!
+                  </Typography>
+                )}
+              </FormControl>
+              <TextField
+                id="outlined-observacao"
+                label="Observação"
+                required={false}
+                {...register("observacao")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <PrimaryButton text={"Confirmar"} />
+            </Form>
           </FormProvider>
         </Box>
       </Modal>
@@ -486,7 +498,7 @@ export function Assistentes() {
         </Box>
       </Modal>
 
-      
+
     </Container>
   );
 }
