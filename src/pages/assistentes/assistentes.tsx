@@ -150,13 +150,13 @@ export function Assistentes() {
       administrador: true,
     } as AssistentesCadastrarDTO;
 
-    console.log(assistente.dNascimento);
+    ////console.log(assistente.dNascimento);
 
     assistente.cpf = removeSpecialCharacters(assistente.cpf);
     assistente.telefone = removeSpecialCharacters(assistente.telefone);
     assistente.dNascimento = transformDate(assistente.dNascimento);
 
-    console.log(assistente.dNascimento);
+    //console.log(assistente.dNascimento);
 
     const response = await cadastrarAssistente(assistente);
 
@@ -178,7 +178,7 @@ export function Assistentes() {
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
-    console.log(response.data)
+    //console.log(response.data)
     const temp: AssistentesListarDTO[] = [];
     response.data.forEach((value: AssistentesListarDTO, index: number) => {
       temp.push({

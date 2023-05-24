@@ -1,0 +1,247 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
+<div
+  className="sc-ipEyDJ fEkVjI"
+>
+  <div
+    className="sc-bcXHqe kOWTzR"
+  >
+    <div
+      className="sc-hLBbgP jTUZgJ"
+    >
+      AMIS
+    </div>
+    <a
+      className="sc-gswNZR gptURg"
+      href="/"
+      onClick={[Function]}
+    >
+      <svg
+        color="#da4d3d"
+        fill="currentColor"
+        height={22}
+        stroke="currentColor"
+        strokeWidth="0"
+        style={
+          {
+            "color": "#da4d3d",
+          }
+        }
+        viewBox="0 0 1024 1024"
+        width={22}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z"
+        />
+      </svg>
+      <h1
+        className="sc-dkrFOg gvjiCT"
+      >
+        Tela Inicial
+      </h1>
+    </a>
+    <a
+      className="sc-gswNZR jZMjZO"
+      href="/alunas"
+      onClick={[Function]}
+    >
+      <svg
+        color="#525252"
+        fill="currentColor"
+        height={22}
+        stroke="currentColor"
+        strokeWidth="0"
+        style={
+          {
+            "color": "#525252",
+          }
+        }
+        viewBox="0 0 24 24"
+        width={22}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1h2v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1z"
+        />
+      </svg>
+      <h1
+        className="sc-dkrFOg gvjiCT"
+      >
+        Alunas
+      </h1>
+    </a>
+    <a
+      className="sc-gswNZR jZMjZO"
+      href="/turmas"
+      onClick={[Function]}
+    >
+      <svg
+        color="#525252"
+        fill="currentColor"
+        height={22}
+        stroke="currentColor"
+        strokeWidth="0"
+        style={
+          {
+            "color": "#525252",
+          }
+        }
+        viewBox="0 0 1024 1024"
+        width={22}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M296 250c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h384c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H296zm184 144H296c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zm-48 458H208V148h560v320c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V108c0-17.7-14.3-32-32-32H168c-17.7 0-32 14.3-32 32v784c0 17.7 14.3 32 32 32h264c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm440-88H728v-36.6c46.3-13.8 80-56.6 80-107.4 0-61.9-50.1-112-112-112s-112 50.1-112 112c0 50.7 33.7 93.6 80 107.4V764H520c-8.8 0-16 7.2-16 16v152c0 8.8 7.2 16 16 16h352c8.8 0 16-7.2 16-16V780c0-8.8-7.2-16-16-16zM646 620c0-27.6 22.4-50 50-50s50 22.4 50 50-22.4 50-50 50-50-22.4-50-50zm180 266H566v-60h260v60z"
+        />
+      </svg>
+      <h1
+        className="sc-dkrFOg gvjiCT"
+      >
+        Turmas
+      </h1>
+    </a>
+    <a
+      className="sc-gswNZR jZMjZO"
+      href="/assistentes"
+      onClick={[Function]}
+    >
+      <svg
+        color="#525252"
+        fill="currentColor"
+        height={22}
+        stroke="currentColor"
+        strokeWidth="0"
+        style={
+          {
+            "color": "#525252",
+          }
+        }
+        viewBox="0 0 24 24"
+        width={22}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1h2v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1z"
+        />
+      </svg>
+      <h1
+        className="sc-dkrFOg gvjiCT"
+      >
+        Assistentes
+      </h1>
+    </a>
+    <a
+      className="sc-gswNZR jZMjZO"
+      href="/sair"
+      onClick={[Function]}
+    >
+      <svg
+        color="#525252"
+        fill="currentColor"
+        height={22}
+        stroke="currentColor"
+        strokeWidth="0"
+        style={
+          {
+            "color": "#525252",
+          }
+        }
+        viewBox="0 0 24 24"
+        width={22}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M16 13v-2H7V8l-5 4 5 4v-3z"
+        />
+        <path
+          d="M20 3h-9c-1.103 0-2 .897-2 2v4h2V5h9v14h-9v-4H9v4c0 1.103.897 2 2 2h9c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2z"
+        />
+      </svg>
+      <h1
+        className="sc-dkrFOg gvjiCT"
+      >
+        Sair
+      </h1>
+    </a>
+  </div>
+  <div
+    className="sc-csuSiG dKtfRl"
+  >
+    <div
+      className="sc-eDvSVe bVlFEU"
+    >
+      <h1
+        className="sc-jSUZER iDPtwI"
+      >
+         
+        Alunas
+         
+      </h1>
+      <div
+        className="sc-gKPRtg jPborl"
+      >
+        <div
+          className="sc-iBYQkv deFuDe"
+        >
+          <h1
+            className="sc-ftTHYK dNqcwl"
+          >
+            JOSÉ MARIA
+          </h1>
+          <h1
+            className="sc-pyfCe eXBbNQ"
+          >
+            Admin
+          </h1>
+        </div>
+        <div
+          className="sc-jrcTuL iLQvuk"
+        />
+      </div>
+    </div>
+    <div
+      className="sc-eDWCr fOChem"
+    >
+      <button
+        className="sc-kDvujY FpMuN"
+        onClick={[Function]}
+        type="submit"
+      >
+        Cadastrar
+      </button>
+    </div>
+    <div
+      style={
+        {
+          "background": "#FFF",
+          "height": 420,
+          "margin": "0 auto",
+          "marginTop": "50px",
+          "padding": "0 20px",
+          "width": "85%",
+        }
+      }
+    >
+      <div
+        aria-colcount={4}
+        aria-multiselectable={false}
+        aria-rowcount={1}
+        className="MuiDataGrid-root MuiDataGrid-root--densityStandard css-1v2s6lm-MuiDataGrid-root"
+        role="grid"
+      >
+        <div
+          className="MuiDataGrid-main css-204u17-MuiDataGrid-main"
+        >
+          <div
+            className="MuiDataGrid-overlay css-f7tavo-MuiDataGrid-overlay"
+          >
+            Cannot set properties of null (setting 'scrollLeft')
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
