@@ -34,9 +34,9 @@ import { AlunasListarDTO } from "./dtos/AlunasListar.dto";
 import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrar.dto";
 import {
   cadastraAluna,
-  listaAlunas,
-  apagaAluna,
-  editaAluna,
+  listarAlunas,
+  excluirAluna,
+  editarAluna,
 } from "../../services/alunas";
 
 const Container = styled.div`
@@ -120,6 +120,51 @@ export function Alunas() {
     formState: { errors },
   } = methods;
 
+
+  // Função para verificar se um CPF é válido
+  const validarCPF = (cpf:any) => {
+    cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
+
+    // Verifica se o CPF possui 11 dígitos
+    if (cpf.length !== 11) {
+      return false;
+    }
+
+    // Verifica se todos os dígitos são iguais (ex: 11111111111)
+    if (/^(\d)\1+$/.test(cpf)) {
+      return false;
+    }
+
+    // Calcula o primeiro dígito verificador
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) {
+      remainder = 0;
+    }
+    if (remainder !== parseInt(cpf.charAt(9))) {
+      return false;
+    }
+
+    // Calcula o segundo dígito verificador
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+      sum += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) {
+      remainder = 0;
+    }
+    if (remainder !== parseInt(cpf.charAt(10))) {
+      return false;
+    }
+
+    return true; // CPF válido
+  };
+
+
   function removeSpecialCharacters(string: any) {
     if (typeof string === 'string' || string instanceof String) {
       return string.replace(/[./\-\(\) ]/g, "");
@@ -152,6 +197,79 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
+
+    const cpfEhValido = validarCPF(aluna.cpf);
+    if (cpfEhValido === false){
+      toast.error("O CPF informado é invalido.");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(aluna.email)) {
+       toast.error("E-mail inválido.");
+       return;
+    }
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if (!dateRegex.test(aluna.data_nascimento)) {
+      toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
+      return;
+    }
+
+    const matchResult = aluna.data_nascimento.match(dateRegex);
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    if (
+      dataNascimento.getFullYear() !== Number(ano) ||
+      dataNascimento.getMonth() !== Number(mes) - 1 ||
+      dataNascimento.getDate() !== Number(dia)
+    ) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+
+    if (aluna.nome.length > 70) {
+      toast.error("Nome inválido.");
+      return;
+    }
+
+    if (aluna.login.length < 8) {
+      toast.error("Login muito pequeno.");
+      return;
+    }
+
+    if (aluna.senha.length < 8) {
+      toast.error("Senha muito pequena.");
+      return;
+    }
+
+    if (aluna.senha.length < 8) {
+      toast.error("Senha muito pequena.");
+      return;
+    }
+
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+    const mesAtual = hoje.getMonth();
+    const mesNascimento = dataNascimento.getMonth();
+    if (
+      mesAtual < mesNascimento ||
+      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
+    ) {
+      idade--;
+    }
+    if (idade < 18) {
+      toast.error("É necessário ter mais de 18 anos para este cadastro.");
+      return;
+    }
+
+
+
     aluna.cpf = removeSpecialCharacters(aluna.cpf);
     aluna.telefone = removeSpecialCharacters(aluna.telefone);
     aluna.cep = removeSpecialCharacters(aluna.cep);
@@ -178,17 +296,19 @@ export function Alunas() {
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await listaAlunas();
+    const response = await listarAlunas();
     const temp: AlunasListarDTO[] = [];
-    response.data.forEach((value: AlunasListarDTO, index: number) => {
-      temp.push({
-        id: index, // Adiciona um id único com base no índice
-        login: value.login,
-        nome: value.nome,
-        cpf: value.cpf,
-        data_nascimento: value.data_nascimento,
+    if (response.data && Array.isArray(response.data)) {
+      response.data.forEach((value: AlunasListarDTO, index: number) => {
+        temp.push({
+          id: index, // Adiciona um id único com base no índice
+          login: value.login,
+          nome: value.nome,
+          cpf: value.cpf,
+          data_nascimento: value.data_nascimento,
+        });
       });
-    });
+    }
     setDataTable(temp);
   });
 
@@ -197,7 +317,7 @@ export function Alunas() {
     const selectedAluna = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
     if (selectedAluna) {
       const login = (selectedAluna as any).login; // Obtém o login da aluna
-      const response = await apagaAluna(login); // Passa o login para a função apagaAluna
+      const response = await excluirAluna(login); // Passa o login para a função apagaAluna
 
       if (response.status === 204) {
         toast.success("Aluna excluída com sucesso!");
@@ -225,7 +345,7 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    const response = await editaAluna(id.toString(), aluna);
+    const response = await editarAluna(id.toString(), aluna);
     if (response.status === 200 || response.status === 204) {
       toast.success("Aluna atualizada com sucesso!");
     } else {
