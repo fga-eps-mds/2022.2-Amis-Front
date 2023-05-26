@@ -2,6 +2,7 @@ import { ProfessoresCadastrarDTO } from "../pages/professores/dtos/ProfessoresCa
 import api from "./api";
 
 export const cadastraProfessor = async (payload: ProfessoresCadastrarDTO) => {
+  console.log(payload);
   return await api
     .post("/teacher/", payload)
 

@@ -95,12 +95,68 @@ const style = {
   overflowY: "scroll",
 };
 
+function removeSpecialCharacters(string: any) {
+  if (typeof string === "string" || string instanceof String) {
+    return string.replace(/[.\\/\\\-() ]/g, "");
+  }
+  return "";
+}
+
+function transformDate(date: any) {
+  const parts = date.split('/');
+  const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  return transformedDate;
+}
+
+const validarCPF = (cpf:any) => {
+  cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
+
+  // Verifica se o CPF possui 11 dígitos
+  if (cpf.length !== 11) {
+    return false;
+  }
+
+  // Verifica se todos os dígitos são iguais (ex: 11111111111)
+  if (/^(\d)\1+$/.test(cpf)) {
+    return false;
+  }
+
+  // Calcula o primeiro dígito verificador
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(cpf.charAt(i)) * (10 - i);
+  }
+  let remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) {
+    remainder = 0;
+  }
+  if (remainder !== parseInt(cpf.charAt(9))) {
+    return false;
+  }
+
+  // Calcula o segundo dígito verificador
+  sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += parseInt(cpf.charAt(i)) * (11 - i);
+  }
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) {
+    remainder = 0;
+  }
+  if (remainder !== parseInt(cpf.charAt(10))) {
+    return false;
+  }
+
+  return true; // CPF válido
+};
+
+
 export function Professores() {
   const [open, setOpen] = useState(false);
   const [professor, setProfessor] = useState(Object);
-  // const [showPassword, setShowPassword] = useState(false);
-  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  // const [showPasswordError, setShowPasswordError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordError, setShowPasswordError] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
@@ -113,6 +169,7 @@ export function Professores() {
   const methods = useForm<ProfessoresCadastrarDTO>();
 
   const {
+    setValue,
     register,
     trigger,
     handleSubmit,
@@ -120,25 +177,27 @@ export function Professores() {
     formState: { errors },
   } = methods;
 
-  function removeSpecialCharacters(string: any) {
-    if (typeof string === "string" || string instanceof String) {
-      return string.replace(/[.\\/\\\-() ]/g, "");
+  const selectedCursos = watch("cursos");
+
+  const cadastrarProfessores = async (data: any) => {
+
+    const professor = {
+      senha: data.senha,
+      codigo: data.codigo,
+      nome: data.nome,
+      cpf: data.cpf,
+      email: data.email,
+      data_nascimento: data.data_nascimento,
+      telefone: data.telefone,
+      cursos: data.cursos,
+      //senha_confirmada: data.senha_confirmada,
+    } as ProfessoresCadastrarDTO;
+
+    const cpfEhValido=validarCPF(professor.cpf);
+
+    if(cpfEhValido===false){
+      toast.error("CPF inválido.");
     }
-    return "";
-  }
-
-  function transformDate(date: any) {
-    const parts = date.split('/');
-    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return transformedDate;
-  }
-
-  const cadastrarProfessores = async (professor: ProfessoresCadastrarDTO) => {
-    professor.codigo = nextId;
-    setNextId(nextId + 1);
-
-    console.log(professor.codigo)
-    professor.cursos='';
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(professor.email)) {
@@ -175,6 +234,11 @@ export function Professores() {
       return;
     }
 
+    if (professor.senha.length < 8) {
+      toast.error("Senha muito pequena.");
+      return;
+    }
+
     const hoje = new Date();
     let idade = hoje.getFullYear() - dataNascimento.getFullYear();
     const mesAtual = hoje.getMonth();
@@ -191,14 +255,10 @@ export function Professores() {
     }
 
     professor.cpf = removeSpecialCharacters(professor.cpf);
+    
     professor.telefone = removeSpecialCharacters(professor.telefone);
-    //professor.data_nascimento = removeSpecialCharacters(
-    //  professor.data_nascimento
-    //);
 
     professor.data_nascimento=transformDate(professor.data_nascimento);
-
-    console.log("A data eh",professor.data_nascimento);
 
     const response = await cadastraProfessor(professor);
     if (response.status === 201) {
@@ -210,13 +270,13 @@ export function Professores() {
     await queryClient.invalidateQueries("listar_professores");
   };
 
-  //  const validatePassword = (value: any) => {
-  //    const password = watch("senha");
-  //    if (value === password) {
-  //      return true;
-  //   }
-  //   return "As senhas não correspondem";
-  // };
+  const validatePassword = (value: any) => {
+      const password = watch("senha");
+      if (value === password) {
+        return true;
+     }
+    return "As senhas não correspondem";
+  };
 
   useQuery("listar_professores", async () => {
     const response = await listaProfessores();
@@ -371,7 +431,7 @@ export function Professores() {
                 {...register("email")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              {/* <FormControl
+              <FormControl
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 variant="outlined"
               >
@@ -408,22 +468,18 @@ export function Professores() {
                   label="Password"
                 />
               </FormControl>
+
               <FormControl
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 variant="outlined"
               >
-                <InputLabel
-                  htmlFor="outlined-adornment-confirm-password"
-                  required={true}
-                >
+                <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
                   Confirmar senha
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
-                  {...register("senha_confirmada", {
-                    validate: validatePassword,
-                  })}
+                  {...register("senha_confirmada", { validate: validatePassword })}
                   endAdornment={
                     <InputAdornment position="end">
                       {showConfirmPassword ? (
@@ -454,22 +510,25 @@ export function Professores() {
                     variant="body2"
                     color="error"
                     sx={{ mt: 0.4, mb: -3 }}
-                  >
-                    {" "}
-                    Senha não corresponde!
+                  >Senha não corresponde!
                   </Typography>
                 )}
-              </FormControl> */}
+              </FormControl>
               <Autocomplete
                 multiple
                 disablePortal
-                id="combo-box-demo"
+                id="outlined-cursos"
                 options={["curso 1", "curso 2", "curso 3"]}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-                required={false}
-                {...register("cursos")}
+                onChange={(event, value) => {
+                  setValue("cursos", value.join(",")); // Atualiza o valor do campo "cursos" com o array de opções selecionadas
+                }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Curso" />
+                  <TextField
+                    {...params}
+                    label="Curso"
+                    value={Array.isArray(selectedCursos) ? selectedCursos.join(", ") : ""}
+                  />
                 )}
               />
               <PrimaryButton text={"Cadastrar"} />
@@ -477,6 +536,7 @@ export function Professores() {
           </FormProvider>
         </Box>
       </Modal>
+
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
           <FormText>Altere os dados do professor.</FormText>
