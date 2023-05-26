@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
@@ -36,61 +35,17 @@ import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
 import CPFMask from "../../shared/components/Masks/ValueMask";
+import validarCPF from "../../shared/functions/validarCPF";
+import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
 
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  background: ${(props) => props.theme.colors.grey};
-  display: inline-flex;
-`;
-
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const DivButtons = styled.div`
-  width: 85%;
-  display: inline-flex;
-  justify-content: flex-end;
-  gap: 20px;
-  margin: 0 auto;
-  padding-top: 30px;
-`;
-
-const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-`;
-
-const FormText = styled.h1`
-  color: #525252;
-  font-size: 18px;
-  font-weight: 400;
-  text-align: left;
-  padding-bottom: 25px;
-`;
-
-const style = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  border: "none",
-  boxShadow: 24,
-  p: 4,
-  padding: "50px",
-  height: "85%",
-  overflow: "hidden",
-  overflowY: "scroll",
-};
+import {
+  getContainerStyles,
+  getContentStyles,
+  getDivButtonsStyles,
+  getFormStyles,
+  getFormTextStyles,
+  getInlineStyles,
+} from '../../shared/components/Style/style';
 
 function transformDate(date: any) {
   const parts = date.split('/');
@@ -98,60 +53,15 @@ function transformDate(date: any) {
   return transformedDate;
 }
 
-// Função para verificar se um CPF é válido
-const validarCPF = (cpf: any) => {
-  cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
-
-  // Verifica se o CPF possui 11 dígitos
-  if (cpf.length !== 11) {
-    return false;
-  }
-
-  // Verifica se todos os dígitos são iguais (ex: 11111111111)
-  if (/^(\d)\1+$/.test(cpf)) {
-    return false;
-  }
-
-  // Calcula o primeiro dígito verificador
-  let sum = 0;
-  for (let i = 0; i < 9; i++) {
-    sum += parseInt(cpf.charAt(i)) * (10 - i);
-  }
-  let remainder = (sum * 10) % 11;
-  if (remainder === 10 || remainder === 11) {
-    remainder = 0;
-  }
-  if (remainder !== parseInt(cpf.charAt(9))) {
-    return false;
-  }
-
-  // Calcula o segundo dígito verificador
-  sum = 0;
-  for (let i = 0; i < 10; i++) {
-    sum += parseInt(cpf.charAt(i)) * (11 - i);
-  }
-  remainder = (sum * 10) % 11;
-  if (remainder === 10 || remainder === 11) {
-    remainder = 0;
-  }
-  if (remainder !== parseInt(cpf.charAt(10))) {
-    return false;
-  }
-
-  return true; // CPF válido
-};
-
-function removeSpecialCharacters(string: any) {
-  if (typeof string === 'string' || string instanceof String) {
-    return string.replace(/[./\-() ]/g, "");
-  }
-  return "";
-}
-
-
-
-
 export function Assistentes() {
+  const Container = getContainerStyles();
+  const Content = getContentStyles();
+  const DivButtons = getDivButtonsStyles();
+  const Form = getFormStyles();
+  const FormText = getFormTextStyles();
+  const style = getInlineStyles();
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [open, setOpen] = useState(false);
@@ -174,6 +84,7 @@ export function Assistentes() {
   } = methods;
 
   const validateCPF = (cpf: string): boolean => {
+
     const cpfEhValido = validarCPF(cpf);
     if (!cpfEhValido) {
       toast.error("O CPF informado é inválido.");
@@ -326,7 +237,6 @@ export function Assistentes() {
     assistente.dNascimento = transformDate(assistente.dNascimento);
 
     const response = await cadastrarAssistente(assistente);
-
 
     if (response.status === 201) {
       setOpen(false);
