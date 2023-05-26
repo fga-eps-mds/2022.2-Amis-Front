@@ -272,9 +272,6 @@ export function Assistentes() {
           administrador: value.administrador
         });
       });
-    } else {
-      //console.error("Invalid response data:", response.data);
-      // Handle the error or provide a default value for `temp`
     }
     setDataTable(temp);
   });
@@ -292,7 +289,7 @@ export function Assistentes() {
       }
 
       handleCloseConfirmation();
-      await queryClient.invalidateQueries("listar_assistente");
+      await queryClient.invalidateQueries("listar_assistentes");
     }
   };
 

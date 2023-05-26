@@ -2,7 +2,6 @@ import { AssistentesCadastrarDTO } from "../pages/assistentes/dtos/AssistentesCa
 import api from "./api";
 
 export const cadastrarAssistente = async (payload: AssistentesCadastrarDTO) => {
-  console.log(payload);
 
   try {
     const response = await api.post("/socialWorker/", payload);

@@ -226,7 +226,6 @@ export function Alunas() {
     if (selectedAluna) {
       const login = (selectedAluna as any).login; // Obtém o login da aluna
       const response = await excluirAluna(login); // Passa o login para a função apagaAluna
-
       if (response.status === 204) {
         toast.success("Aluna excluída com sucesso!");
       } else {
@@ -253,7 +252,7 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    const response = await editarAluna(id.toString(), aluna);
+  const response = await editarAluna(id.toString(), aluna);
     if (response.status === 200 || response.status === 204) {
       toast.success("Aluna atualizada com sucesso!");
     } else {
