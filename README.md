@@ -11,7 +11,7 @@ O AMIS é um projeto da ONG Instituto Mulheres Criativas que tem como objetivo a
 
 A principal tônica do projeto é oferecer suporte as atividades das ONG's, apoiando sua missão de capacitar mulheres por meio de cursos gratuítos e outras ações sociais, para isso o Amis se propõe a amenizar o esforço em tarefas burocraticas na gerencia das atividades da ONG.
 
-Este repositório contém o código-fonte do backend do projeto AMIS, seguindo uma arquitetura de microserviços, sendo este o microserviço de usuários, que acomoda o login, logout e as funcionalidades relacionadas a assistente social, aluno, professor.
+Este repositório contém o código-fonte do frontend do projeto AMIS, onde foram desenvolvidas todas as telas do sistema.
 
 ## Tecnologias do Projeto
 
