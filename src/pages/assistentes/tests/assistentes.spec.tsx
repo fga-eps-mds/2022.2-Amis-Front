@@ -4,16 +4,16 @@ import {
   screen
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { BrowserRouter, BrowserRouter as Router } from "react-router-dom";
-import { act } from 'react-dom/test-utils';
+import {BrowserRouter as Router } from "react-router-dom";
+//import { act } from 'react-dom/test-utils';
 import { toast } from "react-toastify";
 import { ThemeProvider } from "styled-components";
 import * as assistentesService from "../../../services/assistentes";
-import { queryClient } from "../../../services/queryClient";
+//import { queryClient } from "../../../services/queryClient";
 import theme from "../../../styles/theme";
 import { Assistentes } from "../assistentes";
 import { CadastrarAssistenteMock } from "./assistentes.mock";
-import { GetAssistenteMock } from "./assistentes.mock";
+//import { GetAssistenteMock } from "./assistentes.mock";
 
 
 const cadastraAssistenteSpy = jest.spyOn(assistentesService, 'cadastrarAssistente');
