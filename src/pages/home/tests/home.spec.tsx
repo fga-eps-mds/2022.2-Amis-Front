@@ -1,33 +1,29 @@
-function soma(a: number, b: number) {
-    return a + b;
-  }
-  
-  test('Teste de soma', () => {
-    const resultado = soma(2, 3);
-    expect(resultado).toBe(5);
+import { render } from "@testing-library/react";
+import { Home } from "../home";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
+import theme from "../../../styles/theme";
+
+
+const renderComponent = async()=> {
+  const queryClient = new QueryClient ();
+  render(
+    // eslint-disable-next-line react/react-in-jsx-scope
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <Home />
+        </ThemeProvider>
+      </Router>
+    </QueryClientProvider>
+  );
+  return queryClient;
+}
+
+describe("Home", () => {
+  it("Teste para renderizar o componente",  () => {
+    // eslint-disable-next-line react/react-in-jsx-scope
+    renderComponent();
   });
-
-// import { QueryClientProvider } from "react-query";
-// import { BrowserRouter } from "react-router-dom";
-// import renderer from "react-test-renderer";
-// import { ThemeProvider } from "styled-components";
-// import { queryClient } from "../../../services/queryClient";
-// import theme from "../../../styles/theme";
-// import { Home } from "../home";
-
-// describe("Snapshot", () => {
-//   it("Deve corresponder ao Snapshot", () => {
-//     const tree = renderer
-//       .create(
-//         <QueryClientProvider client={queryClient}>
-//           <BrowserRouter>
-//             <ThemeProvider theme={theme}>
-//               <Home />
-//             </ThemeProvider>
-//           </BrowserRouter>
-//         </QueryClientProvider>
-//       )
-//       .toJSON();
-//     expect(tree).toMatchSnapshot();
-//   });
-// });
+});

@@ -44,7 +44,7 @@ export const listarAlunasNaTurma = async (idTurma: number) => {
 };
 
 export const listarAlunas = async () => {
-  return await api.get("/alunas/").then((response: any) => response);
+  return await api.get("/student/").then((response: any) => response);
 };
 
 export const listarVagasTurma = async (idTurmaVagas: number) => {

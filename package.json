@@ -19,6 +19,7 @@
     "axios": "^1.2.1",
     "axios-mock-adapter": "^1.21.4",
     "dayjs": "^1.11.7",
+    "email-validator": "^2.0.4",
     "jest-junit": "^15.0.0",
     "jest-sonar": "^0.2.15",
     "jest-sonar-reporter": "^2.0.0",

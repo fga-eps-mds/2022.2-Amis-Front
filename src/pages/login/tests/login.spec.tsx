@@ -1,29 +1,29 @@
-function soma(a: number, b: number) {
-    return a + b;
-  }
-  
-  test('Teste de soma', () => {
-    const resultado = soma(2, 3);
-    expect(resultado).toBe(5);
+import { render } from "@testing-library/react";
+import { Login } from "../login";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
+import theme from "../../../styles/theme";
+
+
+const renderComponent = async()=> {
+  const queryClient = new QueryClient ();
+  render(
+    // eslint-disable-next-line react/react-in-jsx-scope
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <Login />
+        </ThemeProvider>
+      </Router>
+    </QueryClientProvider>
+  );
+  return queryClient;
+}
+
+describe("Login", () => {
+  it("Teste para renderizar o componente",  () => {
+    // eslint-disable-next-line react/react-in-jsx-scope
+    renderComponent();
   });
-
-// import { BrowserRouter } from "react-router-dom";
-// import renderer from "react-test-renderer";
-// import { ThemeProvider } from "styled-components";
-// import { Login } from "../login";
-// import theme from "../../../styles/theme";
-
-// describe("Snapshot", () => {
-//   it("Deve corresponder ao Snapshot", () => {
-//     const tree = renderer
-//       .create(
-//         <BrowserRouter>
-//           <ThemeProvider theme={theme}>
-//             <Login />
-//           </ThemeProvider>
-//         </BrowserRouter>
-//       )
-//       .toJSON();
-//     expect(tree).toMatchSnapshot();
-//   });
-// });
+});
