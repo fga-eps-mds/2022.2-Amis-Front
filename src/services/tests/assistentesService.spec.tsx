@@ -1,4 +1,3 @@
-import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import {
   cadastrarAssistente,
@@ -21,8 +20,8 @@ describe("Testes do serviço de assistentes", () => {
   it("deve cadastrar um assistente", async () => {
     // Dados do payload de teste
     const payload = {
-      nome: 'Pedro Teste',
-      cpf: '06951977119',
+      nome: 'Joana',
+      cpf: '88749602047',
       dNascimento:'2001-09-06',
       login: 'pedro12345',
       telefone: '61991812098',
@@ -67,7 +66,7 @@ describe("Testes do serviço de assistentes", () => {
     // Dados do assistente para edição
     const assistente = {
       nome: 'Joana',
-      cpf: '06951977119',
+      cpf: '88749602047',
       dNascimento:'2001-09-06',
       login: 'pedro12345',
       telefone: '61991812098',

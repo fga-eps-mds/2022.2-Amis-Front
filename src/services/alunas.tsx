@@ -3,7 +3,13 @@ import api from "./api";
 
 export const cadastraAluna = async (payload: AlunasCadastrarDTO) => {
   //console.log('Dados da requisição:', payload); // Substitua "data" pelos dados que você está enviando
-  return await api.post("/student/", payload).then((response: any) => response);
+  try {
+    const response = await api.post("/student/", payload);
+    return response;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
 };
 
 export const listarAlunas = async () => {
