@@ -10,7 +10,6 @@ import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from 'react-toastify';
-import { Typography } from "@mui/material";
 import CPFMask from "../../shared/components/Masks/ValueMask";
 import * as EmailValidator from 'email-validator';
 
@@ -28,7 +27,9 @@ import {
   OutlinedInput,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
+
 import { useQuery } from "react-query";
 import { useForm, FormProvider } from 'react-hook-form';
 import { AlunasListarDTO } from "./dtos/AlunasListar.dto";
@@ -100,7 +101,6 @@ export function Alunas() {
   const [aluna, setAluna] = useState(Object);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showPasswordError, setShowPasswordError] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState<Object[]>([]);
@@ -115,7 +115,6 @@ export function Alunas() {
 
   const {
     register,
-    trigger,
     handleSubmit,
     watch,
     formState: { errors },
@@ -165,10 +164,9 @@ export function Alunas() {
     return true; // CPF válido
   };
 
-
   function removeSpecialCharacters(string: any) {
     if (typeof string === 'string' || string instanceof String) {
-      return string.replace(/[./\-\(\) ]/g, "");
+      return string.replace(/[./\-() ]/g, "");
     }
     return "";
   }
@@ -197,33 +195,34 @@ export function Alunas() {
       email: data.email,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
-
-
+    
     const cpfEhValido = validarCPF(aluna.cpf);
-    if (cpfEhValido === false){
-      toast.error("O CPF informado é invalido.");
+    if (!cpfEhValido) {
+      toast.error("O CPF informado é inválido.");
+      return;
     }
-
+    
     const emailValido = EmailValidator.validate(aluna.email);
     if (!emailValido) {
       toast.error("O e-mail informado é inválido.");
+      return;
     }
-
+    
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     if (!dateRegex.test(aluna.data_nascimento)) {
       toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
       return;
     }
-
-    const matchResult = aluna.data_nascimento.match(dateRegex);
+    
+    const matchResult = dateRegex.exec(aluna.data_nascimento);
     if (!matchResult) {
       toast.error("Data de nascimento inválida.");
       return;
     }
+    
     const [, dia, mes, ano] = matchResult;
-
     const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
-
+    
     if (
       dataNascimento.getFullYear() !== Number(ano) ||
       dataNascimento.getMonth() !== Number(mes) - 1 ||
@@ -232,37 +231,34 @@ export function Alunas() {
       toast.error("Data de nascimento inválida.");
       return;
     }
-
+    
     if (aluna.nome.length > 70) {
       toast.error("Nome inválido.");
       return;
     }
-
+    
     if (aluna.login.length < 8) {
       toast.error("Login muito pequeno.");
       return;
     }
-
+    
     if (aluna.senha.length < 8) {
       toast.error("Senha muito pequena.");
       return;
     }
-
-    if (aluna.senha.length < 8) {
-      toast.error("Senha muito pequena.");
-      return;
-    }
-
+    
     const hoje = new Date();
     let idade = hoje.getFullYear() - dataNascimento.getFullYear();
     const mesAtual = hoje.getMonth();
     const mesNascimento = dataNascimento.getMonth();
+    
     if (
       mesAtual < mesNascimento ||
       (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
     ) {
       idade--;
     }
+    
     if (idade < 18) {
       toast.error("É necessário ter mais de 18 anos para este cadastro.");
       return;
