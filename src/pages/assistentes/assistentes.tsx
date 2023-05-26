@@ -15,11 +15,10 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
-  MenuItem,
   Modal,
   OutlinedInput,
-  Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useQuery } from "react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -37,7 +36,6 @@ import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
 import CPFMask from "../../shared/components/Masks/ValueMask";
-import { Typography } from "@mui/material";
 
 const Container = styled.div`
   width: 100%;
@@ -94,6 +92,64 @@ const style = {
   overflowY: "scroll",
 };
 
+function transformDate(date: any) {
+  const parts = date.split('/');
+  const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  return transformedDate;
+}
+
+// Função para verificar se um CPF é válido
+const validarCPF = (cpf: any) => {
+  cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
+
+  // Verifica se o CPF possui 11 dígitos
+  if (cpf.length !== 11) {
+    return false;
+  }
+
+  // Verifica se todos os dígitos são iguais (ex: 11111111111)
+  if (/^(\d)\1+$/.test(cpf)) {
+    return false;
+  }
+
+  // Calcula o primeiro dígito verificador
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(cpf.charAt(i)) * (10 - i);
+  }
+  let remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) {
+    remainder = 0;
+  }
+  if (remainder !== parseInt(cpf.charAt(9))) {
+    return false;
+  }
+
+  // Calcula o segundo dígito verificador
+  sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += parseInt(cpf.charAt(i)) * (11 - i);
+  }
+  remainder = (sum * 10) % 11;
+  if (remainder === 10 || remainder === 11) {
+    remainder = 0;
+  }
+  if (remainder !== parseInt(cpf.charAt(10))) {
+    return false;
+  }
+
+  return true; // CPF válido
+};
+
+function removeSpecialCharacters(string: any) {
+  if (typeof string === 'string' || string instanceof String) {
+    return string.replace(/[./\-() ]/g, "");
+  }
+  return "";
+}
+
+
+
 
 export function Assistentes() {
   const [showPassword, setShowPassword] = useState(false);
@@ -103,7 +159,6 @@ export function Assistentes() {
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [selectedAssistente, setSelectedAssistente] = useState(null);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
@@ -112,140 +167,80 @@ export function Assistentes() {
   const methods = useForm();
   const {
     register,
-    trigger,
     watch,
     handleSubmit,
     setValue,
     formState: { errors },
   } = methods;
 
-  function transformDate(date: any) {
-    const parts = date.split('/');
-    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return transformedDate;
-  }
-
-     // Função para verificar se um CPF é válido
-    const validarCPF = (cpf:any) => {
-      cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
-
-      // Verifica se o CPF possui 11 dígitos
-      if (cpf.length !== 11) {
-        return false;
-      }
-
-      // Verifica se todos os dígitos são iguais (ex: 11111111111)
-      if (/^(\d)\1+$/.test(cpf)) {
-        return false;
-      }
-
-      // Calcula o primeiro dígito verificador
-      let sum = 0;
-      for (let i = 0; i < 9; i++) {
-        sum += parseInt(cpf.charAt(i)) * (10 - i);
-      }
-      let remainder = (sum * 10) % 11;
-      if (remainder === 10 || remainder === 11) {
-        remainder = 0;
-      }
-      if (remainder !== parseInt(cpf.charAt(9))) {
-        return false;
-      }
-
-      // Calcula o segundo dígito verificador
-      sum = 0;
-      for (let i = 0; i < 10; i++) {
-        sum += parseInt(cpf.charAt(i)) * (11 - i);
-      }
-      remainder = (sum * 10) % 11;
-      if (remainder === 10 || remainder === 11) {
-        remainder = 0;
-      }
-      if (remainder !== parseInt(cpf.charAt(10))) {
-        return false;
-      }
-
-      return true; // CPF válido
-    };
-
-    function removeSpecialCharacters(string: any) {
-      if (typeof string === 'string' || string instanceof String) {
-        return string.replace(/[./\-\(\) ]/g, "");
-      }
-      return "";
+  const validateCPF = (cpf: string): boolean => {
+    const cpfEhValido = validarCPF(cpf);
+    if (!cpfEhValido) {
+      toast.error("O CPF informado é inválido.");
+      return false;
     }
+    return true;
+  };
 
-  const registerAssistentes = async (data: any) => {
-
-    const assistente = {
-      nome: data.nome,
-      cpf: data.cpf,
-      data_nascimento: data.data_nascimento,
-      dNascimento:data.data_nascimento,
-      telefone: data.telefone,
-      email: data.email,
-      login: data.login,
-      senha: data.senha,
-      observacao: data.observacao,
-      administrador: true,
-    } as AssistentesCadastrarDTO;
-
-    ////console.log(assistente.dNascimento);
-
-    const cpfEhValido = validarCPF(assistente.cpf);
-    if (cpfEhValido === false){
-      toast.error("O CPF informado é invalido.");
-    }
-
-    const emailValido = EmailValidator.validate(assistente.email);
+  const validateEmail = (email: string): boolean => {
+    const emailValido = EmailValidator.validate(email);
     if (!emailValido) {
       toast.error("O e-mail informado é inválido.");
+      return false;
     }
+    return true;
+  };
 
+  const validateDate = (date: string): boolean => {
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-    if (!dateRegex.test(assistente.dNascimento)) {
+    if (!dateRegex.test(date)) {
       toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
-      return;
+      return false;
     }
+    const matchResult = dateRegex.exec(date);
 
-    const matchResult = assistente.dNascimento.match(dateRegex);
     if (!matchResult) {
       toast.error("Data de nascimento inválida.");
-      return;
+      return false;
     }
     const [, dia, mes, ano] = matchResult;
-
     const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
-
     if (
       dataNascimento.getFullYear() !== Number(ano) ||
       dataNascimento.getMonth() !== Number(mes) - 1 ||
       dataNascimento.getDate() !== Number(dia)
     ) {
       toast.error("Data de nascimento inválida.");
-      return;
+      return false;
     }
+    return true;
+  };
 
-    if (assistente.nome.length > 70) {
+  const validateNome = (nome: string): boolean => {
+    if (nome.length > 70) {
       toast.error("Nome inválido.");
-      return;
+      return false;
     }
+    return true;
+  };
 
-    if (assistente.login.length < 8) {
+  const validateLogin = (login: string): boolean => {
+    if (login.length < 8) {
       toast.error("Login muito pequeno.");
-      return;
+      return false;
     }
+    return true;
+  };
 
-    if (assistente.senha.length < 8) {
+  const validateSenha = (senha: string): boolean => {
+    if (senha.length < 8) {
       toast.error("Senha muito pequena.");
-      return;
+      return false;
     }
+    return true;
+  };
 
-    if (assistente.senha.length < 8) {
-      toast.error("Senha muito pequena.");
-      return;
-    }
-
+  const validateAge = (dataNascimento: Date): boolean => {
     const hoje = new Date();
     let idade = hoje.getFullYear() - dataNascimento.getFullYear();
     const mesAtual = hoje.getMonth();
@@ -258,18 +253,80 @@ export function Assistentes() {
     }
     if (idade < 18) {
       toast.error("É necessário ter mais de 18 anos para este cadastro.");
+      return false;
+    }
+    return true;
+  };
+
+
+  const registerAssistentes = async (data: any) => {
+    const assistente = {
+      nome: data.nome,
+      cpf: data.cpf,
+      //data_nascimento: data.data_nascimento,
+      dNascimento: data.data_nascimento,
+      telefone: data.telefone,
+      email: data.email,
+      login: data.login,
+      senha: data.senha,
+      observacao: data.observacao,
+      administrador: true,
+    } as AssistentesCadastrarDTO;
+
+    const cpfValido = validateCPF(assistente.cpf);
+    if (!cpfValido) {
+      return;
+    }
+
+    const emailValido = validateEmail(assistente.email);
+    if (!emailValido) {
+      return;
+    }
+
+    const dateValido = validateDate(assistente.dNascimento);
+    if (!dateValido) {
       return;
     }
 
 
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
 
-    assistente.cpf=removeSpecialCharacters(assistente.cpf);
+    const matchResult = dateRegex.exec(assistente.dNascimento);
+
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
+      return;
+    }
+
+    const nomeValido = validateNome(assistente.nome);
+    if (!nomeValido) {
+      return;
+    }
+
+    const loginValido = validateLogin(assistente.login);
+    if (!loginValido) {
+      return;
+    }
+
+    const senhaValida = validateSenha(assistente.senha);
+    if (!senhaValida) {
+      return;
+    }
+
+    assistente.cpf = removeSpecialCharacters(assistente.cpf);
     assistente.telefone = removeSpecialCharacters(assistente.telefone);
     assistente.dNascimento = transformDate(assistente.dNascimento);
 
-    //console.log(assistente.dNascimento);
-
     const response = await cadastrarAssistente(assistente);
+
 
     if (response.status === 201) {
       setOpen(false);
@@ -358,9 +415,14 @@ export function Assistentes() {
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
     if (response.status === 200) {
-      queryClient.invalidateQueries("listar_assistentes");
-      setOpenEdit(false);
-      toast.success("Assistente editado com sucesso!");
+      try {
+        await queryClient.invalidateQueries("listar_assistentes");
+        setOpenEdit(false);
+        toast.success("Assistente editado com sucesso!");
+      } catch (error) {
+        // Handle the error
+        console.error(error);
+      }
     }
   };
 

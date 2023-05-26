@@ -98,7 +98,7 @@ const style = {
 
 export function Alunas() {
   const [open, setOpen] = useState(false);
-  const [aluna, setAluna] = useState(Object);
+  const [aluna] = useState(Object);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -122,7 +122,7 @@ export function Alunas() {
 
 
   // Função para verificar se um CPF é válido
-  const validarCPF = (cpf:any) => {
+  const validarCPF = (cpf: any) => {
     cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
 
     // Verifica se o CPF possui 11 dígitos
@@ -177,7 +177,7 @@ export function Alunas() {
     return transformedDate;
   }
 
-  const cadastrarAlunas = async (data: any) => {
+  const cadastrarAlunas = async (data: any): Promise<void> => {
 
     const aluna = {
       nome: data.nome,
@@ -195,34 +195,34 @@ export function Alunas() {
       email: data.email,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
-    
+
     const cpfEhValido = validarCPF(aluna.cpf);
     if (!cpfEhValido) {
       toast.error("O CPF informado é inválido.");
       return;
     }
-    
+
     const emailValido = EmailValidator.validate(aluna.email);
     if (!emailValido) {
       toast.error("O e-mail informado é inválido.");
       return;
     }
-    
+
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     if (!dateRegex.test(aluna.data_nascimento)) {
       toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
       return;
     }
-    
+
     const matchResult = dateRegex.exec(aluna.data_nascimento);
     if (!matchResult) {
       toast.error("Data de nascimento inválida.");
       return;
     }
-    
+
     const [, dia, mes, ano] = matchResult;
     const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
-    
+
     if (
       dataNascimento.getFullYear() !== Number(ano) ||
       dataNascimento.getMonth() !== Number(mes) - 1 ||
@@ -231,34 +231,34 @@ export function Alunas() {
       toast.error("Data de nascimento inválida.");
       return;
     }
-    
+
     if (aluna.nome.length > 70) {
       toast.error("Nome inválido.");
       return;
     }
-    
+
     if (aluna.login.length < 8) {
       toast.error("Login muito pequeno.");
       return;
     }
-    
+
     if (aluna.senha.length < 8) {
       toast.error("Senha muito pequena.");
       return;
     }
-    
+
     const hoje = new Date();
     let idade = hoje.getFullYear() - dataNascimento.getFullYear();
     const mesAtual = hoje.getMonth();
     const mesNascimento = dataNascimento.getMonth();
-    
+
     if (
       mesAtual < mesNascimento ||
       (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
     ) {
       idade--;
     }
-    
+
     if (idade < 18) {
       toast.error("É necessário ter mais de 18 anos para este cadastro.");
       return;
@@ -269,7 +269,7 @@ export function Alunas() {
     aluna.cpf = removeSpecialCharacters(aluna.cpf);
     aluna.telefone = removeSpecialCharacters(aluna.telefone);
     aluna.cep = removeSpecialCharacters(aluna.cep);
-    aluna.data_nascimento=transformDate(aluna.data_nascimento);
+    aluna.data_nascimento = transformDate(aluna.data_nascimento);
 
     const response = await cadastraAluna(aluna);
     if (response.status === 201) {
@@ -309,7 +309,7 @@ export function Alunas() {
   });
 
 
-  const deleteAlunas = async () => {
+  const deleteAlunas = async (): Promise<void> => {
     const selectedAluna = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
     if (selectedAluna) {
       const login = (selectedAluna as any).login; // Obtém o login da aluna
@@ -327,7 +327,7 @@ export function Alunas() {
   };
 
 
-  const editAlunas = async (data: any) => {
+  const editAlunas = async (data: any): Promise<void> => {
     // eslint-disable-next-line array-callback-return
     const aluna = {
       nome: data.nome,
@@ -363,15 +363,17 @@ export function Alunas() {
       getActions: (params: { id: GridRowId }) => [
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
+          key={params.id}
           icon={<AiFillEdit size={20} />}
           label="Editar"
-          onClick={async () => {
+          onClick={() => {
             setId(params.id);
             setOpenEdit(true);
           }}
         />,
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
+          key={params.id}
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
           onClick={() => {
@@ -596,7 +598,7 @@ export function Alunas() {
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
           <FormText>Altere os dados da aluna.</FormText>
-          <Form onSubmit={handleSubmit(editAlunas)}>
+          <Form onSubmit={handleSubmit(editAlunas) }>
             <TextField
               id="outlined-nome"
               label="Nome Completo *"
