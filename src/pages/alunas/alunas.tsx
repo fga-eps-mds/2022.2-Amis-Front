@@ -184,11 +184,12 @@ export function Alunas() {
 
     const response = await cadastraAluna(aluna);
     if (response.status === 201) {
-      //console.log("Aluna cadastrada com sucesso!")
+
+      console.log("Aluna cadastrada com sucesso!")
       handleClose();
       toast.success("Aluna cadastrada com sucesso!");
     } else {
-      //console.log("MENSAGEM NEGATIVA!!")
+      console.log("MENSAGEM NEGATIVA!!")
       toast.error("Erro ao cadastrar a aluna.");
     }
     await queryClient.invalidateQueries("listar_alunas");

@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { Turmas } from "../turmas";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -8,6 +8,7 @@ import * as turmasService from "../../../services/turmas";
 import { listarAlunasMock } from "./turmas.mock";
 
 const listarAlunasSpy = jest.spyOn(turmasService, 'listarAlunas');
+
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
@@ -16,6 +17,7 @@ jest.mock('react-toastify', () => ({
 
 const renderComponent = async()=> {
   const queryClient = new QueryClient ();
+  await act(async () => {
   render(
     // eslint-disable-next-line react/react-in-jsx-scope
     <QueryClientProvider client={queryClient}>
@@ -25,7 +27,8 @@ const renderComponent = async()=> {
         </ThemeProvider>
       </Router>
     </QueryClientProvider>
-  );
+   );
+  });
   return queryClient;
 }
 

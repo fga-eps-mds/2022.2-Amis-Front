@@ -2,27 +2,8 @@ import { AlunasCadastrarDTO } from "../pages/alunas/dtos/AlunasCadastrar.dto";
 import api from "./api";
 
 export const cadastraAluna = async (payload: AlunasCadastrarDTO) => {
-  try {
-    const response = await api.post("/student/", payload);
-    return response;
-  } catch (error:any) {
-    if (error.response) {
-      // Ocorreu um erro com resposta do servidor (por exemplo, status HTTP diferente de 2xx)
-      console.log("Erro de resposta do servidor:");
-      console.log("Status:", error.response.status);
-      console.log("Dados da resposta:", error.response.data);
-      console.log("Cabeçalhos da resposta:", error.response.headers);
-    } else if (error.request) {
-      // A solicitação foi feita, mas não houve resposta do servidor
-      console.log("Erro de solicitação:");
-      console.log("Erro:", error.request);
-    } else {
-      // Ocorreu um erro ao configurar a solicitação ou ao processar a resposta
-      console.log("Erro durante o processamento da solicitação:");
-      console.log("Mensagem de erro:", error.message);
-    }
-    throw error; // Rejeita a Promise para que o erro seja tratado no chamador
-  }
+  //console.log('Dados da requisição:', payload); // Substitua "data" pelos dados que você está enviando
+  return await api.post("/student/", payload).then((response: any) => response);
 };
 
 export const listarAlunas = async () => {

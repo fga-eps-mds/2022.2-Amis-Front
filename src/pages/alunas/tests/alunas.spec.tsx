@@ -49,6 +49,11 @@ const renderComponent = ()=> {
 }
 
 describe("Alunas", () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  
+
   it("teste de clique no botão Cadastrar",  () => {
     // eslint-disable-next-line react/react-in-jsx-scope
     renderComponent();
