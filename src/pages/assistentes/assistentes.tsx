@@ -1,12 +1,11 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable react/jsx-key */
 import React, { useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import * as EmailValidator from 'email-validator';
+
 import {
   Box,
   Button,
@@ -198,10 +197,9 @@ export function Assistentes() {
       toast.error("O CPF informado é invalido.");
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(assistente.email)) {
-       toast.error("E-mail inválido.");
-       return;
+    const emailValido = EmailValidator.validate(assistente.email);
+    if (!emailValido) {
+      toast.error("O e-mail informado é inválido.");
     }
 
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;

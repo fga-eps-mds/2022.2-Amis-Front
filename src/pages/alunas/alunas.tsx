@@ -12,6 +12,7 @@ import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from 'react-toastify';
 import { Typography } from "@mui/material";
 import CPFMask from "../../shared/components/Masks/ValueMask";
+import * as EmailValidator from 'email-validator';
 
 import {
   Box,
@@ -203,10 +204,9 @@ export function Alunas() {
       toast.error("O CPF informado é invalido.");
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(aluna.email)) {
-       toast.error("E-mail inválido.");
-       return;
+    const emailValido = EmailValidator.validate(aluna.email);
+    if (!emailValido) {
+      toast.error("O e-mail informado é inválido.");
     }
 
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
