@@ -3,16 +3,16 @@
 exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
 <div>
   <div
-    className="sc-hBxehG ibKRjt"
+    className="sc-ipEyDJ iNhSUS"
   >
     <div
-      className="sc-fnGiBr vpwKY"
+      className="sc-csuSiG hOMzVq"
     >
       <div
-        className="sc-fEXmlR boZxAa"
+        className="sc-eDWCr fPDczd"
       >
         <h1
-          className="sc-bjfHbI iJdsUp"
+          className="sc-bqWxrE bsUfAj"
         >
           AMIS
         </h1>
@@ -21,7 +21,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
           onClick={[Function]}
         >
           <button
-            className="sc-idXgbr jmnPjA"
+            className="sc-ksBlkl cHvHkv"
             onClick={[Function]}
           >
             Home
@@ -32,7 +32,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
           onClick={[Function]}
         >
           <button
-            className="sc-idXgbr dPAtZG"
+            className="sc-ksBlkl cgyygN"
             onClick={[Function]}
           >
             Receitas
@@ -53,18 +53,18 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     </div>
   </div>
   <div
-    className="sc-kgTSHT vNa-dT"
+    className="sc-bjfHbI blaGIl"
   >
     <div
-      className="sc-fLcnxK iuHPaY"
+      className="sc-idXgbr jCQzeu"
     >
       <h1
-        className="sc-iveFHk bNZPJP"
+        className="sc-hHTYSt jDkCJe"
       >
         AMIS
       </h1>
       <h1
-        className="sc-iveFHk bNZPJP"
+        className="sc-hHTYSt jDkCJe"
       >
         Mulheres Criativas
       </h1>
@@ -116,7 +116,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       }
     >
       <img
-        className="sc-bBABsx jczzxV"
+        className="sc-dIfARi dvNEGs"
         src="test-file-stub"
         style={
           {
@@ -129,7 +129,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
         }
       />
       <img
-        className="sc-bBABsx jczzxV"
+        className="sc-dIfARi dvNEGs"
         src="test-file-stub"
         style={
           {
@@ -141,76 +141,76 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     </div>
   </div>
   <div
-    className="sc-cwSeag ePDlRK"
+    className="sc-dmctIk eqmaEq"
   >
     <h1
-      className="sc-lllmON kNZGHC"
+      className="sc-kgTSHT ihVGqN"
     >
       Quem Somos
     </h1>
     <span
-      className="sc-iJnaPW fEfPCp"
+      className="sc-fLcnxK eMddWG"
     >
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate, sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem. Maecenas et lacus vel lacus lacinia porttitor. Nulla tempus dictum efficitur. Suspendisse potenti. Sed ac nulla eget nunc tempor faucibus sed et mauris. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Quisque tortor ipsum, tincidunt eget ligula at, aliquet commodo purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In pretium leo ac dolor gravida pretium. Sed eu venenatis lacus, efficitur pulvinar massa. Morbi aliquet sapien vitae purus tincidunt, eget consequat erat iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut fermentum non libero ut consequat. Quisque elementum velit eget ipsum suscipit rutrum.
     </span>
     <h1
-      className="sc-lllmON kNZGHC"
+      className="sc-kgTSHT ihVGqN"
     >
        Nossa missão
     </h1>
     <span
-      className="sc-iJnaPW fEfPCp"
+      className="sc-fLcnxK eMddWG"
     >
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam aliquam egestas ultricies. Morbi venenatis, odio a laoreet vulputate, sapien tellus ornare orci, sit amet feugiat arcu dui sed lorem. Maecenas et lacus vel lacus lacinia porttitor. Nulla tempus dictum efficitur. Suspendisse potenti. Sed ac nulla eget nunc tempor faucibus sed et mauris. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Quisque tortor ipsum, tincidunt eget ligula at, aliquet commodo purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In pretium leo ac dolor gravida pretium. Sed eu venenatis lacus, efficitur pulvinar massa. Morbi aliquet sapien vitae purus tincidunt, eget consequat erat iaculis. Donec ut sem ac sapien laoreet congue id et neque. Ut fermentum non libero ut consequat. Quisque elementum velit eget ipsum suscipit rutrum.
     </span>
   </div>
   <div
-    className="sc-gikAfH jwNVoc"
+    className="sc-bBABsx hdTJTu"
   >
     <div
-      className="sc-ezOQGI fPIdKw"
+      className="sc-iveFHk kxAKQE"
     >
       <h1
-        className="sc-bYMpWt bpkZWv"
+        className="sc-cwSeag dKRnpi"
       />
       <span
-        className="sc-kMjNwy hrpIXe"
+        className="sc-lllmON bUzVLa"
       >
         Mulheres atendidas
       </span>
     </div>
     <div
-      className="sc-ezOQGI fPIdKw"
+      className="sc-iveFHk kxAKQE"
     >
       <h1
-        className="sc-bYMpWt bpkZWv"
+        className="sc-cwSeag dKRnpi"
       />
       <span
-        className="sc-kMjNwy hrpIXe"
+        className="sc-lllmON bUzVLa"
       >
         Formações profissionais
       </span>
     </div>
   </div>
   <div
-    className="sc-ilhmMj jaunbF"
+    className="sc-iJnaPW jOPtMN"
   >
     <div>
       <h1
-        className="sc-jIRcFI eoUPgx"
+        className="sc-gikAfH dNLHga"
       >
         Nossas receitas
       </h1>
     </div>
   </div>
   <div
-    className="sc-dIfARi hIOfut"
+    className="sc-hBxehG ihUWmk"
   >
     <a
       href="https://www.instagram.com/amismulherescriativas/"
     >
       <img
-        className="sc-hHTYSt ibSsFW"
+        className="sc-fnGiBr inBseq"
         src="test-file-stub"
         style={
           {
@@ -225,7 +225,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
       href="https://pt-br.facebook.com/InstitutoMulheresCriativas/"
     >
       <img
-        className="sc-hHTYSt ibSsFW"
+        className="sc-fnGiBr inBseq"
         src="test-file-stub"
         style={
           {
@@ -238,7 +238,7 @@ exports[`Snapshot Deve corresponder ao Snapshot 1`] = `
     </a>
     <div>
       <span
-        className="sc-dmctIk kzFREf"
+        className="sc-fEXmlR cWpkJD"
       >
         © 2022. All rights reserved.
       </span>
