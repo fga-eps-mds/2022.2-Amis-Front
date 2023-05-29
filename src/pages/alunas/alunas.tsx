@@ -11,7 +11,7 @@ import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from 'react-toastify';
 import { Typography } from "@mui/material";
-import CPFMask from "../../shared/components/Masks/ValueMask";
+import ValueMask from "../../shared/components/Masks/ValueMask";
 
 import {
   Box,
@@ -312,7 +312,7 @@ export function Alunas() {
                 {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              <CPFMask label="cpf" />
+              <ValueMask label="cpf" />
 
               <FormControl sx={{ width: '100%', background: '#F5F4FF' }}>
                 <InputLabel id="select-deficiencia-label">Possui deficiência?</InputLabel>
@@ -328,9 +328,9 @@ export function Alunas() {
                 </Select>
               </FormControl>
 
-              <CPFMask label="data_nascimento" />
+              <ValueMask label="data_nascimento" />
 
-              <CPFMask label="telefone" />
+              <ValueMask label="telefone" />
 
               <TextField
                 id="outlined-email"
@@ -452,7 +452,7 @@ export function Alunas() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <CPFMask label="cep" />
+              <ValueMask label="cep" />
 
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
