@@ -103,7 +103,7 @@ export function Login() {
           <Form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               id="outlined-cpf"
-              label="Email"
+              label="Login"
               {...register("email")}
               sx={{ width: "60%", background: "#F5F4FF" }}
             />
