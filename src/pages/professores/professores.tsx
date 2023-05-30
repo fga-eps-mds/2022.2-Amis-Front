@@ -10,6 +10,7 @@ import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
 import ValueMask from "../../shared/components/Masks/ValueMask";
+import * as EmailValidator from 'email-validator';
 
 import {
   Box,

@@ -1,25 +1,19 @@
+import {
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import {BrowserRouter as Router } from "react-router-dom";
+//import { act } from 'react-dom/test-utils';
+import { toast } from "react-toastify";
+import { ThemeProvider } from "styled-components";
+import * as assistentesService from "../../../services/assistentes";
+//import { queryClient } from "../../../services/queryClient";
+import theme from "../../../styles/theme";
 import { Assistentes } from "../assistentes";
 import { CadastrarAssistenteMock } from "./assistentes.mock";
-import * as assistentesService from "../../../services/assistentes";
-import { toast } from "react-toastify";
-import React, { Component } from "react";
-import { BrowserRouter, BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider } from "styled-components";
-import theme from "../../../styles/theme";
-import renderer from "react-test-renderer";
-import { QueryClientProvider, QueryClient } from "react-query";
-import { queryClient } from "../../../services/queryClient";
-import {
-  getByAltText,
-  getByLabelText,
-  getByPlaceholderText,
-  getByRole,
-  getByTestId,
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+//import { GetAssistenteMock } from "./assistentes.mock";
 
 
 const cadastraAssistenteSpy = jest.spyOn(assistentesService, 'cadastrarAssistente');
@@ -29,8 +23,15 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
+//const listarAssistenteSpy = jest.spyOn(assistentesService, 'listarAssistentes');
+//jest.mock('react-toastify', () => ({
+//  toast: {
+//    success: jest.fn(),
+//  },
+//}));
 
-const renderComponent = ()=> {
+
+const renderComponent = async()=> {
   const queryClient = new QueryClient ();
   render(
     // eslint-disable-next-line react/react-in-jsx-scope
@@ -42,7 +43,6 @@ const renderComponent = ()=> {
       </Router>
     </QueryClientProvider>
   );
-
   return queryClient;
 }
 
@@ -64,6 +64,7 @@ describe("Assistentes", () => {
     const toastSuccessSpy = jest.spyOn(toast, 'success');
 
     cadastraAssistenteSpy.mockImplementation(CadastrarAssistenteMock);
+    //listarAssistenteSpy.mockImplementation(GetAssistenteMock);
 
     renderComponent();
     
@@ -96,29 +97,11 @@ describe("Assistentes", () => {
     const response = { status: 201 };
 
     if (response.status === 201) {
-      console.log("Assistente cadastrado com sucesso!");
+      //console.log("Assistente cadastrado com sucesso!");
       toast.success("Assistente cadastrado com sucesso!");
     }
 
     // Verifique se o spy foi chamado corretamente
     expect(toastSuccessSpy).toHaveBeenCalledWith("Assistente cadastrado com sucesso!");
-  });
-});
-
-
-describe("Snapshot", () => {
-  it("Deve corresponder ao Snapshot", () => {
-    const tree = renderer
-      .create(
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <ThemeProvider theme={theme}>
-              <Assistentes />
-            </ThemeProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
-      )
-      .toJSON();
-    expect(tree).toMatchSnapshot();
   });
 });

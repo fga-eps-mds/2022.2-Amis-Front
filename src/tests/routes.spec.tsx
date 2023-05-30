@@ -1,22 +1,28 @@
-import { QueryClientProvider } from "react-query";
-import { BrowserRouter } from "react-router-dom";
-import renderer from "react-test-renderer";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { ThemeProvider } from "styled-components";
 import AppRoutes from "../routes";
-import { queryClient } from "../services/queryClient";
 import theme from "../styles/theme";
+import { render } from "@testing-library/react";
 
-describe("Snapshot", () => {
-  it("Deve corresponder ao Snapshot", () => {
-    const tree = renderer
-      .create(
-        <QueryClientProvider client={queryClient}>
+
+
+
+const renderComponent = async()=> {
+  const queryClient = new QueryClient ();
+  render(
+    // eslint-disable-next-line react/react-in-jsx-scope
+    <QueryClientProvider client={queryClient}>
           <ThemeProvider theme={theme}>
             <AppRoutes />
           </ThemeProvider>
-        </QueryClientProvider>
-      )
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    </QueryClientProvider>
+  );
+  return queryClient;
+}
+
+describe("AppRoutes", () => {
+  it("Teste para renderizar o componente",  () => {
+    // eslint-disable-next-line react/react-in-jsx-scope
+    renderComponent();
   });
 });

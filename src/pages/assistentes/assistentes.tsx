@@ -1,12 +1,10 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable react/jsx-key */
 import React, { useState } from "react";
-import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import * as EmailValidator from 'email-validator';
+
 import {
   Box,
   Button,
@@ -16,11 +14,10 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
-  MenuItem,
   Modal,
   OutlinedInput,
-  Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useQuery } from "react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -37,66 +34,34 @@ import {
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
-import CPFMask from "../../shared/components/Masks/ValueMask";
-import { Typography } from "@mui/material";
+import ValueMask from "../../shared/components/Masks/ValueMask";
+import validarCPF from "../../shared/functions/validarCPF";
+import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
 
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  background: ${(props) => props.theme.colors.grey};
-  display: inline-flex;
-`;
+import {
+  getContainerStyles,
+  getContentStyles,
+  getDivButtonsStyles,
+  getFormStyles,
+  getFormTextStyles,
+  getInlineStyles,
+} from '../../shared/components/Style/style';
 
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const DivButtons = styled.div`
-  width: 85%;
-  display: inline-flex;
-  justify-content: flex-end;
-  gap: 20px;
-  margin: 0 auto;
-  padding-top: 30px;
-`;
-
-const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-`;
-
-const FormText = styled.h1`
-  color: #525252;
-  font-size: 18px;
-  font-weight: 400;
-  text-align: left;
-  padding-bottom: 25px;
-`;
-
-const style = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  border: "none",
-  boxShadow: 24,
-  p: 4,
-  padding: "50px",
-  height: "85%",
-  overflow: "hidden",
-  overflowY: "scroll",
-};
-
+function transformDate(date: any) {
+  const parts = date.split('/');
+  const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  return transformedDate;
+}
 
 export function Assistentes() {
+  const Container = getContainerStyles();
+  const Content = getContentStyles();
+  const DivButtons = getDivButtonsStyles();
+  const Form = getFormStyles();
+  const FormText = getFormTextStyles();
+  const style = getInlineStyles();
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [open, setOpen] = useState(false);
@@ -104,7 +69,6 @@ export function Assistentes() {
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [selectedAssistente, setSelectedAssistente] = useState(null);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
@@ -113,35 +77,105 @@ export function Assistentes() {
   const methods = useForm();
   const {
     register,
-    trigger,
     watch,
     handleSubmit,
     setValue,
     formState: { errors },
   } = methods;
 
-  function transformDate(date: any) {
-    const parts = date.split('/');
-    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return transformedDate;
-  }
+  const validateCPF = (cpf: string): boolean => {
+
+    const cpfEhValido = validarCPF(cpf);
+    if (!cpfEhValido) {
+      toast.error("O CPF informado é inválido.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailValido = EmailValidator.validate(email);
+    if (!emailValido) {
+      toast.error("O e-mail informado é inválido.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateDate = (date: string): boolean => {
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if (!dateRegex.test(date)) {
+      toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
+      return false;
+    }
+    const matchResult = dateRegex.exec(date);
+
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return false;
+    }
+    const [, dia, mes, ano] = matchResult;
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+    if (
+      dataNascimento.getFullYear() !== Number(ano) ||
+      dataNascimento.getMonth() !== Number(mes) - 1 ||
+      dataNascimento.getDate() !== Number(dia)
+    ) {
+      toast.error("Data de nascimento inválida.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateNome = (nome: string): boolean => {
+    if (nome.length > 70) {
+      toast.error("Nome inválido.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateLogin = (login: string): boolean => {
+    if (login.length < 8) {
+      toast.error("Login muito pequeno.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateSenha = (senha: string): boolean => {
+    if (senha.length < 8) {
+      toast.error("Senha muito pequena.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateAge = (dataNascimento: Date): boolean => {
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+    const mesAtual = hoje.getMonth();
+    const mesNascimento = dataNascimento.getMonth();
+    if (
+      mesAtual < mesNascimento ||
+      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
+    ) {
+      idade--;
+    }
+    if (idade < 18) {
+      toast.error("É necessário ter mais de 18 anos para este cadastro.");
+      return false;
+    }
+    return true;
+  };
+
 
   const registerAssistentes = async (data: any) => {
-
-    function removeSpecialCharacters(string: any) {
-      if (typeof string === 'string' || string instanceof String) {
-        return string.replace(/[./\-\(\) ]/g, "");
-      }
-      return "";
-    }
-
-
-
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
-      data_nascimento: data.data_nascimento,
-      dNascimento:data.data_nascimento,
+      //data_nascimento: data.data_nascimento,
+      dNascimento: data.data_nascimento,
       telefone: data.telefone,
       email: data.email,
       login: data.login,
@@ -150,15 +184,59 @@ export function Assistentes() {
       administrador: true,
     } as AssistentesCadastrarDTO;
 
-    console.log(assistente.dNascimento);
+    const cpfValido = validateCPF(assistente.cpf);
+    if (!cpfValido) {
+      return;
+    }
+
+    const emailValido = validateEmail(assistente.email);
+    if (!emailValido) {
+      return;
+    }
+
+    const dateValido = validateDate(assistente.dNascimento);
+    if (!dateValido) {
+      return;
+    }
+
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+    const matchResult = dateRegex.exec(assistente.dNascimento);
+
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
+      return;
+    }
+
+    const nomeValido = validateNome(assistente.nome);
+    if (!nomeValido) {
+      return;
+    }
+
+    const loginValido = validateLogin(assistente.login);
+    if (!loginValido) {
+      return;
+    }
+
+    const senhaValida = validateSenha(assistente.senha);
+    if (!senhaValida) {
+      return;
+    }
 
     assistente.cpf = removeSpecialCharacters(assistente.cpf);
     assistente.telefone = removeSpecialCharacters(assistente.telefone);
     assistente.dNascimento = transformDate(assistente.dNascimento);
 
-    console.log(assistente.dNascimento);
-
-    const response = await cadastrarAssistente(assistente);
+    const response: any = await cadastrarAssistente(assistente);
 
     if (response.status === 201) {
       setOpen(false);
@@ -178,21 +256,23 @@ export function Assistentes() {
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
-    console.log(response.data)
+    //console.log(response.data)
     const temp: AssistentesListarDTO[] = [];
-    response.data.forEach((value: AssistentesListarDTO, index: number) => {
-      temp.push({
-        id: index,
-        nome: value.nome,
-        cpf: value.cpf,
-        dNascimento: value.dNascimento,
-        telefone: value.telefone,
-        email: value.email,
-        login: value.login,
-        observacao: value.observacao,
-        administrador: value.administrador
+    if (response.data && Array.isArray(response.data)) {
+      response.data.forEach((value: AssistentesListarDTO, index: number) => {
+        temp.push({
+          id: index,
+          nome: value.nome,
+          cpf: value.cpf,
+          dNascimento: value.dNascimento,
+          telefone: value.telefone,
+          email: value.email,
+          login: value.login,
+          observacao: value.observacao,
+          administrador: value.administrador
+        });
       });
-    });
+    }
     setDataTable(temp);
   });
 
@@ -209,7 +289,7 @@ export function Assistentes() {
       }
 
       handleCloseConfirmation();
-      await queryClient.invalidateQueries("listar_assistente");
+      await queryClient.invalidateQueries("listar_assistentes");
     }
   };
 
@@ -242,9 +322,14 @@ export function Assistentes() {
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
     if (response.status === 200) {
-      queryClient.invalidateQueries("listar_assistentes");
-      setOpenEdit(false);
-      toast.success("Assistente editado com sucesso!");
+      try {
+        await queryClient.invalidateQueries("listar_assistentes");
+        setOpenEdit(false);
+        toast.success("Assistente editado com sucesso!");
+      } catch (error) {
+        // Handle the error
+        console.error(error);
+      }
     }
   };
 
@@ -324,11 +409,11 @@ export function Assistentes() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <CPFMask label="cpf" />
+              <ValueMask label="cpf" />
 
-              <CPFMask label="data_nascimento" />
+              <ValueMask label="data_nascimento" />
 
-              <CPFMask label="telefone" />
+              <ValueMask label="telefone" />
 
               <TextField
                 id="outlined-email"
@@ -419,7 +504,7 @@ export function Assistentes() {
                       )}
                     </InputAdornment>
                   }
-                  label="Password"
+                  label="Password********"
                 />
                 {errors.senha_confirmada && (
                   <Typography

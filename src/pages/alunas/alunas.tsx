@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-
-import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
@@ -10,8 +8,10 @@ import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from 'react-toastify';
-import { Typography } from "@mui/material";
 import ValueMask from "../../shared/components/Masks/ValueMask";
+import * as EmailValidator from 'email-validator';
+import validarCPF from "../../shared/functions/validarCPF";
+import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
 
 import {
   Box,
@@ -27,79 +27,42 @@ import {
   OutlinedInput,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
+
 import { useQuery } from "react-query";
 import { useForm, FormProvider } from 'react-hook-form';
 import { AlunasListarDTO } from "./dtos/AlunasListar.dto";
 import { AlunasCadastrarDTO } from "./dtos/AlunasCadastrar.dto";
 import {
   cadastraAluna,
-  listaAlunas,
-  apagaAluna,
-  editaAluna,
+  listarAlunas,
+  excluirAluna,
+  editarAluna,
 } from "../../services/alunas";
 
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  background: ${(props) => props.theme.colors.grey};
-  display: inline-flex;
-`;
-
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const DivButtons = styled.div`
-  width: 85%;
-  display: inline-flex;
-  justify-content: flex-end;
-  gap: 20px;
-  margin: 0 auto;
-  padding-top: 30px;
-`;
-
-const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-`;
-
-const FormText = styled.h1`
-  color: #525252;
-  font-size: 18px;
-  font-weight: 400;
-  text-align: left;
-  padding-bottom: 25px;
-`;
-
-const style = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  border: "none",
-  boxShadow: 24,
-  p: 4,
-  padding: "50px",
-  height: "85%",
-  overflow: "hidden",
-  overflowY: "scroll",
-};
+import {
+  getContainerStyles,
+  getContentStyles,
+  getDivButtonsStyles,
+  getFormStyles,
+  getFormTextStyles,
+  getInlineStyles,
+} from '../../shared/components/Style/style';
 
 export function Alunas() {
+  const Container = getContainerStyles();
+  const Content = getContentStyles();
+  const DivButtons = getDivButtonsStyles();
+  const Form = getFormStyles();
+  const FormText = getFormTextStyles();
+  const style = getInlineStyles();
+
+
   const [open, setOpen] = useState(false);
-  const [aluna, setAluna] = useState(Object);
+  const [aluna] = useState(Object);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showPasswordError, setShowPasswordError] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [dataTable, setDataTable] = useState<Object[]>([]);
@@ -114,18 +77,10 @@ export function Alunas() {
 
   const {
     register,
-    trigger,
     handleSubmit,
     watch,
     formState: { errors },
   } = methods;
-
-  function removeSpecialCharacters(string: any) {
-    if (typeof string === 'string' || string instanceof String) {
-      return string.replace(/[./\-\(\) ]/g, "");
-    }
-    return "";
-  }
 
   function transformDate(date: any) {
     const parts = date.split('/');
@@ -133,7 +88,7 @@ export function Alunas() {
     return transformedDate;
   }
 
-  const cadastrarAlunas = async (data: any) => {
+  const cadastrarAlunas = async (data: any): Promise<void> => {
 
     const aluna = {
       nome: data.nome,
@@ -152,18 +107,89 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
+    const cpfEhValido = validarCPF(aluna.cpf);
+    if (!cpfEhValido) {
+      toast.error("O CPF informado é inválido.");
+      return;
+    }
+
+    const emailValido = EmailValidator.validate(aluna.email);
+    if (!emailValido) {
+      toast.error("O e-mail informado é inválido.");
+      return;
+    }
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if (!dateRegex.test(aluna.data_nascimento)) {
+      toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
+      return;
+    }
+
+    const matchResult = dateRegex.exec(aluna.data_nascimento);
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+
+    const [, dia, mes, ano] = matchResult;
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    if (
+      dataNascimento.getFullYear() !== Number(ano) ||
+      dataNascimento.getMonth() !== Number(mes) - 1 ||
+      dataNascimento.getDate() !== Number(dia)
+    ) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+
+    if (aluna.nome.length > 70) {
+      toast.error("Nome inválido.");
+      return;
+    }
+
+    if (aluna.login.length < 8) {
+      toast.error("Login muito pequeno.");
+      return;
+    }
+
+    if (aluna.senha.length < 8) {
+      toast.error("Senha muito pequena.");
+      return;
+    }
+
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+    const mesAtual = hoje.getMonth();
+    const mesNascimento = dataNascimento.getMonth();
+
+    if (
+      mesAtual < mesNascimento ||
+      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
+    ) {
+      idade--;
+    }
+
+    if (idade < 18) {
+      toast.error("É necessário ter mais de 18 anos para este cadastro.");
+      return;
+    }
+
+
+
     aluna.cpf = removeSpecialCharacters(aluna.cpf);
     aluna.telefone = removeSpecialCharacters(aluna.telefone);
     aluna.cep = removeSpecialCharacters(aluna.cep);
-    aluna.data_nascimento=transformDate(aluna.data_nascimento);
+    aluna.data_nascimento = transformDate(aluna.data_nascimento);
 
-    const response = await cadastraAluna(aluna);
+    const response: any = await cadastraAluna(aluna);
     if (response.status === 201) {
-      //console.log("Aluna cadastrada com sucesso!")
+
+      console.log("Aluna cadastrada com sucesso!")
       handleClose();
       toast.success("Aluna cadastrada com sucesso!");
     } else {
-      //console.log("MENSAGEM NEGATIVA!!")
+      console.log("MENSAGEM NEGATIVA!!")
       toast.error("Erro ao cadastrar a aluna.");
     }
     await queryClient.invalidateQueries("listar_alunas");
@@ -178,27 +204,28 @@ export function Alunas() {
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await listaAlunas();
+    const response = await listarAlunas();
     const temp: AlunasListarDTO[] = [];
-    response.data.forEach((value: AlunasListarDTO, index: number) => {
-      temp.push({
-        id: index, // Adiciona um id único com base no índice
-        login: value.login,
-        nome: value.nome,
-        cpf: value.cpf,
-        data_nascimento: value.data_nascimento,
+    if (response.data && Array.isArray(response.data)) {
+      response.data.forEach((value: AlunasListarDTO, index: number) => {
+        temp.push({
+          id: index, // Adiciona um id único com base no índice
+          login: value.login,
+          nome: value.nome,
+          cpf: value.cpf,
+          data_nascimento: value.data_nascimento,
+        });
       });
-    });
+    }
     setDataTable(temp);
   });
 
 
-  const deleteAlunas = async () => {
+  const deleteAlunas = async (): Promise<void> => {
     const selectedAluna = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
     if (selectedAluna) {
       const login = (selectedAluna as any).login; // Obtém o login da aluna
-      const response = await apagaAluna(login); // Passa o login para a função apagaAluna
-
+      const response = await excluirAluna(login); // Passa o login para a função apagaAluna
       if (response.status === 204) {
         toast.success("Aluna excluída com sucesso!");
       } else {
@@ -211,7 +238,7 @@ export function Alunas() {
   };
 
 
-  const editAlunas = async (data: any) => {
+  const editAlunas = async (data: any): Promise<void> => {
     // eslint-disable-next-line array-callback-return
     const aluna = {
       nome: data.nome,
@@ -225,7 +252,7 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    const response = await editaAluna(id.toString(), aluna);
+  const response = await editarAluna(id.toString(), aluna);
     if (response.status === 200 || response.status === 204) {
       toast.success("Aluna atualizada com sucesso!");
     } else {
@@ -247,15 +274,17 @@ export function Alunas() {
       getActions: (params: { id: GridRowId }) => [
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
+          key={params.id}
           icon={<AiFillEdit size={20} />}
           label="Editar"
-          onClick={async () => {
+          onClick={() => {
             setId(params.id);
             setOpenEdit(true);
           }}
         />,
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
+          key={params.id}
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
           onClick={() => {
@@ -480,7 +509,7 @@ export function Alunas() {
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
           <FormText>Altere os dados da aluna.</FormText>
-          <Form onSubmit={handleSubmit(editAlunas)}>
+          <Form onSubmit={handleSubmit(editAlunas) }>
             <TextField
               id="outlined-nome"
               label="Nome Completo *"

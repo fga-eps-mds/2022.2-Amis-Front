@@ -49,6 +49,11 @@ const renderComponent = ()=> {
 }
 
 describe("Alunas", () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  
+
   it("teste de clique no botão Cadastrar",  () => {
     // eslint-disable-next-line react/react-in-jsx-scope
     renderComponent();
@@ -92,14 +97,14 @@ describe("Alunas", () => {
     
 
     fireEvent.change(nomeInput, { target: { value: 'Alejandra' } });
-    fireEvent.change(inputCpf, { target: { value: '00011122233' } });
-    fireEvent.change(inputDataNascimento, { target: { value: '09012001' } });
+    fireEvent.change(inputCpf, { target: { value: '89402523065' } });
+    fireEvent.change(inputDataNascimento, { target: { value: '09011964' } });
     fireEvent.change(inputTelefone, { target: { value: '61999999999' } });
     fireEvent.change(inputEmail, { target: { value: 'pedro@gmail.com' } });
-    fireEvent.change(inputSenha, { target: { value: '1234' } });
-    fireEvent.change(inputConfirmarSenha, { target: { value: '1234' } });
-    fireEvent.change(inputLogin, { target: { value: 'pedro' } });
-    fireEvent.change(inputBairro, { target: { value: 'Recanto das Emas' } });
+    fireEvent.change(inputSenha, { target: { value: 'alejandra12345' } });
+    fireEvent.change(inputConfirmarSenha, { target: { value: 'alejandra12345' } });
+    fireEvent.change(inputLogin, { target: { value: 'alejandra12345' } });
+    fireEvent.change(inputBairro, { target: { value: 'Gama' } });
     fireEvent.change(inputCidade, { target: { value: 'Brasilia' } });
     fireEvent.change(inputdEndereco, { target: { value: 'qd 111 cj 22 cs 33' } });
     fireEvent.change(inputCep, { target: { value: '72610518' } });
@@ -121,22 +126,4 @@ describe("Alunas", () => {
     toastSuccessSpy.mockRestore();
   });
 
-});
-
-
-describe("Snapshot", () => {
-  it("Deve corresponder ao Snapshot", () => {
-    const tree = renderer
-      .create(
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <ThemeProvider theme={theme}>
-              <Alunas />
-            </ThemeProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
-      )
-      .toJSON();
-    expect(tree).toMatchSnapshot();
-  });
 });

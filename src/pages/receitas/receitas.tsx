@@ -323,7 +323,7 @@ export function Receitas() {
             </Inputs>
             {ingre.map((value: string, index: number) => (
               // eslint-disable-next-line react/jsx-key
-              <DivInput id="divIngr">
+              <DivInput id="divIngr" key={index}>
                 <input
                   id={String(index)}
                   key={index}
@@ -348,7 +348,7 @@ export function Receitas() {
             </Inputs>
             {prep.map((value: string, index: number) => (
               // eslint-disable-next-line react/jsx-key
-              <DivInput id="divPrep">
+              <DivInput id="divPrep" key={index}>
                 <input
                   id={String(index)}
                   key={index}
