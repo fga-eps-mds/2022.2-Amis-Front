@@ -7,6 +7,7 @@ import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import {
+  Autocomplete,
   Box,
   Button,
   Dialog,
@@ -27,7 +28,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
 import { VagasListarDTO } from "./dtos/VagasListar.dto";
@@ -41,6 +42,7 @@ import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricular.dto";
 import { toast } from "react-toastify";
+import ValueMask from "../../shared/components/Masks/ValueMask";
 import { queryClient } from "../../services/queryClient";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
 import {
@@ -131,16 +133,20 @@ export function Turmas(this: any) {
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
   const [vagas, setVagas] = useState<VagasListarDTO>();
   const [matriculas, setMatriculas] = useState(Array);
+  const methods = useForm({});
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({});
+  } = methods;
   const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
 
   const registerTurmas = async (data: any) => {
     const turma = {
+      curso: data.curso,
+      professor: data.professor,
+      turma: data.turma,
       descricao: data.descricao,
       turno: data.turno,
       capacidade: data.capacidade,
@@ -149,6 +155,69 @@ export function Turmas(this: any) {
       dataInicio: data.dataInicio,
       dataFim: data.dataFim,
     } as TurmasCadastrarDTO;
+
+    if (turma.turma.length > 70) {
+      toast.error("Nome da turma inválido, use menos de 70 caracteres.");
+      return;
+    }
+
+    console.log(turma.dataInicio);
+    console.log(turma.dataFim);
+
+    function validateDates(dataInicio: string, dataFim: string): boolean {
+      const startDate = new Date(dataInicio);
+      const endDate = new Date(dataFim);
+
+      if (startDate.getTime() < endDate.getTime()) {
+        return true; // Data de início é anterior à data de fim
+      }
+
+      return false; // Data de início não é anterior à data de fim
+    }
+
+    if (!validateDates(turma.dataInicio, turma.dataFim)) {
+      // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
+      toast.error("A data de início deve ser anterior à data de fim.");
+      return;
+    }
+
+    function validateHorarios(
+      horarioInicio: string,
+      horarioFim: string
+    ): boolean {
+      const [inicioHora, inicioMinuto] = horarioInicio.split(":").map(Number);
+      const [fimHora, fimMinuto] = horarioFim.split(":").map(Number);
+
+      if (
+        inicioHora >= 0 &&
+        inicioHora <= 23 &&
+        inicioMinuto >= 0 &&
+        inicioMinuto <= 59 &&
+        fimHora >= 0 &&
+        fimHora <= 23 &&
+        fimMinuto >= 0 &&
+        fimMinuto <= 59 &&
+        (inicioHora < fimHora ||
+          (inicioHora === fimHora && inicioMinuto < fimMinuto))
+      ) {
+        return true; // horarioInicio é anterior a horarioFim e dentro do intervalo válido
+      }
+
+      return false; // horarioInicio não é anterior a horarioFim ou fora do intervalo válido
+    }
+
+    if (!validateHorarios(turma.horarioInicio, turma.horarioFim)) {
+      // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
+      toast.error(
+        "O horário de início deve ser anterior ao horário de término e deve estar entre 00:00h e 23:59h"
+      );
+      return;
+    }
+
+    if (turma.capacidade <= 0) {
+      toast.error("A capacidade deve ser um número maior que 0.");
+      return;
+    }
 
     const response = await cadastrarTurmas(turma);
     if (response.status === 201) {
@@ -170,7 +239,7 @@ export function Turmas(this: any) {
           capacidade: value.capacidade,
           horarioInicio: value.horarioInicio,
           horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
+          dataInicio: value.dataFim,
           dataFim: value.dataFim,
           turno: "Matutino",
         });
@@ -233,6 +302,9 @@ export function Turmas(this: any) {
 
   const editTurmas = async (data: any) => {
     const turmaEdit = {
+      curso: data.curso,
+      professor: data.professor,
+      turma: data.turma,
       descricao: data.descricao,
       turno: data.turno,
       capacidade: data.capacidade,
@@ -331,9 +403,10 @@ export function Turmas(this: any) {
       response.data.forEach((value: AlunasListarDTO) => {
         temp.push({
           id: value.id,
+          login: value.login,
           nome: value.nome,
           cpf: value.cpf,
-          dNascimento: value.dNascimento,
+          data_nascimento: value.data_nascimento,
         });
       });
       setDataTableAlunas(temp);
@@ -469,71 +542,97 @@ export function Turmas(this: any) {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormText
-            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
-          >
-            Cadastrar uma nova turma
-          </FormText>
-          <Form onSubmit={handleSubmit(registerTurmas)}>
-            <TextField
-              id="outlined-descricao"
-              label="Turma"
-              required={true}
-              {...register("descricao")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Turno</InputLabel>
-              <Select
-                id="simple-select-label-turno"
-                labelId="simple-select-turno"
-                label="Informe o turno"
-                defaultValue=""
-                {...register("turno")}
+          <FormProvider {...methods}>
+            <FormText
+              style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
+            >
+              Cadastrar uma nova turma
+            </FormText>
+            <Form onSubmit={handleSubmit(registerTurmas)}>
+              <Autocomplete
+                multiple
+                disablePortal
+                id="combo-box-demo"
+                options={["curso 1", "curso 2", "curso 3"]}
+                required={true}
+                {...register("curso")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={1 as any}>Matutino</MenuItem>
-                <MenuItem value={2 as any}>Vespertino</MenuItem>
-                <MenuItem value={3 as any}>Noturno</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              id="outlined-capacidade"
-              label="Número de vagas"
-              required={true}
-              {...register("capacidade")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dataInicio"
-              label="Data de Início"
-              required={true}
-              {...register("dataInicio")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dataFim"
-              label="Data de Término"
-              required={true}
-              {...register("dataFim")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-horarioInicio"
-              label="Horário de Inicio"
-              required={true}
-              {...register("horarioInicio")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-horarioFim"
-              label="Horário de Término"
-              required={true}
-              {...register("horarioFim")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <PrimaryButton text={"Cadastrar"} />
-          </Form>
+                renderInput={(params) => (
+                  <TextField {...params} label="Curso" />
+                )}
+              />
+              <TextField
+                id="outlined-turma"
+                label="Turma"
+                required={true}
+                {...register("turma")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-descricao"
+                label="Descrição"
+                required={true}
+                {...register("descricao")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Turno</InputLabel>
+                <Select
+                  id="simple-select-label-turno"
+                  labelId="simple-select-turno"
+                  label="Informe o turno"
+                  defaultValue=""
+                  {...register("turno")}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
+                >
+                  <MenuItem value={1 as any}>Matutino</MenuItem>
+                  <MenuItem value={2 as any}>Vespertino</MenuItem>
+                  <MenuItem value={3 as any}>Noturno</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                id="outlined-capacidade"
+                label="Número de vagas"
+                required={true}
+                inputProps={{ type: "number", maxLength: 3 }}
+                {...register("capacidade")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+
+              <ValueMask label="dataInicio" />
+
+              <ValueMask label="dataFim" />
+
+              <TextField
+                id="outlined-horarioInicio"
+                label="Horário de Inicio"
+                required={true}
+                {...register("horarioInicio")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              {/* <ValueMask label="horarioInicio" /> */}
+              <TextField
+                id="outlined-horarioFim"
+                label="Horário de Término"
+                required={true}
+                {...register("horarioFim")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              {/* <ValueMask label="horarioFim" /> */}
+              <Autocomplete
+                multiple
+                disablePortal
+                id="combo-box-demo"
+                options={["professor 1", "professor 2", "professor 3"]}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                {...register("professor")}
+                renderInput={(params) => (
+                  <TextField {...params} label="Professor" />
+                )}
+              />
+              <PrimaryButton text={"Cadastrar"} />
+            </Form>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
@@ -545,8 +644,15 @@ export function Turmas(this: any) {
           </FormText>
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
-              id="outlined-descricao"
+              id="outlined-turma"
               label="Turma"
+              required={true}
+              {...register("turma")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-descricao"
+              label="Descrição"
               required={true}
               {...register("descricao")}
               sx={{ width: "100%", background: "#F5F4FF" }}
@@ -565,6 +671,7 @@ export function Turmas(this: any) {
                 labelId="simple-select-turno"
                 label="Informe o turno"
                 defaultValue=""
+                required={true}
                 {...register("turno")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               >
