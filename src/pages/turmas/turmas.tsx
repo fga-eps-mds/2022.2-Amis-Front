@@ -603,22 +603,22 @@ export function Turmas(this: any) {
 
               <ValueMask label="dataFim" />
 
-              <TextField
+              {/* { <TextField
                 id="outlined-horarioInicio"
                 label="Horário de Inicio"
                 required={true}
                 {...register("horarioInicio")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              {/* <ValueMask label="horarioInicio" /> */}
-              <TextField
+              /> */}
+              { <ValueMask label="horarioInicio" /> }
+              {/* <TextField
                 id="outlined-horarioFim"
                 label="Horário de Término"
                 required={true}
                 {...register("horarioFim")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              {/* <ValueMask label="horarioFim" /> */}
+              /> */}
+              <ValueMask label="horarioFim" />
               <Autocomplete
                 multiple
                 disablePortal

@@ -51,15 +51,15 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       return formattedValue;
     }
 
-    // eslint-disable-next-line no-constant-condition
     if (label === "horarioFim" || label === "horarioInicio") {
-      const horarioRegex = /^(\d{0,2})(\d{0,2})$/;
-      const parts = numericValue.match(horarioRegex);
+      // Aplica a máscara de hora
+      const horaRegex = /^(\d{0,2})(\d{0,2})$/;
+      const parts = numericValue.match(horaRegex);
+    
       if (parts) {
-        const hora = parts[1] ? `${parts[1]}:` : "";
-        const minutos = parts[2] ? `${parts[2].padStart(2, "0")}` : "";
-        formattedValue = `${hora}${minutos}`;
+        formattedValue = `${parts[1]}${parts[2] ? `:${parts[2]}` : ""}`;
       }
+      return formattedValue;
     }
 
     // eslint-disable-next-line no-constant-condition
@@ -71,6 +71,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       // Aplica a máscara de data de nascimento
       const dataNascimentoRegex = /^(\d{0,2})(\d{0,2})(\d{0,4})$/;
       const parts = numericValue.match(dataNascimentoRegex);
+      
 
       if (parts) {
         // formattedValue = `(${parts[0]})`;
