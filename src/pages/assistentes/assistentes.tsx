@@ -270,7 +270,7 @@ export function Assistentes() {
           email: value.email,
           login: value.login,
           observacao: value.observacao,
-          administrador: value.administrador
+          administrador: value.administrador,
         });
       });
     }
@@ -295,7 +295,6 @@ export function Assistentes() {
   };
 
   const carregarAssistentes = async (id: any) => {
-    console.log("Passando no carregar "+id);
     const response = dataTable.find((element: any) => {
       if (element.id === id) {
         return element;
@@ -304,8 +303,6 @@ export function Assistentes() {
 
     const assistente = response as AssistentesListarDTO;
     setAssistente(assistente);
-
-    console.log("assistente:"+ assistente.dNascimento);
 
     setValue("nomeEdit", assistente.nome);
     setValue("cpfEdit", assistente.cpf);
@@ -317,6 +314,7 @@ export function Assistentes() {
   };
 
   const editAssistentes = async (data: any) => {
+
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
@@ -324,12 +322,14 @@ export function Assistentes() {
       telefone: data.telefoneEdit,
       email: data.emailEdit,
       login: data.loginEdit,
-      observacao: data.observacao
+      observacao: assistente.observacao,
+      administrador:assistente.administrador,
+      //senha:assistente.senha,
     };
 
-    console.log("A data no editar:"+data.loginEdit)
+    console.log("O adm no editar:"+assistente.administrador);
 
-    const response = await editarAssistente(assistente.id, assistenteEditada);
+    const response = await editarAssistente(assistente.login, assistenteEditada);
     if (response.status === 200) {
       try {
         await queryClient.invalidateQueries("listar_assistentes");

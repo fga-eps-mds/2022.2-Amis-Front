@@ -24,6 +24,7 @@ export const editarAluna = async (
   alunaId: string,
   aluna: Object
 ) => {
+  console.log("O id da aluna:"+alunaId)
   return await api
     .put("/student/" + alunaId, aluna)
     .then((response) => response)

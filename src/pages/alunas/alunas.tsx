@@ -60,7 +60,7 @@ export function Alunas() {
 
 
   const [open, setOpen] = useState(false);
-  const [aluna] = useState(Object);
+  const [aluna,setAluna] = useState(Object);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -79,6 +79,7 @@ export function Alunas() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = methods;
 
@@ -182,6 +183,8 @@ export function Alunas() {
     aluna.cep = removeSpecialCharacters(aluna.cep);
     aluna.data_nascimento = transformDate(aluna.data_nascimento);
 
+    console.log("A senha:"+aluna.senha);
+
     const response = await cadastraAluna(aluna);
     if (response.status === 201) {
 
@@ -214,6 +217,14 @@ export function Alunas() {
           nome: value.nome,
           cpf: value.cpf,
           data_nascimento: value.data_nascimento,
+          telefone:value.telefone,
+          email:value.email,
+          status:value.status,
+          deficiencia:value.deficiencia,
+          bairro:value.bairro,
+          cidade:value.cidade,
+          cep:value.cep,
+          descricao_endereco:value.descricao_endereco,
         });
       });
     }
@@ -237,30 +248,65 @@ export function Alunas() {
     }
   };
 
+  const carregarAlunas = async (id: any) => {
+    const response = dataTable.find((element: any) => {
+      if (element.id === id) {
+        return element;
+      }
+    });
+
+    const aluna = response as AlunasListarDTO;
+
+    setAluna(aluna);
+
+    //console.log("o carregar que precisa:"+aluna.cep);
+
+
+    console.log("A aluna respectiva eh:"+aluna.cpf);
+    setValue("nomeEdit", aluna.nome);
+    setValue("cpfEdit", aluna.cpf);
+    setValue("data_nascimentoEdit", aluna.data_nascimento);
+    setValue("telefoneEdit", aluna.telefone);
+    setValue("emailEdit", aluna.email);
+    setValue("loginEdit",aluna.login);
+    //setValue("statusEdit",aluna.status);
+    //setValue("idEndereco",aluna.login);
+    
+    setOpenEdit(true);
+  };
+
 
   const editAlunas = async (data: any): Promise<void> => {
     // eslint-disable-next-line array-callback-return
-    const aluna = {
-      nome: data.nome,
-      login: data.login,
-      cpf: data.cpf,
-      telefone: data.telefone,
-      data_nascimento: data.data_nascimento,
+    const alunaEditada = {
+      nome: data.nomeEdit,
+      login: data.loginEdit,
+      cpf: data.cpfEdit,
+      telefone: data.telefoneEdit,
+      data_nascimento: data.data_nascimentoEdit,
       senha: data.senha,
-      email: data.email,
-      status: data.status,
-      idEndereco: 1,
+      deficiencia:aluna.deficiencia,
+      descricao_endereco:aluna.descricao_endereco,
+      email: data.emailEdit,
+      status: aluna.status,
+      bairro:aluna.bairro,
+      cep:aluna.cep,
+      cidade:aluna.cidade,
     } as AlunasCadastrarDTO;
 
-  const response = await editarAluna(id.toString(), aluna);
-    if (response.status === 200 || response.status === 204) {
-      toast.success("Aluna atualizada com sucesso!");
-    } else {
-      toast.error("Erro na atualização da aluna.");
-    }
-    setOpenEdit(false);
-    await queryClient.invalidateQueries("listar_alunas");
+    //console.log("A aluna editada:"+alunaEditada.);
+
+    const response = await editarAluna(aluna.login, alunaEditada);
+      if (response.status === 200 || response.status === 204) {
+        toast.success("Aluna atualizada com sucesso!");
+      } else {
+        toast.error("Erro na atualização da aluna.");
+      }
+      setOpenEdit(false);
+      await queryClient.invalidateQueries("listar_alunas");
   };
+
+
 
   const columnsTable = [
     { field: "nome", headerName: "Nome", flex: 2 },
@@ -278,6 +324,7 @@ export function Alunas() {
           icon={<AiFillEdit size={20} />}
           label="Editar"
           onClick={() => {
+            carregarAlunas(params.id);
             setId(params.id);
             setOpenEdit(true);
           }}
@@ -507,24 +554,25 @@ export function Alunas() {
       </Modal>
 
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+        {/* comentario */}
         <Box sx={style}>
           <FormText>Altere os dados da aluna.</FormText>
           <Form onSubmit={handleSubmit(editAlunas) }>
             <TextField
               id="outlined-nome"
-              label="Nome Completo *"
+              label="Nome Completo"
               defaultValue={aluna.nome}
               required={true}
-              {...register("nome")}
+              {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-cpf"
-              label="CPF *"
+              label="CPF"
               required={true}
               inputProps={{ maxLength: 11 }}
               defaultValue={aluna.cpf}
-              {...register("cpf")}
+              {...register("cpfEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -532,60 +580,33 @@ export function Alunas() {
               label="Data de Nascimento"
               defaultValue={aluna.data_nascimento}
               required={true}
-              {...register("data_nascimento")}
+              {...register("data_nascimentoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
 
             <TextField
               id="outlined-telefone"
-              label="Telefone *"
+              label="Telefone"
               defaultValue={aluna.telefone}
               required={true}
-              {...register("telefone")}
+              {...register("telefoneEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-email"
               label="E-mail"
-              {...register("email")}
+              {...register("emailEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-login"
-              label="Login *"
+              label="Login"
               required={true}
               inputProps={{ maxLength: 120 }}
               defaultValue={aluna.login}
-              {...register("login")}
+              {...register("loginEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-senha"
-              label="Senha *"
-              defaultValue={aluna.senha}
-              required={true}
-              {...register("senha")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Status(Produção, Curso ou Inativo)
-              </InputLabel>
-              <Select
-                id="simple-select-label-status"
-                labelId="simple-select-status"
-                required={true}
-                defaultValue={aluna.status}
-                label="Status(Produção, Curso ou Inativo)"
-                {...register("status")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={1 as any}>Produção</MenuItem>
-                <MenuItem value={2 as any}>Curso</MenuItem>
-                <MenuItem value={3 as any}>Inativo</MenuItem>
-              </Select>
-            </FormControl>
             <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
