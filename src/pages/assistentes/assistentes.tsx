@@ -256,7 +256,8 @@ export function Assistentes() {
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
-    //console.log(response.data)
+    console.log("data no listar:"+response.data)
+
     const temp: AssistentesListarDTO[] = [];
     if (response.data && Array.isArray(response.data)) {
       response.data.forEach((value: AssistentesListarDTO, index: number) => {
@@ -294,18 +295,24 @@ export function Assistentes() {
   };
 
   const carregarAssistentes = async (id: any) => {
+    console.log("Passando no carregar "+id);
     const response = dataTable.find((element: any) => {
       if (element.id === id) {
         return element;
       }
     });
+
     const assistente = response as AssistentesListarDTO;
     setAssistente(assistente);
+
+    console.log("assistente:"+ assistente.dNascimento);
+
     setValue("nomeEdit", assistente.nome);
     setValue("cpfEdit", assistente.cpf);
-    setValue("dNascimento", assistente.dNascimento);
-    setValue("telefone", assistente.telefone);
-    setValue("email", assistente.email);
+    setValue("nascimentoEdit", assistente.dNascimento);
+    setValue("telefoneEdit", assistente.telefone);
+    setValue("emailEdit", assistente.email);
+    setValue("loginEdit",assistente.login);
     setOpenEdit(true);
   };
 
@@ -313,12 +320,14 @@ export function Assistentes() {
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
-      dNascimento: data.dataNascimentoEdit,
+      dNascimento: data.nascimentoEdit,
       telefone: data.telefoneEdit,
       email: data.emailEdit,
       login: data.loginEdit,
       observacao: data.observacao
     };
+
+    console.log("A data no editar:"+data.loginEdit)
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
     if (response.status === 200) {
