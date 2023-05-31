@@ -8,5 +8,5 @@ export interface AssistentesListarDTO {
   login: string;
   observacao: string;
   administrador: true;
-  //senha:string;
+  senha:string;
 }

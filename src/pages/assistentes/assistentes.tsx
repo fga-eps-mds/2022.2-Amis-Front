@@ -271,6 +271,7 @@ export function Assistentes() {
           login: value.login,
           observacao: value.observacao,
           administrador: value.administrador,
+          senha:value.senha,
         });
       });
     }
@@ -324,10 +325,8 @@ export function Assistentes() {
       login: data.loginEdit,
       observacao: assistente.observacao,
       administrador:assistente.administrador,
-      //senha:assistente.senha,
+      senha:assistente.senha,
     };
-
-    console.log("O adm no editar:"+assistente.administrador);
 
     const response = await editarAssistente(assistente.login, assistenteEditada);
     if (response.status === 200) {

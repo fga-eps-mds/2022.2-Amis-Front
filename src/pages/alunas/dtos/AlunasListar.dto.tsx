@@ -12,4 +12,5 @@ export interface AlunasListarDTO {
   cidade: string,
   cep:string,
   descricao_endereco: string,
+  senha:string,
 }

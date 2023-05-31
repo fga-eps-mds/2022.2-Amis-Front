@@ -225,6 +225,7 @@ export function Alunas() {
           cidade:value.cidade,
           cep:value.cep,
           descricao_endereco:value.descricao_endereco,
+          senha:value.senha,
         });
       });
     }
@@ -259,7 +260,7 @@ export function Alunas() {
 
     setAluna(aluna);
 
-    //console.log("o carregar que precisa:"+aluna.cep);
+    console.log("o carregar que precisa:"+aluna.senha);
 
 
     console.log("A aluna respectiva eh:"+aluna.cpf);
@@ -284,7 +285,7 @@ export function Alunas() {
       cpf: data.cpfEdit,
       telefone: data.telefoneEdit,
       data_nascimento: data.data_nascimentoEdit,
-      senha: data.senha,
+      senha: aluna.senha,
       deficiencia:aluna.deficiencia,
       descricao_endereco:aluna.descricao_endereco,
       email: data.emailEdit,
@@ -294,7 +295,7 @@ export function Alunas() {
       cidade:aluna.cidade,
     } as AlunasCadastrarDTO;
 
-    //console.log("A aluna editada:"+alunaEditada.);
+    console.log("A senha da aluna editada:"+alunaEditada.senha);
 
     const response = await editarAluna(aluna.login, alunaEditada);
       if (response.status === 200 || response.status === 204) {
