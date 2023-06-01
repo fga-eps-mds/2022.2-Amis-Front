@@ -7,7 +7,7 @@ export const cadastrarAssistente = async (payload: AssistentesCadastrarDTO) => {
     const response = await api.post("/socialWorker/", payload);
     return response;
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return error;
   }
 };
@@ -29,6 +29,7 @@ export const editarAssistente = async (
     .then((response) => response)
     .catch((error) => error);
 };
+
 
 export const excluirAssistente = async (assistenteId: string) => {
   return await api

@@ -11,14 +11,22 @@ interface Value {
   data_nascimento: string;
   telefone: string;
   cep: string;
+  cpfEdit: string;
+  data_nascimentoEdit: string;
+  telefoneEdit: string;
+  cepEdit: string;
 }
 
 const ValueMask: React.FC<Props> = ({ label }) => {
   const value: Value = {
     cpf: 'CPF',
+    cpfEdit: 'CPF',
     data_nascimento: 'Data de Nascimento',
+    data_nascimentoEdit: 'Data de Nascimento',
     telefone: 'Telefone',
-    cep: 'CEP'
+    telefoneEdit: 'Telefone',
+    cep: 'CEP',
+    cepEdit: 'CEP'
   };
   const { register, setValue } = useFormContext();
 
@@ -30,7 +38,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
     let formattedValue = '';
     const numericValue = value.replace(/\D/g, '');
 
-    if(label === 'cpf'){
+    if(label === 'cpf' || label === 'cpfEdit'){
       // Aplica a máscara de CPF
       const cpfRegex = /^(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})$/;
       const parts = numericValue.match(cpfRegex);
@@ -40,7 +48,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       }
       return formattedValue;
     }
-    if(label === 'data_nascimento'){
+    if(label === 'data_nascimento' || label === 'data_nascimentoEdit'){
       // Aplica a máscara de data de nascimento
       const dataNascimentoRegex = /^(\d{0,2})(\d{0,2})(\d{0,4})$/;
       const parts = numericValue.match(dataNascimentoRegex);
@@ -52,7 +60,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       return formattedValue;
 
     }
-    if(label === 'telefone'){
+    if(label === 'telefone' || label === 'telefoneEdit'){
       // Aplica a máscara de telefone
       const telefoneRegex = /^(\d{0,2})(\d{0,5})(\d{0,4})$/;
       const parts = numericValue.match(telefoneRegex);
@@ -66,7 +74,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
     return formattedValue;
     }
 
-    if (label === 'cep') {
+    if (label === 'cep' || label === 'cepEdit') {
       const cepRegex = /^(\d{0,2})(\d{0,3})(\d{0,3})$/;
       const parts = numericValue.match(cepRegex);
     
