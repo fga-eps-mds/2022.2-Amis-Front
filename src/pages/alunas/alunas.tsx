@@ -558,7 +558,7 @@ export function Alunas() {
               <TextField
                 id="outlined-descricao_endereco"
                 required={true}
-                label="Descrição do Endereco"
+                label="Descrição do Endereço"
                 {...register("descricao_endereco")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
