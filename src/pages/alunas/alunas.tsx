@@ -10,8 +10,13 @@ import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from 'react-toastify';
 import ValueMask from "../../shared/components/Masks/ValueMask";
 import * as EmailValidator from 'email-validator';
-import validarCPF from "../../shared/functions/validarCPF";
-import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
+import removeSpecialCharacters from "../../shared/validations/removeSpecialCharacters";
+import { validateCPF } from "../../shared/validations/validarCPF";
+import { validateAge, validateDate } from "../../shared/validations/validarDataNascimento";
+import { validateEmail } from "../../shared/validations/validarEmail";
+import { validateLogin } from "../../shared/validations/validarLogin";
+import { validateNome } from "../../shared/validations/validarNome";
+import { validateSenha } from "../../shared/validations/validarSenha";
 
 import {
   Box,
@@ -108,82 +113,61 @@ export function Alunas() {
       idEndereco: 1,
     } as AlunasCadastrarDTO;
 
-    const cpfEhValido = validarCPF(aluna.cpf);
-    if (!cpfEhValido) {
-      toast.error("O CPF informado é inválido.");
+    // VALIDAÇÕES
+
+    const cpfValido = validateCPF(aluna.cpf);
+    if (!cpfValido) {
       return;
     }
 
-    const emailValido = EmailValidator.validate(aluna.email);
+    const emailValido = validateEmail(aluna.email);
     if (!emailValido) {
-      toast.error("O e-mail informado é inválido.");
       return;
     }
+
+    const dateValido = validateDate(aluna.data_nascimento);
+    if (!dateValido) {
+      return;
+    }
+
 
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-    if (!dateRegex.test(aluna.data_nascimento)) {
-      toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
-      return;
-    }
 
     const matchResult = dateRegex.exec(aluna.data_nascimento);
+
     if (!matchResult) {
       toast.error("Data de nascimento inválida.");
       return;
     }
-
     const [, dia, mes, ano] = matchResult;
+
     const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
 
-    if (
-      dataNascimento.getFullYear() !== Number(ano) ||
-      dataNascimento.getMonth() !== Number(mes) - 1 ||
-      dataNascimento.getDate() !== Number(dia)
-    ) {
-      toast.error("Data de nascimento inválida.");
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
       return;
     }
 
-    if (aluna.nome.length > 70) {
-      toast.error("Nome inválido.");
+    const nomeValido = validateNome(aluna.nome);
+    if (!nomeValido) {
       return;
     }
 
-    if (aluna.login.length < 8) {
-      toast.error("Login muito pequeno.");
+    const loginValido = validateLogin(aluna.login);
+    if (!loginValido) {
       return;
     }
 
-    if (aluna.senha.length < 8) {
-      toast.error("Senha muito pequena.");
+    const senhaValida = validateSenha(aluna.senha);
+    if (!senhaValida) {
       return;
     }
-
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
-    const mesAtual = hoje.getMonth();
-    const mesNascimento = dataNascimento.getMonth();
-
-    if (
-      mesAtual < mesNascimento ||
-      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
-    ) {
-      idade--;
-    }
-
-    if (idade < 18) {
-      toast.error("É necessário ter mais de 18 anos para este cadastro.");
-      return;
-    }
-
 
 
     aluna.cpf = removeSpecialCharacters(aluna.cpf);
     aluna.telefone = removeSpecialCharacters(aluna.telefone);
     aluna.cep = removeSpecialCharacters(aluna.cep);
     aluna.data_nascimento = transformDate(aluna.data_nascimento);
-
-    console.log("A senha:"+aluna.senha);
 
     const response: any = await cadastraAluna(aluna);
     if (response.status === 201) {
@@ -285,10 +269,51 @@ export function Alunas() {
 
 
   const editAlunas = async (data: any): Promise<void> => {
-    data.data_nascimentoEdit = transformDate(data.data_nascimentoEdit);
+    // VALIDAÇÕES
+
+    const cpfValido = validateCPF(data.cpfEdit);
+    if (!cpfValido) {
+      return;
+    }
+
+    const emailValido = validateEmail(data.emailEdit);
+    if (!emailValido) {
+      return;
+    }
+
+    const dateValido = validateDate(data.data_nascimentoEdit);
+    if (!dateValido) {
+      return;
+    }
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+    const matchResult = dateRegex.exec(data.data_nascimentoEdit);
+
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
+      return;
+    }
+
+    const nomeValido = validateNome(data.nomeEdit);
+    if (!nomeValido) {
+      return;
+    }
+
+
     data.cpfEdit = removeSpecialCharacters(data.cpfEdit);
     data.telefoneEdit = removeSpecialCharacters(data.telefoneEdit);
     data.cepEdit = removeSpecialCharacters(data.cepEdit);
+    data.data_nascimentoEdit = transformDate(data.data_nascimentoEdit);
+
     
     const alunaEditada = {
       nome: data.nomeEdit,
