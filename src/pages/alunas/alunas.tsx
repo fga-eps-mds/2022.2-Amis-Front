@@ -211,12 +211,16 @@ export function Alunas() {
     const temp: AlunasListarDTO[] = [];
     if (response.data && Array.isArray(response.data)) {
       response.data.forEach((value: AlunasListarDTO, index: number) => {
+         
+        const [year, month, day] = value.data_nascimento.split("-");
+        const dataFormatada = `${day}/${month}/${year}`;
+    
         temp.push({
           id: index, // Adiciona um id único com base no índice
           login: value.login,
           nome: value.nome,
           cpf: value.cpf,
-          data_nascimento: value.data_nascimento,
+          data_nascimento:dataFormatada,
           telefone:value.telefone,
           email:value.email,
           status:value.status,
@@ -281,13 +285,14 @@ export function Alunas() {
 
 
   const editAlunas = async (data: any): Promise<void> => {
-    // eslint-disable-next-line array-callback-return
+    const dataEditada = transformDate(data.data_nascimentoEdit);
+    
     const alunaEditada = {
       nome: data.nomeEdit,
       login: aluna.login,
       cpf: data.cpfEdit,
       telefone: data.telefoneEdit,
-      data_nascimento: data.data_nascimentoEdit,
+      data_nascimento: dataEditada,
       senha: aluna.senha,
       deficiencia: data.deficienciaEdit,
       descricao_endereco: data.descricao_enderecoEdit,

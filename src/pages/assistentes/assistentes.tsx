@@ -261,11 +261,15 @@ export function Assistentes() {
     const temp: AssistentesListarDTO[] = [];
     if (response.data && Array.isArray(response.data)) {
       response.data.forEach((value: AssistentesListarDTO, index: number) => {
+        
+        const [year, month, day] = value.dNascimento.split("-");
+        const dataFormatada = `${day}/${month}/${year}`;
+
         temp.push({
           id: index,
           nome: value.nome,
           cpf: value.cpf,
-          dNascimento: value.dNascimento,
+          dNascimento: dataFormatada,
           telefone: value.telefone,
           email: value.email,
           login: value.login,
@@ -315,11 +319,13 @@ export function Assistentes() {
   };
 
   const editAssistentes = async (data: any) => {
+    const dataEditada = transformDate(data.nascimentoEdit);
+    console.log(dataEditada)
 
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
-      dNascimento: data.nascimentoEdit,
+      dNascimento: dataEditada,
       telefone: data.telefoneEdit,
       email: data.emailEdit,
       observacao: data.observacaoEdit,
