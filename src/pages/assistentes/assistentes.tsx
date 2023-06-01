@@ -34,7 +34,7 @@ import {
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
-import CPFMask from "../../shared/components/Masks/ValueMask";
+import ValueMask from "../../shared/components/Masks/ValueMask";
 import validarCPF from "../../shared/functions/validarCPF";
 import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
 
@@ -311,7 +311,7 @@ export function Assistentes() {
 
     setValue("nomeEdit", assistente.nome);
     setValue("cpfEdit", assistente.cpf);
-    setValue("nascimentoEdit", assistente.dNascimento);
+    setValue("data_nascimentoEdit", assistente.dNascimento);
     setValue("telefoneEdit", assistente.telefone);
     setValue("emailEdit", assistente.email);
     setValue("observacaoEdit",assistente.login);
@@ -319,13 +319,15 @@ export function Assistentes() {
   };
 
   const editAssistentes = async (data: any) => {
-    const dataEditada = transformDate(data.nascimentoEdit);
-    console.log(dataEditada)
+    data.data_nascimentoEdit = transformDate(data.data_nascimentoEdit);
+    data.cpfEdit = removeSpecialCharacters(data.cpfEdit);
+    data.telefoneEdit = removeSpecialCharacters(data.telefoneEdit);
+    data.cepEdit = removeSpecialCharacters(data.cepEdit);
 
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
-      dNascimento: dataEditada,
+      dNascimento: data.data_nascimentoEdit,
       telefone: data.telefoneEdit,
       email: data.emailEdit,
       observacao: data.observacaoEdit,
@@ -423,11 +425,11 @@ export function Assistentes() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <CPFMask label="cpf" />
+              <ValueMask label="cpf" />
 
-              <CPFMask label="data_nascimento" />
+              <ValueMask label="data_nascimento" />
 
-              <CPFMask label="telefone" />
+              <ValueMask label="telefone" />
 
               <TextField
                 id="outlined-email"
@@ -544,6 +546,9 @@ export function Assistentes() {
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
+        <FormProvider
+            {...methods}
+          >
           <FormText>Altere os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(editAssistentes)}>
             <TextField
@@ -553,30 +558,9 @@ export function Assistentes() {
               {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-cpf"
-              label="CPF"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("cpfEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dataNascimento"
-              label="Data de Nascimento"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("nascimentoEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="Telefone"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("telefoneEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <ValueMask label="cpfEdit" />
+            <ValueMask label="data_nascimentoEdit" />
+            <ValueMask label="telefoneEdit" />
             <TextField
               id="outlined-email"
               label="E-mail"
@@ -591,17 +575,10 @@ export function Assistentes() {
               {...register("observacaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            {/* <TextField
-              id="outlined-login"
-              label="Login"
-              required={true}
-              inputProps={{ maxLength: 120 }}
-              {...register("loginEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            /> */}
 
             <PrimaryButton text={"Editar"} />
           </Form>
+          </FormProvider>
         </Box>
       </Modal>
 

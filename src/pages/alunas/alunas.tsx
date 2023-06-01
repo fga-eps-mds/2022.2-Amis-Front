@@ -8,7 +8,7 @@ import { queryClient } from "../../services/queryClient";
 import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from 'react-toastify';
-import CPFMask from "../../shared/components/Masks/ValueMask";
+import ValueMask from "../../shared/components/Masks/ValueMask";
 import * as EmailValidator from 'email-validator';
 import validarCPF from "../../shared/functions/validarCPF";
 import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
@@ -285,14 +285,17 @@ export function Alunas() {
 
 
   const editAlunas = async (data: any): Promise<void> => {
-    const dataEditada = transformDate(data.data_nascimentoEdit);
+    data.data_nascimentoEdit = transformDate(data.data_nascimentoEdit);
+    data.cpfEdit = removeSpecialCharacters(data.cpfEdit);
+    data.telefoneEdit = removeSpecialCharacters(data.telefoneEdit);
+    data.cepEdit = removeSpecialCharacters(data.cepEdit);
     
     const alunaEditada = {
       nome: data.nomeEdit,
       login: aluna.login,
       cpf: data.cpfEdit,
       telefone: data.telefoneEdit,
-      data_nascimento: dataEditada,
+      data_nascimento: data.data_nascimentoEdit,
       senha: aluna.senha,
       deficiencia: data.deficienciaEdit,
       descricao_endereco: data.descricao_enderecoEdit,
@@ -396,7 +399,7 @@ export function Alunas() {
                 {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              <CPFMask label="cpf" />
+              <ValueMask label="cpf" />
 
               <FormControl sx={{ width: '100%', background: '#F5F4FF' }}>
                 <InputLabel id="select-deficiencia-label">Possui deficiência?</InputLabel>
@@ -411,9 +414,9 @@ export function Alunas() {
                 </Select>
               </FormControl>
 
-              <CPFMask label="data_nascimento" />
+              <ValueMask label="data_nascimento" />
 
-              <CPFMask label="telefone" />
+              <ValueMask label="telefone" />
 
               <TextField
                 id="outlined-email"
@@ -535,7 +538,7 @@ export function Alunas() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <CPFMask label="cep" />
+              <ValueMask label="cep" />
 
               <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label" required={true}>
@@ -563,8 +566,9 @@ export function Alunas() {
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         {/* comentario */}
         <Box sx={style}>
+          <FormProvider {...methods}>
           <FormText>Altere os dados da aluna.</FormText>
-          <Form onSubmit={handleSubmit(editAlunas) }>
+          <Form onSubmit={handleSubmit(editAlunas) } >
             <TextField
               id="outlined-nome"
               label="Nome Completo"
@@ -586,47 +590,16 @@ export function Alunas() {
                   <MenuItem value={false as any}>Não</MenuItem>
                 </Select>
               </FormControl>
-            <TextField
-              id="outlined-cpf"
-              label="CPF"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              defaultValue={aluna.cpf}
-              {...register("cpfEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-data_nascimento"
-              label="Data de Nascimento"
-              defaultValue={aluna.data_nascimento}
-              required={true}
-              {...register("data_nascimentoEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-
-            <TextField
-              id="outlined-telefone"
-              label="Telefone"
-              defaultValue={aluna.telefone}
-              required={true}
-              {...register("telefoneEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            
+            <ValueMask label="cpfEdit" />
+            <ValueMask label="data_nascimentoEdit" />
+            <ValueMask label="telefoneEdit" />
             <TextField
               id="outlined-email"
               label="E-mail"
               {...register("emailEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            {/* <TextField
-              id="outlined-login"
-              label="Login"
-              required={true}
-              inputProps={{ maxLength: 120 }}
-              defaultValue={aluna.login}
-              {...register("loginEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            /> */}
             <TextField
               id="outlined-bairro"
               label="Bairro"
@@ -651,14 +624,7 @@ export function Alunas() {
               {...register("descricao_enderecoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-cep"
-              label="CEP"
-              defaultValue={aluna.cep}
-              required={true}
-              {...register("cepEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <ValueMask label="cepEdit" />
             <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label" required={true}>
                   Status
@@ -678,6 +644,7 @@ export function Alunas() {
               </FormControl>
             <PrimaryButton text={"Editar"} />
           </Form>
+          </FormProvider>
         </Box>
       </Modal>
     </Container>
