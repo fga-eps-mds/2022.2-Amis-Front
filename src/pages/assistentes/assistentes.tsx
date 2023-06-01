@@ -57,15 +57,14 @@ function transformDate(date: any) {
   return transformedDate;
 }
 
+const Container = getContainerStyles();
+const Content = getContentStyles();
+const DivButtons = getDivButtonsStyles();
+const Form = getFormStyles();
+const FormText = getFormTextStyles();
+const style = getInlineStyles();
+
 export function Assistentes() {
-  const Container = getContainerStyles();
-  const Content = getContentStyles();
-  const DivButtons = getDivButtonsStyles();
-  const Form = getFormStyles();
-  const FormText = getFormTextStyles();
-  const style = getInlineStyles();
-
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [open, setOpen] = useState(false);

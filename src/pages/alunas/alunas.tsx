@@ -55,14 +55,15 @@ import {
   getInlineStyles,
 } from '../../shared/components/Style/style';
 
-export function Alunas() {
-  const Container = getContainerStyles();
-  const Content = getContentStyles();
-  const DivButtons = getDivButtonsStyles();
-  const Form = getFormStyles();
-  const FormText = getFormTextStyles();
-  const style = getInlineStyles();
 
+const Container = getContainerStyles();
+const Content = getContentStyles();
+const DivButtons = getDivButtonsStyles();
+const Form = getFormStyles();
+const FormText = getFormTextStyles();
+const style = getInlineStyles();
+
+export function Alunas() {
 
   const [open, setOpen] = useState(false);
   const [aluna,setAluna] = useState(Object);
@@ -171,12 +172,9 @@ export function Alunas() {
 
     const response: any = await cadastraAluna(aluna);
     if (response.status === 201) {
-
-      console.log("Aluna cadastrada com sucesso!")
       handleClose();
       toast.success("Aluna cadastrada com sucesso!");
     } else {
-      console.log("MENSAGEM NEGATIVA!!")
       toast.error("Erro ao cadastrar a aluna.");
     }
     await queryClient.invalidateQueries("listar_alunas");
@@ -247,11 +245,6 @@ export function Alunas() {
     const aluna = response as AlunasListarDTO;
 
     setAluna(aluna);
-
-    console.log("o carregar que precisa:"+aluna.senha);
-
-
-    console.log("A aluna respectiva eh:"+aluna.cpf);
     setValue("nomeEdit", aluna.nome);
     setValue("cpfEdit", aluna.cpf);
     setValue("data_nascimentoEdit", aluna.data_nascimento);
