@@ -10,7 +10,7 @@ import { BsFillTrashFill } from "react-icons/bs";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from "react-toastify";
 import ValueMask from "../../shared/components/Masks/ValueMask";
-import * as EmailValidator from 'email-validator';
+
 
 import {
   Box,
@@ -41,6 +41,14 @@ import {
   editaProfessor,
 } from "../../services/professores";
 
+
+import { validateCPF } from "../../shared/validations/validarCPF";
+import { validateDate, validateAge } from "../../shared/validations/validarDataNascimento";
+import { validateEmail } from "../../shared/validations/validarEmail";
+import { validateLogin } from "../../shared/validations/validarLogin";
+import { validateSenha } from "../../shared/validations/validarSenha";
+import { validateNome } from "../../shared/validations/validarNome";
+import removeSpecialCharacters from "../../shared/validations/removeSpecialCharacters";
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -96,60 +104,11 @@ const style = {
   overflowY: "scroll",
 };
 
-function removeSpecialCharacters(string: any) {
-  if (typeof string === "string" || string instanceof String) {
-    return string.replace(/[.\\/\\\-() ]/g, "");
-  }
-  return "";
-}
-
 function transformDate(date: any) {
   const parts = date.split('/');
   const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
   return transformedDate;
 }
-
-const validarCPF = (cpf:any) => {
-  cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
-
-  // Verifica se o CPF possui 11 dígitos
-  if (cpf.length !== 11) {
-    return false;
-  }
-
-  // Verifica se todos os dígitos são iguais (ex: 11111111111)
-  if (/^(\d)\1+$/.test(cpf)) {
-    return false;
-  }
-
-  // Calcula o primeiro dígito verificador
-  let sum = 0;
-  for (let i = 0; i < 9; i++) {
-    sum += parseInt(cpf.charAt(i)) * (10 - i);
-  }
-  let remainder = (sum * 10) % 11;
-  if (remainder === 10 || remainder === 11) {
-    remainder = 0;
-  }
-  if (remainder !== parseInt(cpf.charAt(9))) {
-    return false;
-  }
-
-  // Calcula o segundo dígito verificador
-  sum = 0;
-  for (let i = 0; i < 10; i++) {
-    sum += parseInt(cpf.charAt(i)) * (11 - i);
-  }
-  remainder = (sum * 10) % 11;
-  if (remainder === 10 || remainder === 11) {
-    remainder = 0;
-  }
-  if (remainder !== parseInt(cpf.charAt(10))) {
-    return false;
-  }
-
-  return true; // CPF válido
-};
 
 
 export function Professores() {
@@ -164,6 +123,7 @@ export function Professores() {
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [selectedProfeesor, setSelectedProfessor] = useState(null);
   const [nextId, setNextId] = useState(1); // Variável de estado para o próximo ID
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
@@ -188,31 +148,32 @@ export function Professores() {
       nome: data.nome,
       cpf: data.cpf,
       email: data.email,
+      login: data.login,
       data_nascimento: data.data_nascimento,
       telefone: data.telefone,
       cursos: data.cursos,
       //senha_confirmada: data.senha_confirmada,
     } as ProfessoresCadastrarDTO;
 
-    const cpfEhValido=validarCPF(professor.cpf);
-
-    if(cpfEhValido===false){
-      toast.error("CPF inválido.");
+    const cpfValido = validateCPF(professor.cpf);
+    if (!cpfValido) {
+      return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(professor.email)) {
-      toast.error("E-mail inválido.");
+    const emailValido = validateEmail(professor.email);
+    if (!emailValido) {
+      return;
+    }
+
+    const dateValido = validateDate(professor.data_nascimento);
+    if (!dateValido) {
       return;
     }
 
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-    if (!dateRegex.test(professor.data_nascimento)) {
-      toast.error("Formato de data inválido. Use o formato dd/mm/aaaa.");
-      return;
-    }
 
-    const matchResult = professor.data_nascimento.match(dateRegex);
+    const matchResult = dateRegex.exec(professor.data_nascimento);
+
     if (!matchResult) {
       toast.error("Data de nascimento inválida.");
       return;
@@ -221,44 +182,28 @@ export function Professores() {
 
     const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
 
-    if (
-      dataNascimento.getFullYear() !== Number(ano) ||
-      dataNascimento.getMonth() !== Number(mes) - 1 ||
-      dataNascimento.getDate() !== Number(dia)
-    ) {
-      toast.error("Data de nascimento inválida.");
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
       return;
     }
 
-    if (professor.nome.length > 70) {
-      toast.error("Nome inválido.");
+    const nomeValido = validateNome(professor.nome);
+    if (!nomeValido) {
       return;
     }
 
-    if (professor.senha.length < 8) {
-      toast.error("Senha muito pequena.");
+    const loginValido = validateLogin(professor.login);
+    if (!loginValido) {
       return;
     }
 
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
-    const mesAtual = hoje.getMonth();
-    const mesNascimento = dataNascimento.getMonth();
-    if (
-      mesAtual < mesNascimento ||
-      (mesAtual === mesNascimento && hoje.getDate() < dataNascimento.getDate())
-    ) {
-      idade--;
-    }
-    if (idade < 18) {
-      toast.error("É necessário ter mais de 18 anos para este cadastro.");
+    const senhaValida = validateSenha(professor.senha);
+    if (!senhaValida) {
       return;
     }
 
-    professor.cpf = removeSpecialCharacters(professor.cpf);
-    
+    //professor.cpf = removeSpecialCharacters(professor.cpf);
     professor.telefone = removeSpecialCharacters(professor.telefone);
-
     professor.data_nascimento=transformDate(professor.data_nascimento);
 
     const response = await cadastraProfessor(professor);
@@ -286,6 +231,7 @@ export function Professores() {
       temp.push({
         id: index,
         nome: value.nome,
+        login: value.login,
         cpf: value.cpf,
         data_nascimento: value.data_nascimento,
       });
@@ -295,14 +241,19 @@ export function Professores() {
 
 
   const deleteProfessores = async () => {
-    const response = await apagaProfessor(id.toString());
-    if (response.status === 204) {
-      toast.success("Professor excluído com sucesso!");
-    } else {
-      toast.error("Erro ao excluir professor.");
+    const selectedProfessor = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
+    if (selectedProfessor) {
+      const login = (selectedProfessor as any).login; // Obtém o login da aluna
+      const response = await apagaProfessor(login); // Passa o login para a função apagaAluna
+      if (response.status === 204) {
+        toast.success("Professor excluído com sucesso!");
+      } else {
+        toast.error("Erro ao excluir professor.");
+      }
+
+      handleCloseConfirmation();
+      await queryClient.invalidateQueries("listar_professores");
     }
-    handleCloseConfirmation();
-    await queryClient.invalidateQueries("listar_professores");
   };
 
   const editProfesores = async (data: ProfessoresCadastrarDTO) => {
@@ -310,6 +261,7 @@ export function Professores() {
     const professor = {
       nome: data.nome,
       cpf: data.cpf,
+      login: data.login,
       email: data.email,
       data_nascimento: data.data_nascimento,
       telefone: data.telefone,
@@ -327,6 +279,7 @@ export function Professores() {
 
   const columnsTable = [
     { field: "nome", headerName: "Nome", flex: 2 },
+    { field: "login", headerName: "Login", flex: 2 },
     { field: "cpf", headerName: "CPF", flex: 2 },
     { field: "data_nascimento", headerName: "Data Nascimento", flex: 2 },
     {
@@ -346,11 +299,16 @@ export function Professores() {
         />,
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
+          key={params.id}
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
           onClick={() => {
             setId(params.id);
-            handleOpenConfirmation();
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            if (selectedRow) {
+              setSelectedProfessor((selectedRow as any).login);
+              handleOpenConfirmation();
+            }
           }}
         />,
       ],
@@ -393,43 +351,30 @@ export function Professores() {
             <Form onSubmit={handleSubmit(cadastrarProfessores)}>
               <TextField
                 id="outlined-nome"
-                label="Nome"
+                label="Nome Completo"
                 required={true}
                 {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              {/* <TextField
-                id="outlined-cpf"
-                label="CPF (apenas números)"
-                inputProps={{ maxLength: 11 }}
-                required={true}
-                {...register("cpf")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              /> */}
+              
               <ValueMask label="cpf" />
-              {/* <TextField
-                id="outlined-data_nascimento"
-                label="Data de Nascimento"
-                required={true}
-                {...register("data_nascimento")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              /> */}
+              
               <ValueMask label="data_nascimento" />
-              {/* <TextField
-                id="outlined-telefone"
-                label="Telefone"
-                defaultValue={professor.telefone}
-                required={true}
-                {...register("telefone")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              /> */}
+              
               <ValueMask label="telefone" />
               <TextField
                 id="outlined-email"
-                label="Email"
+                label="E-mail"
                 defaultValue={professor.email}
                 required={false}
                 {...register("email")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-login"
+                required={true}
+                label="Login"
+                {...register("login")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
               <FormControl
@@ -527,12 +472,13 @@ export function Professores() {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Curso"
+                    required={false}
+                    label="Cursos"
                     value={Array.isArray(selectedCursos) ? selectedCursos.join(", ") : ""}
                   />
                 )}
               />
-              <PrimaryButton text={"Cadastrar"} />
+              <PrimaryButton text={"Confirmar"} />
             </Form>
           </FormProvider>
         </Box>
@@ -577,6 +523,15 @@ export function Professores() {
               defaultValue={professor.email}
               required={true}
               {...register("email")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-login"
+              label="Login *"
+              required={true}
+              inputProps={{ maxLength: 120 }}
+              defaultValue={professor.login}
+              {...register("login")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <Autocomplete

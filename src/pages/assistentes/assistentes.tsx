@@ -35,8 +35,8 @@ import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
 import ValueMask from "../../shared/components/Masks/ValueMask";
-import validarCPF from "../../shared/functions/validarCPF";
-import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
+import { validateCPF } from "../../shared/validations/validarCPF";
+import removeSpecialCharacters from "../../shared/validations/removeSpecialCharacters";
 
 import {
   getContainerStyles,
@@ -82,16 +82,6 @@ export function Assistentes() {
     setValue,
     formState: { errors },
   } = methods;
-
-  const validateCPF = (cpf: string): boolean => {
-
-    const cpfEhValido = validarCPF(cpf);
-    if (!cpfEhValido) {
-      toast.error("O CPF informado é inválido.");
-      return false;
-    }
-    return true;
-  };
 
   const validateEmail = (email: string): boolean => {
     const emailValido = EmailValidator.validate(email);

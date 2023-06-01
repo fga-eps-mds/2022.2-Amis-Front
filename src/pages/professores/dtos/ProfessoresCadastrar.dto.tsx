@@ -4,6 +4,7 @@ export interface ProfessoresCadastrarDTO {
   nome: string;
   cpf: string;
   email: string;
+  login: string;
   data_nascimento: string;
   telefone: string;
   cursos: string;

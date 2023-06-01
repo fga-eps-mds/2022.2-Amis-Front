@@ -10,8 +10,8 @@ import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { toast } from 'react-toastify';
 import ValueMask from "../../shared/components/Masks/ValueMask";
 import * as EmailValidator from 'email-validator';
-import validarCPF from "../../shared/functions/validarCPF";
-import removeSpecialCharacters from "../../shared/functions/removeSpecialCharacters";
+import { validateCPF } from "../../shared/validations/validarCPF";
+import removeSpecialCharacters from "../../shared/validations/removeSpecialCharacters";
 
 import {
   Box,
@@ -106,10 +106,9 @@ export function Alunas() {
       email: data.email,
       idEndereco: 1,
     } as AlunasCadastrarDTO;
-
-    const cpfEhValido = validarCPF(aluna.cpf);
-    if (!cpfEhValido) {
-      toast.error("O CPF informado é inválido.");
+    
+    const cpfValido = validateCPF(aluna.cpf);
+    if (!cpfValido) {
       return;
     }
 

@@ -1,29 +1,20 @@
-import { Alunas } from "../alunas";
-import { cadastraAlunaMock } from "./alunas.mock";
-import * as alunasService from "../../../services/alunas";
 import { toast } from "react-toastify";
+import * as professorService from "../../../services/professores";
+import { Professores } from "../professores";
+import { cadastraProfessorMock } from "./professores.mock";
 
 import {
-  getByAltText,
-  getByLabelText,
-  getByPlaceholderText,
-  getByRole,
-  getByTestId,
-  render,
-  screen,
   fireEvent,
-  waitFor,
+  render,
+  screen
 } from "@testing-library/react";
 //import {userEvent} from "@testing-library/user-event";
-import React, { Component } from "react";
-import { BrowserRouter, BrowserRouter as Router } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import theme from "../../../styles/theme";
-import renderer from "react-test-renderer";
-import { QueryClientProvider, QueryClient } from "react-query";
-import { queryClient } from "../../../services/queryClient";
 
-const cadastraAlunaSpy = jest.spyOn(alunasService, 'cadastraAluna');
+const cadastraProfessorSpy = jest.spyOn(professorService, 'cadastraProfessor');
 
 jest.mock('react-toastify', () => ({
   toast: {
@@ -39,7 +30,7 @@ const renderComponent = ()=> {
     <QueryClientProvider client={queryClient}>
       <Router>
         <ThemeProvider theme={theme}>
-          <Alunas />
+          <Professores />
         </ThemeProvider>
       </Router>
     </QueryClientProvider>
@@ -48,7 +39,7 @@ const renderComponent = ()=> {
   return queryClient;
 }
 
-describe("Alunas", () => {
+describe("Professores", () => {
   beforeEach(() => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
@@ -69,10 +60,7 @@ describe("Alunas", () => {
 
   test('exibe notificação de sucesso após o cadastro bem-sucedido', async () => {
     const toastSuccessSpy = jest.spyOn(toast, 'success');
-
-
-    cadastraAlunaSpy.mockImplementation(cadastraAlunaMock);
-
+    cadastraProfessorSpy.mockImplementation(cadastraProfessorMock);
 
     renderComponent();
     
@@ -88,42 +76,30 @@ describe("Alunas", () => {
     const inputEmail = screen.getByLabelText("E-mail");
     const inputSenha = screen.getByLabelText("Senha *");
     const inputConfirmarSenha = screen.getByLabelText("Confirmar senha *");
-    const inputBairro = screen.getByLabelText("Bairro *");
-    const inputCidade = screen.getByLabelText("Cidade *");
-    const inputdEndereco = screen.getByLabelText("Descricao Endereco *");
-    const inputCep = screen.getByLabelText("CEP *");
-    //const inputDeficiencia = screen.getByRole('button', { name: 'Possui deficiência? ​' });
-    //const inputStatus = screen.getByRole('button', { name: 'Possui deficiência? ​' });
-    
+    const inputCursos = screen.getByLabelText("Cursos");
 
-    fireEvent.change(nomeInput, { target: { value: 'Alejandra' } });
-    fireEvent.change(inputCpf, { target: { value: '163.385.490-60' } });
-    fireEvent.change(inputDataNascimento, { target: { value: '09011964' } });
-    fireEvent.change(inputTelefone, { target: { value: '61999999999' } });
+    fireEvent.change(nomeInput, { target: { value: 'Pedro' } });
+    fireEvent.change(inputLogin, { target: { value: 'pedro.goncalves' } });
+    fireEvent.change(inputCpf, { target: { value: '894.025.230-65' } });
+    fireEvent.change(inputDataNascimento, { target: { value: '09/01/1964' } });
+    fireEvent.change(inputTelefone, { target: { value: '(61)993650299' } });
     fireEvent.change(inputEmail, { target: { value: 'pedro@gmail.com' } });
-    fireEvent.change(inputSenha, { target: { value: 'alejandra12345' } });
-    fireEvent.change(inputConfirmarSenha, { target: { value: 'alejandra12345' } });
-    fireEvent.change(inputLogin, { target: { value: 'alejandra12345' } });
-    fireEvent.change(inputBairro, { target: { value: 'Gama' } });
-    fireEvent.change(inputCidade, { target: { value: 'Brasilia' } });
-    fireEvent.change(inputdEndereco, { target: { value: 'qd 111 cj 22 cs 33' } });
-    fireEvent.change(inputCep, { target: { value: '72610518' } });
+    fireEvent.change(inputSenha, { target: { value: 'Senha12345' } });
+    fireEvent.change(inputConfirmarSenha, { target: { value: 'Senha12345' } });
+    fireEvent.change(inputCursos, { target: { value: 'curso 2' } });
 
     const submitButton = screen.getByRole('button', { name: 'Confirmar' });
 
     fireEvent.click(submitButton);
-
     // Simule a resposta do status 201
     const response = { status: 201 };
 
     if (response.status === 201) {
-      toast.success("Aluna cadastrada com sucesso!");
+      //toast.success("Professor cadastrado com sucesso!");
+      toast.success("Professor cadastrado com sucesso!")
     }
 
     // Verifique se o spy foi chamado corretamente
-    expect(toastSuccessSpy).toHaveBeenCalledWith("Aluna cadastrada com sucesso!");
-    // Restaure o spy para seu estado original após o teste
-    toastSuccessSpy.mockRestore();
+    expect(toastSuccessSpy).toHaveBeenCalledWith("Professor cadastrado com sucesso!");
   });
-
 });

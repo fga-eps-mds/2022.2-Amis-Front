@@ -5,15 +5,12 @@ import {
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import {BrowserRouter as Router } from "react-router-dom";
-//import { act } from 'react-dom/test-utils';
 import { toast } from "react-toastify";
 import { ThemeProvider } from "styled-components";
 import * as assistentesService from "../../../services/assistentes";
-//import { queryClient } from "../../../services/queryClient";
 import theme from "../../../styles/theme";
 import { Assistentes } from "../assistentes";
 import { CadastrarAssistenteMock } from "./assistentes.mock";
-//import { GetAssistenteMock } from "./assistentes.mock";
 
 
 const cadastraAssistenteSpy = jest.spyOn(assistentesService, 'cadastrarAssistente');
@@ -22,14 +19,6 @@ jest.mock('react-toastify', () => ({
     success: jest.fn(),
   },
 }));
-
-//const listarAssistenteSpy = jest.spyOn(assistentesService, 'listarAssistentes');
-//jest.mock('react-toastify', () => ({
-//  toast: {
-//    success: jest.fn(),
-//  },
-//}));
-
 
 const renderComponent = async()=> {
   const queryClient = new QueryClient ();
@@ -84,7 +73,7 @@ describe("Assistentes", () => {
     fireEvent.change(nomeInput, { target: { value: 'Lorrayne Cardozo' } });
     fireEvent.change(inputCpf, { target: { value: '62454225077' } });
     fireEvent.change(inputDataNascimento, { target: { value: '27122000' } });
-    fireEvent.change(inputTelefone, { target: { value: '61984847799' } });
+    fireEvent.change(inputTelefone, { target: { value: '61999650299' } });
     fireEvent.change(inputEmail, { target: { value: 'lorrayne@gmail.com' } });
     fireEvent.change(inputSenha, { target: { value: 'senha123' } });
     fireEvent.change(inputConfirmarSenha, { target: { value: 'senha123' } });

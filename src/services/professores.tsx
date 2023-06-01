@@ -2,11 +2,13 @@ import { ProfessoresCadastrarDTO } from "../pages/professores/dtos/ProfessoresCa
 import api from "./api";
 
 export const cadastraProfessor = async (payload: ProfessoresCadastrarDTO) => {
-  console.log(payload);
-  return await api
-    .post("/teacher/", payload)
-
-    .then((response: any) => response);
+  try {
+    const response = await api.post("/teacher/", payload);
+    return response;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
 };
 
 export const listaProfessores = async () => {
