@@ -175,8 +175,6 @@ export function Assistentes() {
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
-    console.log("data no listar:"+response.data)
-
     const temp: AssistentesListarDTO[] = [];
     if (response.data && Array.isArray(response.data)) {
       response.data.forEach((value: AssistentesListarDTO, index: number) => {

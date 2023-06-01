@@ -83,8 +83,6 @@ export function Login() {
 
     const request = await auth.authenticate(email, senha);
 
-    console.log(request);
-
     if (request.token) {
       setLoading(false);
       navigate("/alunas");

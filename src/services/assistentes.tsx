@@ -7,7 +7,7 @@ export const cadastrarAssistente = async (payload: AssistentesCadastrarDTO) => {
     const response = await api.post("/socialWorker/", payload);
     return response;
   } catch (error) {
-    console.error(error);
+    //console.error(error);
     return error;
   }
 };

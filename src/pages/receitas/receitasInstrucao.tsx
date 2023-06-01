@@ -155,7 +155,6 @@ export function ReceitasInstrucao() {
 
   const removeReceita = async (id: number) => {
     await api.delete("/receita/" + id).then((response: any) => {
-      console.log(response.data);
       if (response.status === 204) {
         toast.success("Receita excluída com sucesso!");
       } else {
@@ -166,10 +165,8 @@ export function ReceitasInstrucao() {
 
   useQuery("carregaReceitas", async () => {
     await api.get(`/receita/${index}`).then((response: any) => {
-      console.log(response.data);
       if (response.status === 200) {
         setReceitaDetail(response.data);
-        console.log("receita", receitaDetail);
       }
     });
   });
