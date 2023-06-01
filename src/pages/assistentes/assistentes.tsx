@@ -236,7 +236,7 @@ export function Assistentes() {
     assistente.telefone = removeSpecialCharacters(assistente.telefone);
     assistente.dNascimento = transformDate(assistente.dNascimento);
 
-    const response = await cadastrarAssistente(assistente);
+    const response: any = await cadastrarAssistente(assistente);
 
     if (response.status === 201) {
       setOpen(false);
@@ -310,7 +310,7 @@ export function Assistentes() {
     setValue("nascimentoEdit", assistente.dNascimento);
     setValue("telefoneEdit", assistente.telefone);
     setValue("emailEdit", assistente.email);
-    setValue("loginEdit",assistente.login);
+    setValue("observacaoEdit",assistente.login);
     setOpenEdit(true);
   };
 
@@ -322,8 +322,8 @@ export function Assistentes() {
       dNascimento: data.nascimentoEdit,
       telefone: data.telefoneEdit,
       email: data.emailEdit,
-      login: data.loginEdit,
-      observacao: assistente.observacao,
+      observacao: data.observacaoEdit,
+      login: assistente.login,
       administrador:assistente.administrador,
       senha:assistente.senha,
     };
@@ -579,13 +579,21 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
+              id="outlined-observacao"
+              label="Observação"
+              required={false}
+              {...register("observacaoEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            {/* <TextField
               id="outlined-login"
               label="Login"
               required={true}
               inputProps={{ maxLength: 120 }}
               {...register("loginEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            /> */}
+
             <PrimaryButton text={"Editar"} />
           </Form>
         </Box>

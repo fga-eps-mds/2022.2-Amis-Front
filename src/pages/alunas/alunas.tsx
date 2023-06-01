@@ -185,7 +185,7 @@ export function Alunas() {
 
     console.log("A senha:"+aluna.senha);
 
-    const response = await cadastraAluna(aluna);
+    const response: any = await cadastraAluna(aluna);
     if (response.status === 201) {
 
       console.log("Aluna cadastrada com sucesso!")
@@ -267,11 +267,14 @@ export function Alunas() {
     setValue("nomeEdit", aluna.nome);
     setValue("cpfEdit", aluna.cpf);
     setValue("data_nascimentoEdit", aluna.data_nascimento);
+    setValue("deficienciaEdit",aluna.deficiencia);
     setValue("telefoneEdit", aluna.telefone);
     setValue("emailEdit", aluna.email);
-    setValue("loginEdit",aluna.login);
-    //setValue("statusEdit",aluna.status);
-    //setValue("idEndereco",aluna.login);
+    setValue("bairroEdit",aluna.bairro);
+    setValue("cidadeEdit",aluna.cidade);
+    setValue("descricao_enderecoEdit",aluna.descricao_endereco);
+    setValue("cepEdit",aluna.cep);
+    setValue("statusEdit",aluna.status);
     
     setOpenEdit(true);
   };
@@ -281,21 +284,20 @@ export function Alunas() {
     // eslint-disable-next-line array-callback-return
     const alunaEditada = {
       nome: data.nomeEdit,
-      login: data.loginEdit,
+      login: aluna.login,
       cpf: data.cpfEdit,
       telefone: data.telefoneEdit,
       data_nascimento: data.data_nascimentoEdit,
       senha: aluna.senha,
-      deficiencia:aluna.deficiencia,
-      descricao_endereco:aluna.descricao_endereco,
+      deficiencia: data.deficienciaEdit,
+      descricao_endereco: data.descricao_enderecoEdit,
       email: data.emailEdit,
-      status: aluna.status,
-      bairro:aluna.bairro,
-      cep:aluna.cep,
-      cidade:aluna.cidade,
+      status: data.statusEdit,
+      bairro: data.bairroEdit,
+      cep: data.cepEdit,
+      cidade: data.cidadeEdit,
     } as AlunasCadastrarDTO;
 
-    console.log("A senha da aluna editada:"+alunaEditada.senha);
 
     const response = await editarAluna(aluna.login, alunaEditada);
       if (response.status === 200 || response.status === 204) {
@@ -396,7 +398,6 @@ export function Alunas() {
                 <Select
                   labelId="select-deficiencia-label"
                   id="select-deficiencia"
-                  defaultValue={aluna.deficiencia}
                   {...register('deficiencia')}
                   label="Possui deficiência?"
                 >
@@ -524,7 +525,7 @@ export function Alunas() {
               <TextField
                 id="outlined-descricao_endereco"
                 required={true}
-                label="Descricao Endereco"
+                label="Descrição do Endereco"
                 {...register("descricao_endereco")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
@@ -532,13 +533,13 @@ export function Alunas() {
               <CPFMask label="cep" />
 
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Status (Produção, Curso ou Inativo)
+              <InputLabel id="demo-simple-select-label" required={true}>
+                  Status
                 </InputLabel>
                 <Select
                   id="simple-select-label-status"
                   labelId="simple-select-status"
-                  label="Status(Produção, Curso ou Inativo)"
+                  label="Status"
                   {...register("status")}
                   sx={{ width: "100%", background: "#F5F4FF" }}
                 >
@@ -567,6 +568,19 @@ export function Alunas() {
               {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            <FormControl sx={{ width: '100%', background: '#F5F4FF' }}>
+                <InputLabel id="select-deficiencia-label">Possui deficiência?</InputLabel>
+                <Select
+                  labelId="select-deficiencia-label"
+                  id="select-deficiencia"
+                  defaultValue={aluna.deficiencia}
+                  {...register('deficienciaEdit')}
+                  label="Possui deficiência?"
+                >
+                  <MenuItem value={true as any}>Sim</MenuItem>
+                  <MenuItem value={false as any}>Não</MenuItem>
+                </Select>
+              </FormControl>
             <TextField
               id="outlined-cpf"
               label="CPF"
@@ -599,7 +613,7 @@ export function Alunas() {
               {...register("emailEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
+            {/* <TextField
               id="outlined-login"
               label="Login"
               required={true}
@@ -607,7 +621,56 @@ export function Alunas() {
               defaultValue={aluna.login}
               {...register("loginEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
+            /> */}
+            <TextField
+              id="outlined-bairro"
+              label="Bairro"
+              defaultValue={aluna.bairro}
+              required={true}
+              {...register("bairroEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            <TextField
+              id="outlined-cidade"
+              label="Cidade"
+              defaultValue={aluna.cidade}
+              required={true}
+              {...register("cidadeEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-descricao_endereco"
+              label="Descrição do Endereço"
+              defaultValue={aluna.descricao_endereco}
+              required={true}
+              {...register("descricao_enderecoEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-cep"
+              label="CEP"
+              defaultValue={aluna.cep}
+              required={true}
+              {...register("cepEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label" required={true}>
+                  Status
+                </InputLabel>
+                <Select
+                  id="simple-select-label-status"
+                  labelId="simple-select-status"
+                  label="Status"
+                  defaultValue={aluna.status}
+                  {...register("statusEdit")}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
+                >
+                  <MenuItem value={1 as any}>Produção</MenuItem>
+                  <MenuItem value={2 as any}>Curso</MenuItem>
+                  <MenuItem value={3 as any}>Inativo</MenuItem>
+                </Select>
+              </FormControl>
             <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
