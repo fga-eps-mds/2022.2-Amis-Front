@@ -79,16 +79,21 @@ export function Login() {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    const { email, senha } = data;
-
-    const request = await auth.authenticate(email, senha);
-
-    if (request.token) {
-      setLoading(false);
-      navigate("/alunas");
-    } else {
-      setLoading(false);
+    const { login, senha } = data;
+  
+    try {
+      const request = await auth.authenticate(login, senha);
+  
+      if (request.token) {
+        setLoading(false);
+        navigate("/alunas");
+      } else {
+        toast.error("Não foi possível entrar, verifique as credenciais!");
+        setLoading(false);
+      }
+    } catch (error) {
       toast.error("Não foi possível entrar, verifique as credenciais!");
+      setLoading(false);
     }
   };
 
@@ -102,7 +107,7 @@ export function Login() {
             <TextField
               id="outlined-cpf"
               label="Login"
-              {...register("email")}
+              {...register("login")}
               sx={{ width: "60%", background: "#F5F4FF" }}
             />
             <FormControl
