@@ -21,6 +21,7 @@ import {
   OutlinedInput,
   Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useQuery } from "react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -38,7 +39,6 @@ import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
 import { queryClient } from "../../services/queryClient";
 import CPFMask from "../../shared/components/Masks/ValueMask";
-import { Typography } from "@mui/material";
 
 const Container = styled.div`
   width: 100%;
@@ -95,7 +95,6 @@ const style = {
   overflowY: "scroll",
 };
 
-
 export function Assistentes() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -121,27 +120,24 @@ export function Assistentes() {
   } = methods;
 
   function transformDate(date: any) {
-    const parts = date.split('/');
+    const parts = date.split("/");
     const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
     return transformedDate;
   }
 
   const registerAssistentes = async (data: any) => {
-
     function removeSpecialCharacters(string: any) {
-      if (typeof string === 'string' || string instanceof String) {
+      if (typeof string === "string" || string instanceof String) {
         return string.replace(/[./\-\(\) ]/g, "");
       }
       return "";
     }
 
-
-
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
       data_nascimento: data.data_nascimento,
-      dNascimento:data.data_nascimento,
+      dNascimento: data.data_nascimento,
       telefone: data.telefone,
       email: data.email,
       login: data.login,
@@ -178,7 +174,7 @@ export function Assistentes() {
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
-    console.log(response.data)
+    console.log(response.data);
     const temp: AssistentesListarDTO[] = [];
     response.data.forEach((value: AssistentesListarDTO, index: number) => {
       temp.push({
@@ -190,14 +186,16 @@ export function Assistentes() {
         email: value.email,
         login: value.login,
         observacao: value.observacao,
-        administrador: value.administrador
+        administrador: value.administrador,
       });
     });
     setDataTable(temp);
   });
 
   const deleteAssistentes = async () => {
-    const selectedAssistente = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da aluna com base no ID selecionado
+    const selectedAssistente = dataTable.find(
+      (item) => (item as any).id === id
+    ); // Encontra o objeto da aluna com base no ID selecionado
     if (selectedAssistente) {
       const login = (selectedAssistente as any).login; // Obtém o login da aluna
       const response = await excluirAssistente(login); // Passa o login para a função apagaAluna
@@ -237,7 +235,7 @@ export function Assistentes() {
       telefone: data.telefoneEdit,
       email: data.emailEdit,
       login: data.loginEdit,
-      observacao: data.observacao
+      observacao: data.observacao,
     };
 
     const response = await editarAssistente(assistente.id, assistenteEditada);
@@ -311,9 +309,7 @@ export function Assistentes() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormProvider
-            {...methods}
-          >
+          <FormProvider {...methods}>
             <FormText>Preencha corretamente os dados cadastrais.</FormText>
             <Form onSubmit={handleSubmit(registerAssistentes)}>
               <TextField
@@ -348,7 +344,10 @@ export function Assistentes() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 variant="outlined"
               >
-                <InputLabel htmlFor="outlined-adornment-password" required={true}>
+                <InputLabel
+                  htmlFor="outlined-adornment-password"
+                  required={true}
+                >
                   Senha
                 </InputLabel>
                 <OutlinedInput
@@ -395,7 +394,9 @@ export function Assistentes() {
                 <OutlinedInput
                   id="outlined-adornment-confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
-                  {...register("senha_confirmada", { validate: validatePassword })}
+                  {...register("senha_confirmada", {
+                    validate: validatePassword,
+                  })}
                   endAdornment={
                     <InputAdornment position="end">
                       {showConfirmPassword ? (
@@ -497,8 +498,6 @@ export function Assistentes() {
           </Form>
         </Box>
       </Modal>
-
-
     </Container>
   );
 }

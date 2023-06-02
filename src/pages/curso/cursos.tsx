@@ -40,7 +40,12 @@ import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { toast } from "react-toastify";
 import { queryClient } from "../../services/queryClient";
-import { cadastrarCurso } from '../../services/cursos';
+import {
+  cadastrarCurso,
+  editarCurso,
+  excluirCurso,
+  listarCurso,
+} from "../../services/cursos";
 
 const Container = styled.div`
   width: 100%;
@@ -97,10 +102,14 @@ const style = {
   overflowY: "scroll",
 };
 
-export function Curso(this: any) {
+export function Curso() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const handleOpenConfirmation = () => setOpenConfirmation(true);
+  const handleCloseConfirmation = () => setOpenConfirmation(false);
+  const [curso, setCurso] = useState(Object);
+  const [openEdit, setOpenEdit] = useState(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
   const {
     register,
@@ -123,6 +132,68 @@ export function Curso(this: any) {
       setOpen(false);
       queryClient.invalidateQueries("listar_curso");
       toast.success("Curso cadastrado com sucesso!");
+    }
+  };
+
+  useQuery("listar_curso", async () => {
+    const response = await listarCurso();
+
+    console.log(response.data);
+    const temp: CursosListarDTO[] = [];
+    response.data.forEach((value: CursosListarDTO, index: number) => {
+      temp.push({
+        codigo: index,
+        nomeCurso: value.nomeCurso,
+        descricao: value.descricao,
+        duracao: index,
+      });
+    });
+    setDataTable(temp);
+  });
+
+  const deletarCurso = async () => {
+    const selectedCurso = dataTable.find((item) => (item as any).id === id);
+    if (selectedCurso) {
+      const id = (selectedCurso as any).id;
+      const response = await excluirCurso(id);
+
+      if (response.status === 204) {
+        toast.success("Curso excluida com sucesso!");
+      } else {
+        toast.error("Erro ao excluir Curso");
+      }
+
+      handleCloseConfirmation();
+      await queryClient.invalidateQueries("listar_curso");
+    }
+  };
+
+  const carregarCurso = async (id: any) => {
+    const response = dataTable.find((element: any) => {
+      if (element.id === id) {
+        return element;
+      }
+    });
+    const curso = response as CursosListarDTO;
+    setCurso(curso);
+    setValue("nomeEdit", curso.nomeCurso);
+    setValue("descricaoEdit", curso.descricao);
+    setValue("duracaoEdit", curso.duracao);
+    setOpenEdit(true);
+  };
+
+  const editCurso = async (data: any) => {
+    const cursoEditado = {
+      nomeCurso: data.nomeCursoEdit,
+      descricaoCurso: data.descricaoCursoEdit,
+      duracaoCurso: data.duracaoCursoEdit,
+    };
+
+    const response = await editarCurso(curso.id, cursoEditado);
+    if (response.status === 200) {
+      queryClient.invalidateQueries("listar_curso");
+      setOpenEdit(false);
+      toast.success("Curso editado com sucesso!");
     }
   };
 
