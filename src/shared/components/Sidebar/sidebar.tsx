@@ -7,7 +7,7 @@ import { FiSettings } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
-import { AuthContext } from "../../../context/AuthProvider";
+import { AuthContext, Roles } from "../../../context/AuthProvider";
 
 const Container = styled.div`
   width: 200px;
@@ -50,12 +50,21 @@ const Logo = styled.div`
   font-weight: 600;
 `;
 
+interface SideBarItemProps {
+  id: number;
+  name: string;
+  path: string;
+  icon: JSX.Element;
+  allowedRoles: Roles[];
+  handleClick?: () => void;
+}
+
 export function Sidebar() {
   const [pathname] = useState(window.location.pathname);
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const sidebarData = [
+  const sidebarData: SideBarItemProps[] = [
     {
       id: 1,
       name: "Tela Inicial",
@@ -66,6 +75,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: [],
     },
     {
       id: 2,
@@ -136,6 +146,7 @@ export function Sidebar() {
         auth.logout();
         navigate("/login/logout");
       },
+      permittedRoles: [""],
     },
   ];
 
