@@ -136,6 +136,45 @@ describe("Alunas", () => {
       fireEvent.click(submitButton);
     });
   });
+
+  it('deve excluir uma aluna ao submeter o formulário', async () => {
+    const aluna = {
+      login: 'aluna',
+      nome: 'Alice',
+      cpf: '06951977119',
+      data_nascimento: '2000-01-01',
+      deficiencia: false,
+      telefone: '12345678901',
+      email: 'alice@example.com',
+      bairro: 'Centro',
+      cidade: 'São Paulo',
+      cep: '12345678',
+      descricao_endereco: 'Rua Principal',
+      status: 'Ativa',
+      senha:'12345',
+    };
+    //cadastraAlunaSpy.mockImplementation(cadastraAlunaMock);
+    listarAlunasSpy.mockResolvedValueOnce({ data: [aluna] });
+  
+    renderComponent();
+  
+    await screen.findByText("Alice");
+  
+    // Verifica se a mensagem de erro é exibida após a submissão 
+    expect(screen.getByTestId("teste-excluir")).toBeInTheDocument();
+  
+    const excluirButton = screen.getByTestId("teste-excluir");
+  
+    await act(async () => {
+      fireEvent.click(excluirButton);
+    });
+    
+    excluirAlunaSpy.mockResolvedValueOnce(Promise.resolve({ status: 204 } as AxiosResponse));
+    const simButton = screen.getByText('Sim');
+    await act(async () => {
+      fireEvent.click(simButton);
+    });
+  });
   
   
 });

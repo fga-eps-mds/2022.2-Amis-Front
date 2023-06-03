@@ -364,6 +364,7 @@ export function Alunas() {
 
         <IconButton
           key={params.id}
+          data-testid="teste-excluir"
           onClick={() => {
             setId(params.id);
             const selectedRow = dataTable.find((item) => (item as any).id === params.id);
