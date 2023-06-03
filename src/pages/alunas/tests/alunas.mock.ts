@@ -22,6 +22,5 @@ mock.onPost('/alunas/').reply((config) => {
 });
 
 export const cadastraAlunaMock = async (payload: AlunasCadastrarDTO) => {
-  //console.log("Passei aq")
   return await api.post('/alunas/', payload).then((response: any) => response);
 };

@@ -301,7 +301,7 @@ export function Assistentes() {
         toast.success("Assistente editado com sucesso!");
       } catch (error) {
         // Handle the error
-        console.error(error);
+        //console.error(error);
       }
     }
   };

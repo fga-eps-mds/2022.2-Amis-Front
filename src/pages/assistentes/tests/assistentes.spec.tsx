@@ -97,7 +97,6 @@ describe("Assistentes", () => {
     const response = { status: 201 };
 
     if (response.status === 201) {
-      //console.log("Assistente cadastrado com sucesso!");
       toast.success("Assistente cadastrado com sucesso!");
     }
 
