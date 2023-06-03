@@ -16,6 +16,7 @@ import {
   Modal,
   OutlinedInput,
   TextField,
+  IconButton,
   Typography,
 } from "@mui/material";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
@@ -307,6 +308,35 @@ export function Assistentes() {
   };
 
   const columnsTable = [
+    {
+      field: "actions",
+      headerName: "Ações",
+      type: "actions",
+      flex: 1,
+      getActions: (params: { id: GridRowId }) => [
+        <IconButton
+          id="meu-grid-actions-cell-item"
+          data-testid="teste-editar"
+          onClick={async () => {
+            carregarAssistentes(params.id);
+          }}
+        >
+          <AiFillEdit size={20} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+
+        <IconButton
+          data-testid="teste-excluir"
+          onClick={() => {
+            setId(params.id);
+            handleOpenConfirmation();
+          }}
+        >
+          <BsFillTrashFill size={18} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+      ],
+    },
     { field: "nome", headerName: "Nome", flex: 2 },
     { field: "cpf", headerName: "CPF", flex: 1 },
     { field: "observacao", headerName: "Observações", flex: 2 },
@@ -315,29 +345,6 @@ export function Assistentes() {
       headerName: "Administrador(a)",
       flex: 1,
       type: "boolean",
-    },
-    {
-      field: "actions",
-      headerName: "Ações",
-      type: "actions",
-      flex: 1,
-      getActions: (params: { id: GridRowId }) => [
-        <GridActionsCellItem
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
-          onClick={() => {
-            setId(params.id);
-            handleOpenConfirmation();
-          }}
-        />,
-        <GridActionsCellItem
-          icon={<AiFillEdit size={20} />}
-          label="Editar"
-          onClick={async () => {
-            carregarAssistentes(params.id);
-          }}
-        />,
-      ],
     },
   ];
 

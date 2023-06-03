@@ -96,7 +96,7 @@ describe("Alunas", () => {
     const aluna = {
       login: 'aluna',
       nome: 'Alice',
-      cpf: '06951977119',
+      cpf: '40071085017',
       data_nascimento: '2000-01-01',
       deficiencia: false,
       telefone: '12345678901',
