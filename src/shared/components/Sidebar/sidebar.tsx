@@ -87,6 +87,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: [],
     },
     {
       id: 3,
@@ -98,6 +99,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: [],
     },
     // {
     //   id: 4,
@@ -120,6 +122,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: [],
     },
     // {
     //   id: 6,
@@ -146,7 +149,7 @@ export function Sidebar() {
         auth.logout();
         navigate("/login/logout");
       },
-      permittedRoles: [""],
+      allowedRoles: [],
     },
   ];
 
