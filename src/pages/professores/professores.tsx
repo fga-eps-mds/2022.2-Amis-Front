@@ -202,11 +202,11 @@ export function Professores() {
       return;
     }
 
-    //professor.cpf = removeSpecialCharacters(professor.cpf);
+    professor.cpf = removeSpecialCharacters(professor.cpf);
     professor.telefone = removeSpecialCharacters(professor.telefone);
     professor.data_nascimento=transformDate(professor.data_nascimento);
 
-    const response = await cadastraProfessor(professor);
+    const response: any = await cadastraProfessor(professor);
     if (response.status === 201) {
       handleClose();
       toast.success("Professor cadastrado com sucesso!");
@@ -228,12 +228,15 @@ export function Professores() {
     const response = await listaProfessores();
     const temp: ProfessoresListarDTO[] = [];
     response.data.forEach((value: ProfessoresListarDTO, index: number) => {
+      const [year, month, day] = value.data_nascimento.split("-");
+      const dataFormatada = `${day}/${month}/${year}`;
+
       temp.push({
         id: index,
         nome: value.nome,
         login: value.login,
         cpf: value.cpf,
-        data_nascimento: value.data_nascimento,
+        data_nascimento: dataFormatada,
       });
     });
     setDataTable(temp);
