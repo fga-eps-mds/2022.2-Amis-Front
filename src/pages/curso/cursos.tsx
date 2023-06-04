@@ -108,7 +108,9 @@ export function Curso() {
   const handleClose = () => setOpen(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
   const [curso, setCurso] = useState(Object);
+  const [id, setId] = useState<GridRowId>(0);
   const [openEdit, setOpenEdit] = useState(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
   const {
@@ -202,6 +204,31 @@ export function Curso() {
     { field: "nomeCurso", headerName: "Nome do curso", flex: 1 },
     { field: "decricao", headerName: "Descrição", flex: 1 },
     { field: "duracao", headerName: "Duração", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      type: "action",
+      flex: 1,
+      getActions: (params: { id: GridRowId }) => [
+        <GridActionsCellItem
+          key="delete"
+          icon={<BsFillTrashFill size={18} />}
+          label="Deletar"
+          onClick={() => {
+            setId(params.id);
+            handleCloseConfirmation();
+          }}
+        />,
+        <GridActionsCellItem
+          key="edit"
+          icon={<AiFillEdit size={20} />}
+          label="Editar"
+          onClick={async () => {
+            carregarCurso(params.id);
+          }}
+        />,
+      ],
+    },
   ];
 
   return (
@@ -215,6 +242,22 @@ export function Curso() {
           <PrimaryButton text={"Exportar"} handleClick={handleClose} />
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTableCursos} />
+        <Dialog
+          open={openConfirmation}
+          onClose={setOpenConfirmation}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Você tem certeza que deseja excluir?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmation}>Não</Button>
+            <Button onClick={deletarCurso} autoFocus>
+              Sim
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
@@ -251,6 +294,36 @@ export function Curso() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Cadastrar"} />
+          </Form>
+        </Box>
+      </Modal>
+      <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+        <Box sx={style}>
+          <FormText>Altere os dados cadastrados</FormText>
+          <Form onSubmit={handleSubmit(editCurso)}>
+            <TextField
+              id="outlined-nomCurso"
+              label="Nome do Curso"
+              required={true}
+              inputProps={{ maxLength: 70 }}
+              {...register("nomeCurso")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-descricao"
+              label="Descrição"
+              required={true}
+              inputProps={{ maxLength: 300 }}
+              {...register("descricao")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-duracao"
+              label="Duração em horas"
+              {...register("duracao")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <PrimaryButton text={"Editar"} />
           </Form>
         </Box>
       </Modal>
