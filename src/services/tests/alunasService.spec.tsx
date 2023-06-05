@@ -145,8 +145,8 @@ describe("Testes do serviço de aluna", () => {
 
     // Verificar se a resposta foi um erro
     expect(response instanceof Error).toBe(true);
-
-    //expect(response.message).toBe("Request failed with status code 422");
+    
+    expect(response.message).toBe("Request failed with status code 422");
   });
 
 

@@ -18,6 +18,7 @@ import { validateLogin } from "../../shared/validations/validarLogin";
 import { validateNome } from "../../shared/validations/validarNome";
 import { validateSenha } from "../../shared/validations/validarSenha";
 
+
 import {
   Box,
   FormControl,
@@ -33,6 +34,7 @@ import {
   Select,
   TextField,
   Typography,
+  IconButton,
 } from "@mui/material";
 
 import { useQuery } from "react-query";
@@ -189,7 +191,9 @@ export function Alunas() {
   };
 
   useQuery("listar_alunas", async () => {
+
     const response = await listarAlunas();
+
     const temp: AlunasListarDTO[] = [];
     if (response.data && Array.isArray(response.data)) {
       response.data.forEach((value: AlunasListarDTO, index: number) => {
@@ -338,31 +342,29 @@ export function Alunas() {
 
 
   const columnsTable = [
-    { field: "nome", headerName: "Nome", flex: 2 },
-    { field: "cpf", headerName: "CPF", flex: 2 },
-    { field: "data_nascimento", headerName: "Data Nascimento", flex: 2 },
     {
       field: "actions",
       headerName: "Ações",
       type: "actions",
       flex: 1,
-      getActions: (params: { id: GridRowId }) => [
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
+      getActions: (params:any) => [
+        <IconButton
+          id="meu-grid-actions-cell-item"
+          data-testid="teste-editar"
           key={params.id}
-          icon={<AiFillEdit size={20} />}
-          label="Editar"
           onClick={() => {
             carregarAlunas(params.id);
             setId(params.id);
             setOpenEdit(true);
           }}
-        />,
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
+        >
+          <AiFillEdit size={20} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+
+        <IconButton
           key={params.id}
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
+          data-testid="teste-excluir"
           onClick={() => {
             setId(params.id);
             const selectedRow = dataTable.find((item) => (item as any).id === params.id);
@@ -371,9 +373,15 @@ export function Alunas() {
               handleOpenConfirmation();
             }
           }}
-        />,
+          >
+            <BsFillTrashFill size={18}/>
+            <Typography variant="body2"></Typography>
+        </IconButton>,
       ],
     },
+    { field: "nome", headerName: "Nome", flex: 2 },
+    { field: "cpf", headerName: "CPF", flex: 2 },
+    { field: "data_nascimento", headerName: "Data de Nascimento", flex: 2 },
   ];
 
   return (
@@ -385,7 +393,7 @@ export function Alunas() {
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
           {/* <PrimaryButton text={"Editar"} /> */}
         </DivButtons>
-        <DataTable data={dataTable} columns={columnsTable} />
+        <DataTable data={dataTable} columns={columnsTable}/>
         <Dialog
           open={openConfirmation}
           onClose={setOpenConfirmation}

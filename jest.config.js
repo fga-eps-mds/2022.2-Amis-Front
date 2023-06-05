@@ -15,7 +15,8 @@ module.exports = {
   ],
   collectCoverage: true,
   testEnvironment: 'jest-environment-jsdom',
-  setupFilesAfterEnv: ['<rootDir>/.jest/setup-tests.js'],
+  //setupFilesAfterEnv: ['<rootDir>/.jest/setup-tests.js'],
+  setupFilesAfterEnv: ["@testing-library/jest-dom/extend-expect"],
   transform: {
     ".*\\.[jt]sx?$": "babel-jest",
   },
