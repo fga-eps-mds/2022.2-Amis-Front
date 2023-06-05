@@ -26,6 +26,7 @@ interface IAuthContext extends IUser {
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
+  role?: Roles;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -34,15 +35,17 @@ const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 const AuthProvider: React.FC<Props> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<Roles | undefined>(undefined);
 
-  async function authenticate(email: string, senha: string) {
-    const response = await LoginRequest(email, senha);
+  async function authenticate(email: string, senha: string, role: Roles) {
+    const response = await LoginRequest(email, senha, role);
 
     const payload = {
       token: response?.token,
       email: response?.email,
     };
 
+    setRole(role);
     setUser(payload);
     setUserLocalStorage(payload);
     return response;
@@ -78,6 +81,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         authenticate,
         logout,
         loading,
+        role,
       }}
     >
       {children}

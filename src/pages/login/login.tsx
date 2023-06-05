@@ -14,7 +14,7 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { AuthContext } from "../../context/AuthProvider";
+import { AuthContext, Roles } from "../../context/AuthProvider";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 
@@ -69,16 +69,11 @@ const Link = styled.a`
 interface Props {
   login: string;
   senha: string;
-  loginType: LoginType;
+  loginType: Roles;
 }
 
 export function Login() {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Props>();
+  const { register, handleSubmit } = useForm<Props>();
   const [showPassword, setShowPassword] = React.useState(false);
   const handleShowPassword = () => setShowPassword(!showPassword);
   const auth = useContext(AuthContext);
@@ -160,7 +155,7 @@ export function Login() {
                 labelId="select-login-label"
                 id="select-login"
                 label="Tipo de Login"
-                {...register("login-type", {
+                {...register("loginType", {
                   required: "This field is required",
                 })}
                 // placeholder="Tipo de Login"x

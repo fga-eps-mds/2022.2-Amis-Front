@@ -75,7 +75,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: [],
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
     {
       id: 2,
@@ -87,7 +87,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: [],
+      allowedRoles: ["teacher", "socialWorker"],
     },
     {
       id: 3,
@@ -99,7 +99,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: [],
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
     //   id: 4,
@@ -122,7 +122,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: [],
+      allowedRoles: ["socialWorker"],
     },
     // {
     //   id: 6,
@@ -149,24 +149,30 @@ export function Sidebar() {
         auth.logout();
         navigate("/login/logout");
       },
-      allowedRoles: [],
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
   ];
 
   return (
     <Container>
       <Logo>AMIS</Logo>
-      {sidebarData.map((itemData, index) => (
-        <SidebarItem
-          key={index}
-          active={pathname === itemData.path}
-          to={itemData.path}
-          onClick={itemData.handleClick}
-        >
-          {itemData.icon}
-          <ItemText>{itemData.name}</ItemText>
-        </SidebarItem>
-      ))}
+      {sidebarData.map((itemData, index) => {
+        if (auth.role && itemData.allowedRoles.includes(auth.role)) {
+          return (
+            <SidebarItem
+              key={index}
+              active={pathname === itemData.path}
+              to={itemData.path}
+              onClick={itemData.handleClick}
+            >
+              {itemData.icon}
+              <ItemText>{itemData.name}</ItemText>
+            </SidebarItem>
+          );
+        } else {
+          return <></>;
+        }
+      })}
     </Container>
   );
 }
