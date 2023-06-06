@@ -138,9 +138,13 @@ export function Turmas(this: any) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = methods;
   const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
+
+  const selectedCursos = watch("fk_curso", ""); // Make sure "fk_curso" matches the correct input name
+  const selectedProfessor = watch("fk_professor", "");
 
   function transformDate(date: any) {
     const parts = date.split("/");
@@ -163,6 +167,9 @@ export function Turmas(this: any) {
       data_inicio: data.data_inicio,
       data_fim: data.data_fim,
     } as TurmasCadastrarDTO;
+
+    console.log("TURMA:"+turma.fk_curso);
+    console.log("Professor:"+turma.fk_professor)
 
     // if (turma.nome_turma.length > 70) {
     //   toast.error("Nome da turma inválido, use menos de 70 caracteres.");
@@ -223,8 +230,11 @@ export function Turmas(this: any) {
       return;
     }
 
-    turma.inicio_aula = transformDate(turma.inicio_aula);
-    turma.fim_aula = transformDate(turma.fim_aula);
+    turma.data_inicio = transformDate(turma.data_inicio);
+    turma.data_fim = transformDate(turma.data_fim);
+
+    console.log(turma.inicio_aula);
+    console.log(turma.fim_aula);
 
     // turma.fk_curso = parseInt(turma.fk_curso);
 
@@ -560,22 +570,36 @@ export function Turmas(this: any) {
             </FormText>
             <Form onSubmit={handleSubmit(registerTurmas)}>
               <Autocomplete
-                multiple
-                disablePortal
-                id="combo-box-demo"
-                options={["1", "2", "3"]}
+                  multiple
+                  disablePortal
+                  id="outlined-fk_curso"
+                  options={["1", "2", "3"]}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
+                  {...register("fk_curso")}
+                  onChange={(event, value) => {
+                    setValue("fk_curso", value.join(",")); // Atualiza o valor do campo "cursos" com o array de opções selecionadas
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      required={false}
+                      label="Cursos"
+                      value={Array.isArray(selectedCursos) ? selectedCursos.join(", ") : ""}
+                    />
+                  )}
+              />
+              <TextField
+                id="outlined-codigo"
+                label="Codigo da Turma"
                 required={true}
-                {...register("fk_curso")}
+                {...register("codigo")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-                renderInput={(params) => (
-                  <TextField {...params} label="fk_curso" />
-                )}
               />
               <TextField
                 id="outlined-turma"
                 label="Turma"
                 required={true}
-                {...register("turma")}
+                {...register("nome_turma")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
               <TextField
@@ -629,17 +653,27 @@ export function Turmas(this: any) {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               /> */}
               <ValueMask label="fim_aula" />
+
               <Autocomplete
-                multiple
-                disablePortal
-                id="combo-box-demo"
-                options={["professor 1", "professor 2", "professor 3"]}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-                {...register("professor")}
-                renderInput={(params) => (
-                  <TextField {...params} label="Professor" />
-                )}
+                  multiple
+                  disablePortal
+                  id="outlined-fk_professor"
+                  options={["professor 1", "professor 2", "professor 3"]}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
+                  {...register("fk_professor")}
+                  onChange={(event, value) => {
+                    setValue("fk_professor", value.join(",")); // Atualiza o valor do campo "cursos" com o array de opções selecionadas
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      required={false}
+                      label="Professor"
+                      value={Array.isArray(selectedProfessor) ? selectedProfessor.join(", ") : ""}
+                    />
+                  )}
               />
+            
               <PrimaryButton text={"Cadastrar"} />
             </Form>
           </FormProvider>
@@ -652,6 +686,8 @@ export function Turmas(this: any) {
           >
             Editar dados cadastrais da turma
           </FormText>
+                  
+
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
               id="outlined-turma"
