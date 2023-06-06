@@ -57,6 +57,8 @@ import {
   listarVagasTurma,
   confereTurmaMatricula,
 } from "../../services/turmas";
+import { parse, compareAsc } from 'date-fns';
+
 
 const Container = styled.div`
   width: 100%;
@@ -177,22 +179,22 @@ export function Turmas(this: any) {
     // }
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    function validateDates(data_inicio: string, data_fim: string): boolean {
-      const startDate = new Date(data_inicio);
-      const endDate = new Date(data_fim);
 
-      if (startDate.getTime() < endDate.getTime()) {
-        return true; // Data de início é anterior à data de fim
-      }
-
-      return false; // Data de início não é anterior à data de fim
+    function compareDates(date1: string, date2: string): number {
+      const parsedDate1 = parse(date1, 'dd/MM/yy', new Date());
+      const parsedDate2 = parse(date2, 'dd/MM/yy', new Date());
+    
+      return compareAsc(parsedDate1, parsedDate2);
     }
+    
 
-    if (!validateDates(turma.data_inicio, turma.data_fim)) {
+    if (compareDates(turma.data_inicio, turma.data_fim) > 0 ) {
       // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
       toast.error("A data de início deve ser anterior à data de fim.");
       return;
     }
+    
+
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     function validateHorarios(inicio_aula: string, fim_aula: string): boolean {
