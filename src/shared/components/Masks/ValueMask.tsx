@@ -11,10 +11,10 @@ interface Value {
   data_nascimento: string;
   telefone: string;
   cep: string;
-  dataInicio: string;
-  dataFim: string;
-  horarioInicio: string;
-  horarioFim: string;
+  data_inicio: string;
+  data_fim: string;
+  inicio_aula: string;
+  fim_aula: string;
 }
 
 const ValueMask: React.FC<Props> = ({ label }) => {
@@ -23,10 +23,10 @@ const ValueMask: React.FC<Props> = ({ label }) => {
     data_nascimento: "Data de Nascimento",
     telefone: "Telefone",
     cep: "CEP",
-    dataInicio: "Data de Início",
-    dataFim: "Data de Término",
-    horarioInicio: "Horário de Início",
-    horarioFim: "Horário de Término",
+    data_inicio: "Data de Início",
+    data_fim: "Data de Término",
+    inicio_aula: "Horário de Início",
+    fim_aula: "Horário de Término",
   };
   const { register, setValue } = useFormContext();
 
@@ -51,11 +51,11 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       return formattedValue;
     }
 
-    if (label === "horarioFim" || label === "horarioInicio") {
+    if (label === "fim_aula" || label === "inicio_aula") {
       // Aplica a máscara de hora
       const horaRegex = /^(\d{0,2})(\d{0,2})$/;
       const parts = numericValue.match(horaRegex);
-    
+
       if (parts) {
         formattedValue = `${parts[1]}${parts[2] ? `:${parts[2]}` : ""}`;
       }
@@ -65,13 +65,12 @@ const ValueMask: React.FC<Props> = ({ label }) => {
     // eslint-disable-next-line no-constant-condition
     if (
       label === "data_nascimento" ||
-      label === "dataInicio" ||
-      label === "dataFim"
+      label === "data_inicio" ||
+      label === "data_fim"
     ) {
       // Aplica a máscara de data de nascimento
       const dataNascimentoRegex = /^(\d{0,2})(\d{0,2})(\d{0,4})$/;
       const parts = numericValue.match(dataNascimentoRegex);
-      
 
       if (parts) {
         // formattedValue = `(${parts[0]})`;

@@ -9,7 +9,6 @@ export const cadastrarAssistente = async (payload: AssistentesCadastrarDTO) => {
 };
 
 export const listarAssistentes = async () => {
-  
   return await api
     .get("/socialWorker/")
     .then((response) => response)

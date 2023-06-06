@@ -50,10 +50,10 @@ import {
   listarTurmas,
   apagarTurmas,
   editarTurmas,
-  cadastrarAluna,
-  desmatricularAluna,
-  listarAlunasNaTurma,
-  listarAlunas,
+  // cadastrarAluna,
+  // desmatricularAluna,
+  // listarAlunasNaTurma,
+  // listarAlunas,
   listarVagasTurma,
   confereTurmaMatricula,
 } from "../../services/turmas";
@@ -142,31 +142,37 @@ export function Turmas(this: any) {
   } = methods;
   const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
 
+  function transformDate(date: any) {
+    const parts = date.split("/");
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return transformedDate;
+  }
+
   const registerTurmas = async (data: any) => {
     const turma = {
-      curso: data.curso,
-      professor: data.professor,
-      turma: data.turma,
+      codigo: data.codigo,
+      fk_curso: data.fk_curso,
+      fk_professor: data.fk_professor,
+      nome_turma: data.nome_turma,
       descricao: data.descricao,
       turno: data.turno,
-      capacidade: data.capacidade,
-      horarioInicio: data.horarioInicio,
-      horarioFim: data.horarioFim,
-      dataInicio: data.dataInicio,
-      dataFim: data.dataFim,
+      capacidade_turma: data.capacidade_turma,
+      inicio_aula: data.inicio_aula,
+      fim_aula: data.fim_aula,
+      data_inicio: data.data_inicio,
+      data_fim: data.data_fim,
     } as TurmasCadastrarDTO;
 
-    if (turma.turma.length > 70) {
-      toast.error("Nome da turma inválido, use menos de 70 caracteres.");
-      return;
-    }
+    // if (turma.nome_turma.length > 70) {
+    //   toast.error("Nome da turma inválido, use menos de 70 caracteres.");
+    //   return;
+    // }
 
-    console.log(turma.dataInicio);
-    console.log(turma.dataFim);
-
-    function validateDates(dataInicio: string, dataFim: string): boolean {
-      const startDate = new Date(dataInicio);
-      const endDate = new Date(dataFim);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    function validateDates(data_inicio: string, data_fim: string): boolean {
+      const startDate = new Date(data_inicio);
+      const endDate = new Date(data_fim);
 
       if (startDate.getTime() < endDate.getTime()) {
         return true; // Data de início é anterior à data de fim
@@ -175,18 +181,16 @@ export function Turmas(this: any) {
       return false; // Data de início não é anterior à data de fim
     }
 
-    if (!validateDates(turma.dataInicio, turma.dataFim)) {
+    if (!validateDates(turma.data_inicio, turma.data_fim)) {
       // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
       toast.error("A data de início deve ser anterior à data de fim.");
       return;
     }
 
-    function validateHorarios(
-      horarioInicio: string,
-      horarioFim: string
-    ): boolean {
-      const [inicioHora, inicioMinuto] = horarioInicio.split(":").map(Number);
-      const [fimHora, fimMinuto] = horarioFim.split(":").map(Number);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    function validateHorarios(inicio_aula: string, fim_aula: string): boolean {
+      const [inicioHora, inicioMinuto] = inicio_aula.split(":").map(Number);
+      const [fimHora, fimMinuto] = fim_aula.split(":").map(Number);
 
       if (
         inicioHora >= 0 &&
@@ -200,13 +204,13 @@ export function Turmas(this: any) {
         (inicioHora < fimHora ||
           (inicioHora === fimHora && inicioMinuto < fimMinuto))
       ) {
-        return true; // horarioInicio é anterior a horarioFim e dentro do intervalo válido
+        return true; // inicio_aula é anterior a fim_aula e dentro do intervalo válido
       }
 
-      return false; // horarioInicio não é anterior a horarioFim ou fora do intervalo válido
+      return false; // inicio_aula não é anterior a fim_aula ou fora do intervalo válido
     }
 
-    if (!validateHorarios(turma.horarioInicio, turma.horarioFim)) {
+    if (!validateHorarios(turma.inicio_aula, turma.fim_aula)) {
       // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
       toast.error(
         "O horário de início deve ser anterior ao horário de término e deve estar entre 00:00h e 23:59h"
@@ -214,10 +218,15 @@ export function Turmas(this: any) {
       return;
     }
 
-    if (turma.capacidade <= 0) {
-      toast.error("A capacidade deve ser um número maior que 0.");
+    if (turma.capacidade_turma <= 0) {
+      toast.error("A capacidade_turma deve ser um número maior que 0.");
       return;
     }
+
+    turma.inicio_aula = transformDate(turma.inicio_aula);
+    turma.fim_aula = transformDate(turma.fim_aula);
+
+    // turma.fk_curso = parseInt(turma.fk_curso);
 
     const response = await cadastrarTurmas(turma);
     if (response.status === 201) {
@@ -236,11 +245,11 @@ export function Turmas(this: any) {
         temp.push({
           id: value.id,
           descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataFim,
-          dataFim: value.dataFim,
+          capacidade_turma: value.capacidade_turma,
+          inicio_aula: value.inicio_aula,
+          fim_aula: value.fim_aula,
+          data_inicio: value.data_inicio,
+          data_fim: value.data_fim,
           turno: "Matutino",
         });
       }
@@ -248,11 +257,11 @@ export function Turmas(this: any) {
         temp.push({
           id: value.id,
           descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
+          capacidade_turma: value.capacidade_turma,
+          inicio_aula: value.inicio_aula,
+          fim_aula: value.fim_aula,
+          data_inicio: value.data_inicio,
+          data_fim: value.data_fim,
           turno: "Vespertino",
         });
       }
@@ -260,11 +269,11 @@ export function Turmas(this: any) {
         temp.push({
           id: value.id,
           descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
+          capacidade_turma: value.capacidade_turma,
+          inicio_aula: value.inicio_aula,
+          fim_aula: value.fim_aula,
+          data_inicio: value.data_inicio,
+          data_fim: value.data_fim,
           turno: "Noturno",
         });
       }
@@ -272,11 +281,11 @@ export function Turmas(this: any) {
       //   id: value.id,
       //   descricao: value.descricao,
       //   turno: value.turno,
-      //   capacidade: value.capacidade,
-      //   horarioInicio: value.horarioInicio,
-      //   horarioFim: value.horarioFim,
-      //   dataInicio: value.dataInicio,
-      //   dataFim: value.dataFim,
+      //   capacidade_turma: value.capacidade_turma,
+      //   inicio_aula: value.inicio_aula,
+      //   fim_aula: value.fim_aula,
+      //   data_inicio: value.data_inicio,
+      //   data_fim: value.data_fim,
       // });
     });
     setDataTable(temp);
@@ -302,16 +311,17 @@ export function Turmas(this: any) {
 
   const editTurmas = async (data: any) => {
     const turmaEdit = {
-      curso: data.curso,
-      professor: data.professor,
-      turma: data.turma,
+      codigo: data.codigo,
+      fk_curso: data.fk_curso,
+      fk_professor: data.fk_professor,
+      nome_turma: data.nome_turma,
       descricao: data.descricao,
       turno: data.turno,
-      capacidade: data.capacidade,
-      horarioInicio: data.horarioInicio,
-      horarioFim: data.horarioFim,
-      dataInicio: data.dataInicio,
-      dataFim: data.dataFim,
+      capacidade_turma: data.capacidade_turma,
+      inicio_aula: data.inicio_aula,
+      fim_aula: data.fim_aula,
+      data_inicio: data.data_inicio,
+      data_fim: data.data_fim,
     } as TurmasCadastrarDTO;
 
     const response = await editarTurmas(id.toString(), turmaEdit);
@@ -323,37 +333,37 @@ export function Turmas(this: any) {
     setOpenEdit(false);
   };
 
-  const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
-    const turmaMatricula = {
-      idTurma: idDaTurma,
-      idAluna: String(idDaAluna),
-    } as unknown as TurmasMatricularDTO;
+  // const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
+  //   const turmaMatricula = {
+  //     idTurma: idDaTurma,
+  //     idAluna: String(idDaAluna),
+  //   } as unknown as TurmasMatricularDTO;
 
-    if (matriculas.length > vagas?.vagasDisponiveis!) {
-      toast.error("Quantidade de vagas excedida.");
-    } else {
-      const response = await cadastrarAluna(turmaMatricula);
-      if (response.status === 201) {
-        toast.success("Aluna(s) matriculada(s) com sucesso!");
-        queryClient.invalidateQueries("listar_alunas");
-      }
-      setOpenMatricula(false);
-    }
-  };
+  //   if (matriculas.length > vagas?.vagasDisponiveis!) {
+  //     toast.error("Quantidade de vagas excedida.");
+  //   } else {
+  //     const response = await cadastrarAluna(turmaMatricula);
+  //     if (response.status === 201) {
+  //       toast.success("Aluna(s) matriculada(s) com sucesso!");
+  //       queryClient.invalidateQueries("listar_alunas");
+  //     }
+  //     setOpenMatricula(false);
+  //   }
+  // };
 
-  const desmatAluna = async (idTurma: number, idAluna: number) => {
-    const response = await desmatricularAluna(idTurma, idAluna);
-    if (response.status === 204) {
-      toast.success("Aluna(s) removida(s) da turma com sucesso!");
-      setOpenList(false);
-    } else {
-      toast.error("Erro na remoção da(s) aluna(s) da turma.");
-    }
-    handleDesmatCloseConfirmation();
-    useQuery("consultaAlunasNaTurma", async () => {
-      await consultaAlunasNaTurma(idTurma);
-    });
-  };
+  // const desmatAluna = async (idTurma: number, idAluna: number) => {
+  //   const response = await desmatricularAluna(idTurma, idAluna);
+  //   if (response.status === 204) {
+  //     toast.success("Aluna(s) removida(s) da turma com sucesso!");
+  //     setOpenList(false);
+  //   } else {
+  //     toast.error("Erro na remoção da(s) aluna(s) da turma.");
+  //   }
+  //   handleDesmatCloseConfirmation();
+  //   useQuery("consultaAlunasNaTurma", async () => {
+  //     await consultaAlunasNaTurma(idTurma);
+  //   });
+  // };
 
   const columnsTableAlunas = [
     { field: "nome", headerName: "Nome", flex: 2 },
@@ -385,35 +395,35 @@ export function Turmas(this: any) {
     { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
   ];
 
-  const consultaAlunasNaTurma = async (idTurma: number) => {
-    const response = await listarAlunasNaTurma(idTurma);
-    if (response.status === 200) {
-      setAlunasTurma(response.data);
-      console.log(response.data);
-      console.log(alunasTurma);
-    } else {
-      setAlunasTurma([]);
-    }
-  };
+  // const consultaAlunasNaTurma = async (idTurma: number) => {
+  //   const response = await listarAlunasNaTurma(idTurma);
+  //   if (response.status === 200) {
+  //     setAlunasTurma(response.data);
+  //     console.log(response.data);
+  //     console.log(alunasTurma);
+  //   } else {
+  //     setAlunasTurma([]);
+  //   }
+  // };
 
-  useQuery("listar_alunas", async () => {
-    const response = await listarAlunas();
-    const temp: AlunasListarDTO[] = [];
-    if (response.status === 200) {
-      response.data.forEach((value: AlunasListarDTO) => {
-        temp.push({
-          id: value.id,
-          login: value.login,
-          nome: value.nome,
-          cpf: value.cpf,
-          data_nascimento: value.data_nascimento,
-        });
-      });
-      setDataTableAlunas(temp);
-    } else {
-      setDataTableAlunas(temp);
-    }
-  });
+  // useQuery("listar_alunas", async () => {
+  //   const response = await listarAlunas();
+  //   const temp: AlunasListarDTO[] = [];
+  //   if (response.status === 200) {
+  //     response.data.forEach((value: AlunasListarDTO) => {
+  //       temp.push({
+  //         id: value.id,
+  //         login: value.login,
+  //         nome: value.nome,
+  //         cpf: value.cpf,
+  //         data_nascimento: value.data_nascimento,
+  //       });
+  //     });
+  //     setDataTableAlunas(temp);
+  //   } else {
+  //     setDataTableAlunas(temp);
+  //   }
+  // });
 
   const listarIDTurma = async (idDaTurma: number) => {
     setIdTurma(idDaTurma);
@@ -433,11 +443,11 @@ export function Turmas(this: any) {
   const columnsTable = [
     { field: "descricao", headerName: "Turma", width: 250 },
     { field: "turno", headerName: "Turno", width: 125 },
-    { field: "capacidade", headerName: "Número de vagas", width: 180 },
-    { field: "horarioInicio", headerName: "Horário de Início", width: 180 },
-    { field: "horarioFim", headerName: "Horário de Término", width: 180 },
-    { field: "dataInicio", headerName: "Data de Início", width: 165 },
-    { field: "dataFim", headerName: "Data de Término", width: 165 },
+    { field: "capacidade_turma", headerName: "Número de vagas", width: 180 },
+    { field: "inicio_aula", headerName: "Horário de Início", width: 180 },
+    { field: "fim_aula", headerName: "Horário de Término", width: 180 },
+    { field: "data_inicio", headerName: "Data de Início", width: 165 },
+    { field: "data_fim", headerName: "Data de Término", width: 165 },
     {
       field: "actions",
       headerName: "Ações",
@@ -463,7 +473,7 @@ export function Turmas(this: any) {
           onClick={async () => {
             setAlunasTurma([]);
             setOpenList(true);
-            await consultaAlunasNaTurma(Number(params.id));
+            // await consultaAlunasNaTurma(Number(params.id));
             await listarIDTurma(Number(params.id));
             setId(params.id);
             const idTurma = params.id;
@@ -531,7 +541,7 @@ export function Turmas(this: any) {
             <Button onClick={handleDesmatCloseConfirmation}>Não</Button>
             <Button
               onClick={async () => {
-                await desmatAluna(Number(idTurma), Number(idAluna));
+                // await desmatAluna(Number(idTurma), Number(idAluna));
               }}
               autoFocus
             >
@@ -553,12 +563,12 @@ export function Turmas(this: any) {
                 multiple
                 disablePortal
                 id="combo-box-demo"
-                options={["curso 1", "curso 2", "curso 3"]}
+                options={["1", "2", "3"]}
                 required={true}
-                {...register("curso")}
+                {...register("fk_curso")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Curso" />
+                  <TextField {...params} label="fk_curso" />
                 )}
               />
               <TextField
@@ -591,34 +601,34 @@ export function Turmas(this: any) {
                 </Select>
               </FormControl>
               <TextField
-                id="outlined-capacidade"
+                id="outlined-capacidade_turma"
                 label="Número de vagas"
                 required={true}
                 inputProps={{ type: "number", maxLength: 3 }}
-                {...register("capacidade")}
+                {...register("capacidade_turma")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <ValueMask label="dataInicio" />
+              <ValueMask label="data_inicio" />
 
-              <ValueMask label="dataFim" />
+              <ValueMask label="data_fim" />
 
               {/* { <TextField
-                id="outlined-horarioInicio"
+                id="outlined-inicio_aula"
                 label="Horário de Inicio"
                 required={true}
-                {...register("horarioInicio")}
+                {...register("inicio_aula")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               /> */}
-              { <ValueMask label="horarioInicio" /> }
+              <ValueMask label="inicio_aula" />
               {/* <TextField
-                id="outlined-horarioFim"
+                id="outlined-fim_aula"
                 label="Horário de Término"
                 required={true}
-                {...register("horarioFim")}
+                {...register("fim_aula")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               /> */}
-              <ValueMask label="horarioFim" />
+              <ValueMask label="fim_aula" />
               <Autocomplete
                 multiple
                 disablePortal
@@ -658,10 +668,10 @@ export function Turmas(this: any) {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-capacidade"
+              id="outlined-capacidade_turma"
               label="Número de vagas"
               required={true}
-              {...register("capacidade")}
+              {...register("capacidade_turma")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <FormControl fullWidth>
@@ -681,31 +691,31 @@ export function Turmas(this: any) {
               </Select>
             </FormControl>
             <TextField
-              id="outlined-dataInicio"
+              id="outlined-data_inicio"
               label="Data de Início"
               required={true}
-              {...register("dataInicio")}
+              {...register("data_inicio")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-dataFim"
+              id="outlined-data_fim"
               label="Data de Término"
               required={true}
-              {...register("dataFim")}
+              {...register("data_fim")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-horarioInicio"
+              id="outlined-inicio_aula"
               label="Horário de Inicio"
               required={true}
-              {...register("horarioInicio")}
+              {...register("inicio_aula")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-horarioFim"
+              id="outlined-fim_aula"
               label="Horário de Término"
               required={true}
-              {...register("horarioFim")}
+              {...register("fim_aula")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Editar"} />
@@ -838,9 +848,9 @@ export function Turmas(this: any) {
             {vagas?.vagasDisponiveis! >= 1 && (
               <PrimaryButton
                 text={"Matricular"}
-                handleClick={async () =>
-                  await matriculaAluna(Number(idTurma), String(matriculas))
-                }
+                // handleClick={async () =>
+                //   // await matriculaAluna(Number(idTurma), String(matriculas))
+                // }
               />
             )}
           </div>
