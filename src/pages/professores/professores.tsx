@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
@@ -124,11 +124,11 @@ export function Professores() {
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedProfeesor, setSelectedProfessor] = useState(null);
+  const [selectedCursosP, setSelectedCursosP] = useState([]);
   const [nextId, setNextId] = useState(1); // Variável de estado para o próximo ID
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
-  const methods = useForm<ProfessoresCadastrarDTO>();
-
+  const methods = useForm();
   const {
     setValue,
     register,
@@ -137,6 +137,7 @@ export function Professores() {
     watch,
     formState: { errors },
   } = methods;
+  
 
   const selectedCursos = watch("cursos");
 
@@ -237,6 +238,11 @@ export function Professores() {
         login: value.login,
         cpf: value.cpf,
         data_nascimento: dataFormatada,
+        senha:value.senha,
+        codigo:value.codigo,
+        email:value.email,
+        telefone:value.telefone,
+        cursos:value.cursos,
       });
     });
     setDataTable(temp);
@@ -259,18 +265,88 @@ export function Professores() {
     }
   };
 
-  const editProfesores = async (data: ProfessoresCadastrarDTO) => {
-    // eslint-disable-next-line array-callback-return
-    const professor = {
-      nome: data.nome,
-      cpf: data.cpf,
-      login: data.login,
-      email: data.email,
-      data_nascimento: data.data_nascimento,
-      telefone: data.telefone,
-    } as ProfessoresCadastrarDTO;
+  const carregarProfessores = async (id: any) => {
+    const response = dataTable.find((element: any) => {
+      if (element.id === id) {
+        return element;
+      }
+    });
 
-    const response = await editaProfessor(id.toString(), professor);
+    const professor = response as ProfessoresListarDTO;
+    
+    setProfessor(professor);
+    setValue("nomeEdit", professor.nome);
+    setValue("cpfEdit", professor.cpf);
+    setValue("data_nascimentoEdit", professor.data_nascimento);
+    setValue("telefoneEdit", professor.telefone);
+    setValue("emailEdit", professor.email);
+    setValue("cursosEdit",professor.cursos);
+    
+    
+    setOpenEdit(true);
+  };
+  
+  const editProfesores = async (data: any): Promise<void> => {
+    // eslint-disable-next-line array-callback-return
+    
+    const cpfValido = validateCPF(data.cpfEdit);
+    if (!cpfValido) {
+      return;
+    }
+    
+    const emailValido = validateEmail(data.emailEdit);
+    if (!emailValido) {
+      return;
+    }
+    
+    const dateValido = validateDate(data.data_nascimentoEdit);
+    if (!dateValido) {
+      return;
+    }
+    
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    
+    const matchResult = dateRegex.exec(data.data_nascimentoEdit);
+    
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+    
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+    
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
+      return;
+    }
+    
+    const nomeValido = validateNome(professor.nome);
+    if (!nomeValido) {
+      return;
+    }
+    
+    // declarando id que sera editado.
+    
+    const id=professor.login;
+    
+    data.data_nascimentoEdit=transformDate(data.data_nascimentoEdit);
+    data.cpfEdit = removeSpecialCharacters(data.cpfEdit);
+    data.telefoneEdit = removeSpecialCharacters(data.telefoneEdit);
+    
+    
+    const professorEdit = {
+      nome: data.nomeEdit,
+      cpf: data.cpfEdit,
+      login: professor.login,
+      email: data.emailEdit,
+      data_nascimento: data.data_nascimentoEdit,
+      telefone: data.telefoneEdit,
+      senha:professor.senha,
+      cursos:data.cursosEdit,
+    } as ProfessoresCadastrarDTO;
+    
+    const response = await editaProfessor(id.toString(), professorEdit);
     if (response.status === 200 || response.status === 204) {
       toast.success("Professor atualizado com sucesso!");
     } else {
@@ -296,7 +372,9 @@ export function Professores() {
           icon={<AiFillEdit size={20} />}
           label="Editar"
           onClick={async () => {
+            carregarProfessores(params.id);
             setId(params.id);
+            setSelectedCursosP(professor.cursos);
             setOpenEdit(true);
           }}
         />,
@@ -368,13 +446,13 @@ export function Professores() {
               <TextField
                 id="outlined-email"
                 label="E-mail"
-                defaultValue={professor.email}
                 required={false}
                 {...register("email")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
               <TextField
                 id="outlined-login"
+                autoComplete="username"
                 required={true}
                 label="Login"
                 {...register("login")}
@@ -389,6 +467,7 @@ export function Professores() {
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-password"
+                  autoComplete="new-password"
                   type={showPassword ? "text" : "password"}
                   {...register("senha")}
                   endAdornment={
@@ -418,17 +497,15 @@ export function Professores() {
                 />
               </FormControl>
 
-              <FormControl
-                sx={{ width: "100%", background: "#F5F4FF" }}
-                variant="outlined"
-              >
+              <FormControl sx={{ width: "100%", background: "#F5F4FF" }} variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-confirm-password" required={true}>
                   Confirmar senha
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-confirm-password"
+                  autoComplete="new-password" // Add this line
                   type={showConfirmPassword ? "text" : "password"}
-                  {...register("senha_confirmada", { validate: validatePassword })}
+                  {...register("senha", { validate: validatePassword })}
                   endAdornment={
                     <InputAdornment position="end">
                       {showConfirmPassword ? (
@@ -455,14 +532,13 @@ export function Professores() {
                   label="Password********"
                 />
                 {errors.senha_confirmada && (
-                  <Typography
-                    variant="body2"
-                    color="error"
-                    sx={{ mt: 0.4, mb: -3 }}
-                  >Senha não corresponde!
+                  <Typography variant="body2" color="error" sx={{ mt: 0.4, mb: -3 }}>
+                    Senha não corresponde!
                   </Typography>
                 )}
               </FormControl>
+
+
               <Autocomplete
                 multiple
                 disablePortal
@@ -489,65 +565,47 @@ export function Professores() {
 
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
-          <FormText>Altere os dados do professor.</FormText>
-          <Form onSubmit={handleSubmit(editProfesores)}>
-            <TextField
-              id="outlined-nome"
-              label="Nome"
-              defaultValue={professor.nome}
-              {...register("nome")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-cpf"
-              label="CPF (apenas números)"
-              inputProps={{ maxLength: 11 }}
-              defaultValue={professor.cpf}
-              {...register("cpf")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-data_nascimento"
-              label="Data de Nascimento"
-              {...register("data_nascimento")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="Telefone"
-              defaultValue={professor.telefone}
-              required={true}
-              {...register("telefone")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-email"
-              label="Email"
-              defaultValue={professor.email}
-              required={true}
-              {...register("email")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-login"
-              label="Login *"
-              required={true}
-              inputProps={{ maxLength: 120 }}
-              defaultValue={professor.login}
-              {...register("login")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <Autocomplete
-              multiple
-              disablePortal
-              id="combo-box-demo"
-              options={["curso 1", "curso 2", "curso 3"]}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-              {...register("cursos")}
-              renderInput={(params) => <TextField {...params} label="Curso" />}
-            />
-            <PrimaryButton text={"Editar"} />
-          </Form>
+          <FormProvider {...methods}>
+            <FormText>Altere os dados do professor.</FormText>
+            <Form onSubmit={handleSubmit(editProfesores)}>
+              <TextField
+                id="outlined-nome"
+                label="Nome"
+                {...register("nomeEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <ValueMask label="cpfEdit" />
+                
+              <ValueMask label="data_nascimentoEdit" />
+
+              <ValueMask label="telefoneEdit" />
+
+              <TextField
+                id="outlined-email"
+                label="Email"
+                required={true}
+                {...register("emailEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <Autocomplete
+                disablePortal
+                id="outlined-cursos"
+                options={["curso 1", "curso 2", "curso 3"]}
+                defaultValue={professor.cursos}
+                onChange={(event, value) => setValue("cursosEdit", value)}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    required={false}
+                    label="Cursos"
+                    value={Array.isArray(selectedCursos) ? selectedCursos.join(", ") : ""}
+                  />
+                )}
+              />
+              <PrimaryButton text={"Editar"} />
+            </Form>
+          </FormProvider>
         </Box>
       </Modal>
     </Container>
