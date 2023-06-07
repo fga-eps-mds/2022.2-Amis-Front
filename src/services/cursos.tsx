@@ -15,14 +15,14 @@ export const listarCurso = async () => {
     .catch((error) => error);
 };
 
-export const editarCurso = async (cursoId: number, curso: Object) => {
+export const editarCurso = async (cursoId: string, curso: Object) => {
   return await api
     .put("/curso/" + cursoId, curso)
     .then((response) => response)
     .catch((error) => error);
 };
 
-export const excluirCurso = async (cursoId: number) => {
+export const excluirCurso = async (cursoId: string) => {
   return await api
     .delete("/curso/" + cursoId)
     .then((response) => response)

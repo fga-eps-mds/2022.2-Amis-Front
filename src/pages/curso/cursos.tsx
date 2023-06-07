@@ -1,51 +1,37 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import React, { SyntheticEvent, useState } from "react";
-import styled from "styled-components";
-import Sidebar from "../../shared/components/Sidebar/sidebar";
-import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
-import DataTable from "../../shared/components/TablePagination/tablePagination";
-import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Modal,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
+  TextField
 } from "@mui/material";
-import { useQuery } from "react-query";
+import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CursosListarDTO } from "./dtos/CursosListar.dto";
-import { CursosCadastrarDTO } from "./dtos/CursosCadastrar.dto";
-import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
-import {
-  BsFillTrashFill,
-  BsFillPersonPlusFill,
-  BsFillPersonDashFill,
-} from "react-icons/bs";
-import { FaList } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
+import {
+  BsFillTrashFill
+} from "react-icons/bs";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { queryClient } from "../../services/queryClient";
+import styled from "styled-components";
 import {
   cadastrarCurso,
   editarCurso,
   excluirCurso,
   listarCurso,
 } from "../../services/cursos";
+import { queryClient } from "../../services/queryClient";
+import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
+import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import Sidebar from "../../shared/components/Sidebar/sidebar";
+import DataTable from "../../shared/components/TablePagination/tablePagination";
+import { CursosCadastrarDTO } from "./dtos/CursosCadastrar.dto";
+import { CursosListarDTO } from "./dtos/CursosListar.dto";
 
 const Container = styled.div`
   width: 100%;
@@ -109,6 +95,7 @@ export function Curso() {
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [selectedCurso, setSelectedCurso] = useState(null);
   const [curso, setCurso] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [openEdit, setOpenEdit] = useState(false);
@@ -122,10 +109,9 @@ export function Curso() {
 
   const registerCurso = async (data: any) => {
     const curso = {
-      codigo: data.codigo,
-      nomeCurso: data.nomeCurso,
+      nome: data.nome,
       descricao: data.descricao,
-      duracao: data.duracao,
+      duracaoHoras: data.duracaoHoras,
     } as CursosCadastrarDTO;
 
     const response = await cadastrarCurso(curso);
@@ -140,36 +126,31 @@ export function Curso() {
   useQuery("listar_curso", async () => {
     const response = await listarCurso();
 
-    console.log(response.data);
     const temp: CursosListarDTO[] = [];
     response.data.forEach((value: CursosListarDTO, index: number) => {
+      //console.log(value.nome);
       temp.push({
-        codigo: index,
-        nomeCurso: value.nomeCurso,
+        id: value.id,
+        nome: value.nome,
         descricao: value.descricao,
-        duracao: index,
+        duracaoHoras: value.duracaoHoras,
       });
     });
     setDataTable(temp);
   });
 
   const deletarCurso = async () => {
-    const selectedCurso = dataTable.find((item) => (item as any).id === id);
-    if (selectedCurso) {
-      const id = (selectedCurso as any).id;
-      const response = await excluirCurso(id);
+    const response = await excluirCurso(id.toString());
 
-      if (response.status === 204) {
-        toast.success("Curso excluida com sucesso!");
-      } else {
-        toast.error("Erro ao excluir Curso");
-      }
+    if (response.status === 204) {
+      toast.success("Curso excluído com sucesso!");
+    } else {
+      toast.error("Erro ao excluir urso");
+    }
 
       handleCloseConfirmation();
       await queryClient.invalidateQueries("listar_curso");
-    }
   };
-
   const carregarCurso = async (id: any) => {
     const response = dataTable.find((element: any) => {
       if (element.id === id) {
@@ -178,53 +159,61 @@ export function Curso() {
     });
     const curso = response as CursosListarDTO;
     setCurso(curso);
-    setValue("nomeEdit", curso.nomeCurso);
+    setValue("idEdit", curso.id);
+    setValue("nomeEdit", curso.nome);
     setValue("descricaoEdit", curso.descricao);
-    setValue("duracaoEdit", curso.duracao);
+    setValue("duracaoEdit", curso.duracaoHoras);
     setOpenEdit(true);
   };
 
   const editCurso = async (data: any) => {
-    const cursoEditado = {
-      nomeCurso: data.nomeCursoEdit,
-      descricaoCurso: data.descricaoCursoEdit,
-      duracaoCurso: data.duracaoCursoEdit,
-    };
 
-    const response = await editarCurso(curso.id, cursoEditado);
-    if (response.status === 200) {
-      queryClient.invalidateQueries("listar_curso");
-      setOpenEdit(false);
-      toast.success("Curso editado com sucesso!");
+    const cursoEditado = {
+      id: data.idEdit,
+      nome: data.nomeEdit,
+      descricao: data.descricaoEdit,
+      duracaoHoras: data.duracaoEdit,
+    };
+    console.log(curso.id)
+
+    const response = await editarCurso(cursoEditado.id.toString(), cursoEditado);
+    if (response.status === 201) {
+      try {
+        await queryClient.invalidateQueries("listar_curso");
+        setOpenEdit(false);
+        toast.success("Curso editado com sucesso!");
+      } catch (error) {
+        // Handle the error
+        //console.error(error);
+      }
     }
   };
 
   const columnsTableCursos = [
-    { field: "codigo", headerName: "Codigo da turma", flex: 1 },
-    { field: "nomeCurso", headerName: "Nome do curso", flex: 1 },
-    { field: "decricao", headerName: "Descrição", flex: 1 },
-    { field: "duracao", headerName: "Duração", flex: 1 },
+    { field: "id", headerName: "Código", flex: 2 },
+    { field: "nome", headerName: "Nome do curso", flex: 2 },
+    { field: "descricao", headerName: "Descrição", flex: 2 },
+    { field: "duracaoHoras", headerName: "Duração (em horas)", flex: 2 },
     {
       field: "actions",
-      headerName: "Actions",
-      type: "action",
+      headerName: "Ações",
+      type: "actions",
       flex: 1,
       getActions: (params: { id: GridRowId }) => [
         <GridActionsCellItem
-          key="delete"
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
-          onClick={() => {
-            setId(params.id);
-            handleCloseConfirmation();
-          }}
-        />,
-        <GridActionsCellItem
-          key="edit"
           icon={<AiFillEdit size={20} />}
           label="Editar"
           onClick={async () => {
             carregarCurso(params.id);
+          }}
+        />,
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<BsFillTrashFill size={18} />}
+          label="Deletar"
+          onClick={() => {
+            setId(params.id);
+            handleOpenConfirmation();
           }}
         />,
       ],
@@ -264,19 +253,11 @@ export function Curso() {
           <FormText>Preencha corretamente os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(registerCurso)}>
             <TextField
-              id="outlined-codigo"
-              label="Codigo"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("codigo")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
               id="outlined-nomCurso"
               label="Nome do Curso"
               required={true}
               inputProps={{ maxLength: 70 }}
-              {...register("nomeCurso")}
+              {...register("nome")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -289,11 +270,11 @@ export function Curso() {
             />
             <TextField
               id="outlined-duracao"
-              label="Duração em horas"
-              {...register("duracao")}
+              label="Duração (em horas)"
+              {...register("duracaoHoras")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <PrimaryButton text={"Cadastrar"} />
+            <PrimaryButton text={"Confirmar"} />
           </Form>
         </Box>
       </Modal>
@@ -301,12 +282,20 @@ export function Curso() {
         <Box sx={style}>
           <FormText>Altere os dados cadastrados</FormText>
           <Form onSubmit={handleSubmit(editCurso)}>
+          <TextField
+              id="outlined-codigo"
+              label="Código"
+              required={true}
+              disabled={true}
+              {...register("idEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
             <TextField
               id="outlined-nomCurso"
               label="Nome do Curso"
               required={true}
               inputProps={{ maxLength: 70 }}
-              {...register("nomeCurso")}
+              {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
@@ -314,13 +303,13 @@ export function Curso() {
               label="Descrição"
               required={true}
               inputProps={{ maxLength: 300 }}
-              {...register("descricao")}
+              {...register("descricaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-duracao"
-              label="Duração em horas"
-              {...register("duracao")}
+              label="Duração (em horas)"
+              {...register("duracaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Editar"} />

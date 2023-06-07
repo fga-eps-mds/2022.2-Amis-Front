@@ -1,6 +1,6 @@
 export interface CursosListarDTO {
-  codigo: number;
-  nomeCurso: string;
+  id: number;
+  nome: string;
   descricao: string;
-  duracao: number;
+  duracaoHoras: number;
 }

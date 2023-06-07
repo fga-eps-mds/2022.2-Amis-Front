@@ -1,6 +1,5 @@
 export interface CursosCadastrarDTO {
-  codigo: number;
-  nomeCurso: string;
+  nome: string;
   descricao: string;
-  duracao: number;
+  duracaoHoras: number;
 }
