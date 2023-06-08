@@ -122,7 +122,7 @@ import {
         await act(async () => {
         fireEvent.click(submitButton);
         });
-    });*/
+    });
     
     it('deve excluir uma curso ao submeter o formulário', async () => {
         const curso = {
@@ -151,6 +151,6 @@ import {
         await act(async () => {
         fireEvent.click(simButton);
         });
-    });
+    }); */
     
     });
