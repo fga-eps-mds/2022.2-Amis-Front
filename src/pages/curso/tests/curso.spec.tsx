@@ -88,19 +88,20 @@ import {
         expect(toastSuccessSpy).toHaveBeenCalledWith("Curso cadastrado com sucesso!");
     });
     
-    /*it('deve editar uma curso ao submeter o formulário', async () => {
+    it('deve editar uma curso ao submeter o formulário', async () => {
     
         const curso = {
-        nome: "Bordado",
-        descricao: "Curso de bordado",
-        duracaoHoras: 20
+            id: 2,
+            nome: "Bordado",
+            descricao: "Aprender a bordar",
+            duracaoHoras: 20
         };
         
         listaCursosSpy.mockResolvedValueOnce({ data: [curso] });
     
         renderComponent();
     
-        await screen.findByText("Alice");
+        await screen.findByText("Bordado");
     
         // Verifica se a mensagem de erro é exibida após a submissão 
         expect(screen.getByTestId("teste-editar")).toBeInTheDocument();
@@ -108,12 +109,12 @@ import {
         const editarButton = screen.getByTestId("teste-editar");
         
         await act(async () => {
-        fireEvent.click(editarButton);
+            fireEvent.click(editarButton);
         });
         
-        const telefoneInput = screen.getByLabelText('Telefone *');
+        const descricaoInput = screen.getByLabelText('Descrição *');
         await act(async () => {
-        fireEvent.change(telefoneInput, { target: { value: '61991826587' } });
+            fireEvent.change(descricaoInput, { target: { value: "Bordando" } });
         });
     
         editaCursoSpy.mockResolvedValueOnce(Promise.resolve({ status: 200 } as AxiosResponse));
@@ -126,9 +127,10 @@ import {
     
     it('deve excluir uma curso ao submeter o formulário', async () => {
         const curso = {
-        nome: "Bolos",
-        descricao: "Curso de bolos",
-        duracaoHoras: 20
+            id: 1,
+            nome: "Bolos",
+            descricao: "Curso de bolos",
+            duracaoHoras: 20
         };
         
         listaCursosSpy.mockResolvedValueOnce({ data: [curso] });
@@ -151,6 +153,6 @@ import {
         await act(async () => {
         fireEvent.click(simButton);
         });
-    }); */
+    });
     
     });

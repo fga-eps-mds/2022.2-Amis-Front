@@ -7,7 +7,9 @@ import {
   DialogActions,
   DialogTitle,
   Modal,
-  TextField
+  TextField,
+  Typography,
+  IconButton,
 } from "@mui/material";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { useState } from "react";
@@ -190,34 +192,39 @@ export function Curso() {
   };
 
   const columnsTableCursos = [
-    { field: "id", headerName: "Código", flex: 2 },
-    { field: "nome", headerName: "Nome do curso", flex: 2 },
-    { field: "descricao", headerName: "Descrição", flex: 2 },
-    { field: "duracaoHoras", headerName: "Duração (em horas)", flex: 2 },
     {
       field: "actions",
       headerName: "Ações",
       type: "actions",
       flex: 1,
       getActions: (params: { id: GridRowId }) => [
-        <GridActionsCellItem
-          icon={<AiFillEdit size={20} />}
-          label="Editar"
+        <IconButton
+          id="meu-grid-actions-cell-item"
+          data-testid="teste-editar"
           onClick={async () => {
             carregarCurso(params.id);
           }}
-        />,
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
+        >
+          <AiFillEdit size={20} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+
+        <IconButton
+          data-testid="teste-excluir"
           onClick={() => {
             setId(params.id);
             handleOpenConfirmation();
           }}
-        />,
+        >
+          <BsFillTrashFill size={18} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
       ],
     },
+    { field: "id", headerName: "Código", flex: 2 },
+    { field: "nome", headerName: "Nome do curso", flex: 2 },
+    { field: "descricao", headerName: "Descrição", flex: 2 },
+    { field: "duracaoHoras", headerName: "Duração (em horas)", flex: 2 },
   ];
 
   return (
