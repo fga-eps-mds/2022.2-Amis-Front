@@ -148,7 +148,6 @@ export function Receitas() {
 
   useQuery("carregaReceitas", async () => {
     await api.get("/receita/").then((response: any) => {
-      console.log(response.data);
       const temp: ListarReceitaDTO[] = [];
       if (response.status === 200) {
         response.data.forEach((value: ListarReceitaDTO) => {
@@ -162,7 +161,6 @@ export function Receitas() {
         });
         setDataTableReceitas(temp);
       }
-      console.log(temp);
     });
   });
 
@@ -191,8 +189,6 @@ export function Receitas() {
       ingredientes: tempIngredientes,
       modo_preparo: tempModPrep,
     } as ReceitasCadastrarDTO;
-
-    console.log(receita);
 
     await api.post("/receita/", receita).then((response: any) => {
       if (response.status === 201) {
@@ -323,7 +319,7 @@ export function Receitas() {
             </Inputs>
             {ingre.map((value: string, index: number) => (
               // eslint-disable-next-line react/jsx-key
-              <DivInput id="divIngr">
+              <DivInput id="divIngr" key={index}>
                 <input
                   id={String(index)}
                   key={index}
@@ -348,7 +344,7 @@ export function Receitas() {
             </Inputs>
             {prep.map((value: string, index: number) => (
               // eslint-disable-next-line react/jsx-key
-              <DivInput id="divPrep">
+              <DivInput id="divPrep" key={index}>
                 <input
                   id={String(index)}
                   key={index}

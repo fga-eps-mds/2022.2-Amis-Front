@@ -1,12 +1,9 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable react/jsx-key */
-import React, { useState } from "react";
-import styled from "styled-components";
-import Sidebar from "../../shared/components/Sidebar/sidebar";
+import { useState } from "react";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
-import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import Sidebar from "../../shared/components/Sidebar/sidebar";
+import DataTable from "../../shared/components/TablePagination/tablePagination";
+
 import {
   Box,
   Button,
@@ -16,18 +13,17 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
-  MenuItem,
   Modal,
   OutlinedInput,
-  Select,
   TextField,
+  IconButton,
   Typography,
 } from "@mui/material";
-import { useQuery } from "react-query";
-import { FormProvider, useForm } from "react-hook-form";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
-import { BsFillTrashFill } from "react-icons/bs";
+import { FormProvider, useForm } from "react-hook-form";
 import { AiFillEdit, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { BsFillTrashFill } from "react-icons/bs";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import {
   cadastrarAssistente,
@@ -35,65 +31,39 @@ import {
   excluirAssistente,
   listarAssistentes,
 } from "../../services/assistentes";
+import { queryClient } from "../../services/queryClient";
+import ValueMask from "../../shared/components/Masks/ValueMask";
+import removeSpecialCharacters from "../../shared/validations/removeSpecialCharacters";
+import { validateCPF } from "../../shared/validations/validarCPF";
+import { validateAge, validateDate } from "../../shared/validations/validarDataNascimento";
+import { validateEmail } from "../../shared/validations/validarEmail";
+import { validateLogin } from "../../shared/validations/validarLogin";
+import { validateNome } from "../../shared/validations/validarNome";
+import { validateSenha } from "../../shared/validations/validarSenha";
 import { AssistentesCadastrarDTO } from "./dtos/AssistentesCadastrar.dto";
 import { AssistentesListarDTO } from "./dtos/AssistentesListar.dto";
-import { queryClient } from "../../services/queryClient";
-import CPFMask from "../../shared/components/Masks/ValueMask";
 
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  background: ${(props) => props.theme.colors.grey};
-  display: inline-flex;
-`;
+import {
+  getContainerStyles,
+  getContentStyles,
+  getDivButtonsStyles,
+  getFormStyles,
+  getFormTextStyles,
+  getInlineStyles,
+} from '../../shared/components/Style/style';
 
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
+function transformDate(date: any) {
+  const parts = date.split('/');
+  const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  return transformedDate;
+}
 
-const DivButtons = styled.div`
-  width: 85%;
-  display: inline-flex;
-  justify-content: flex-end;
-  gap: 20px;
-  margin: 0 auto;
-  padding-top: 30px;
-`;
-
-const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-`;
-
-const FormText = styled.h1`
-  color: #525252;
-  font-size: 18px;
-  font-weight: 400;
-  text-align: left;
-  padding-bottom: 25px;
-`;
-
-const style = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  border: "none",
-  boxShadow: 24,
-  p: 4,
-  padding: "50px",
-  height: "85%",
-  overflow: "hidden",
-  overflowY: "scroll",
-};
+const Container = getContainerStyles();
+const Content = getContentStyles();
+const DivButtons = getDivButtonsStyles();
+const Form = getFormStyles();
+const FormText = getFormTextStyles();
+const style = getInlineStyles();
 
 export function Assistentes() {
   const [showPassword, setShowPassword] = useState(false);
@@ -103,7 +73,6 @@ export function Assistentes() {
   const [id, setId] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [selectedAssistente, setSelectedAssistente] = useState(null);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
   const handleOpen = () => setOpen(true);
@@ -112,31 +81,17 @@ export function Assistentes() {
   const methods = useForm();
   const {
     register,
-    trigger,
     watch,
     handleSubmit,
     setValue,
     formState: { errors },
   } = methods;
 
-  function transformDate(date: any) {
-    const parts = date.split("/");
-    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    return transformedDate;
-  }
-
   const registerAssistentes = async (data: any) => {
-    function removeSpecialCharacters(string: any) {
-      if (typeof string === "string" || string instanceof String) {
-        return string.replace(/[./\-\(\) ]/g, "");
-      }
-      return "";
-    }
-
     const assistente = {
       nome: data.nome,
       cpf: data.cpf,
-      data_nascimento: data.data_nascimento,
+      //data_nascimento: data.data_nascimento,
       dNascimento: data.data_nascimento,
       telefone: data.telefone,
       email: data.email,
@@ -146,15 +101,61 @@ export function Assistentes() {
       administrador: true,
     } as AssistentesCadastrarDTO;
 
-    console.log(assistente.dNascimento);
+    // VALIDAÇÕES
 
+    const cpfValido = validateCPF(assistente.cpf);
+    if (!cpfValido) {
+      return;
+    }
+
+    const emailValido = validateEmail(assistente.email);
+    if (!emailValido) {
+      return;
+    }
+
+    const dateValido = validateDate(assistente.dNascimento);
+    if (!dateValido) {
+      return;
+    }
+
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+    const matchResult = dateRegex.exec(assistente.dNascimento);
+
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
+      return;
+    }
+
+    const nomeValido = validateNome(assistente.nome);
+    if (!nomeValido) {
+      return;
+    }
+
+    const loginValido = validateLogin(assistente.login);
+    if (!loginValido) {
+      return;
+    }
+
+    const senhaValida = validateSenha(assistente.senha);
+    if (!senhaValida) {
+      return;
+    }
+    
     assistente.cpf = removeSpecialCharacters(assistente.cpf);
     assistente.telefone = removeSpecialCharacters(assistente.telefone);
     assistente.dNascimento = transformDate(assistente.dNascimento);
 
-    console.log(assistente.dNascimento);
-
-    const response = await cadastrarAssistente(assistente);
+    const response: any = await cadastrarAssistente(assistente);
 
     if (response.status === 201) {
       setOpen(false);
@@ -174,31 +175,35 @@ export function Assistentes() {
   useQuery("listar_assistentes", async () => {
     const response = await listarAssistentes();
 
-    console.log(response.data);
     const temp: AssistentesListarDTO[] = [];
-    response.data.forEach((value: AssistentesListarDTO, index: number) => {
-      temp.push({
-        id: index,
-        nome: value.nome,
-        cpf: value.cpf,
-        dNascimento: value.dNascimento,
-        telefone: value.telefone,
-        email: value.email,
-        login: value.login,
-        observacao: value.observacao,
-        administrador: value.administrador,
+    if (response.data && Array.isArray(response.data)) {
+      response.data.forEach((value: AssistentesListarDTO, index: number) => {
+        
+        const [year, month, day] = value.dNascimento.split("-");
+        const dataFormatada = `${day}/${month}/${year}`;
+
+        temp.push({
+          id: index,
+          nome: value.nome,
+          cpf: value.cpf,
+          dNascimento: dataFormatada,
+          telefone: value.telefone,
+          email: value.email,
+          login: value.login,
+          observacao: value.observacao,
+          administrador: value.administrador,
+          senha:value.senha,
+        });
       });
-    });
+    }
     setDataTable(temp);
   });
 
   const deleteAssistentes = async () => {
-    const selectedAssistente = dataTable.find(
-      (item) => (item as any).id === id
-    ); // Encontra o objeto da aluna com base no ID selecionado
+    const selectedAssistente = dataTable.find((item) => (item as any).id === id); // Encontra o objeto da assistente com base no ID selecionado
     if (selectedAssistente) {
-      const login = (selectedAssistente as any).login; // Obtém o login da aluna
-      const response = await excluirAssistente(login); // Passa o login para a função apagaAluna
+      const login = (selectedAssistente as any).login; // Obtém o login da assistente
+      const response = await excluirAssistente(login); // Passa o login para a função apagaassistente
 
       if (response.status === 204) {
         toast.success("Assistente excluída com sucesso!");
@@ -207,7 +212,7 @@ export function Assistentes() {
       }
 
       handleCloseConfirmation();
-      await queryClient.invalidateQueries("listar_assistente");
+      await queryClient.invalidateQueries("listar_assistentes");
     }
   };
 
@@ -217,36 +222,121 @@ export function Assistentes() {
         return element;
       }
     });
+
     const assistente = response as AssistentesListarDTO;
     setAssistente(assistente);
+
     setValue("nomeEdit", assistente.nome);
     setValue("cpfEdit", assistente.cpf);
-    setValue("dNascimento", assistente.dNascimento);
-    setValue("telefone", assistente.telefone);
-    setValue("email", assistente.email);
+    setValue("data_nascimentoEdit", assistente.dNascimento);
+    setValue("telefoneEdit", assistente.telefone);
+    setValue("emailEdit", assistente.email);
+    setValue("observacaoEdit",assistente.observacao);
     setOpenEdit(true);
   };
 
   const editAssistentes = async (data: any) => {
+    // VALIDAÇÕES
+
+    const cpfValido = validateCPF(data.cpfEdit);
+    if (!cpfValido) {
+      return;
+    }
+
+    const emailValido = validateEmail(data.emailEdit);
+    if (!emailValido) {
+      return;
+    }
+
+    const dateValido = validateDate(data.data_nascimentoEdit);
+    if (!dateValido) {
+      return;
+    }
+
+    const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+    const matchResult = dateRegex.exec(data.data_nascimentoEdit);
+
+    if (!matchResult) {
+      toast.error("Data de nascimento inválida.");
+      return;
+    }
+    const [, dia, mes, ano] = matchResult;
+
+    const dataNascimento = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    const ageValida = validateAge(dataNascimento);
+    if (!ageValida) {
+      return;
+    }
+
+    const nomeValido = validateNome(data.nomeEdit);
+    if (!nomeValido) {
+      return;
+    }
+
+
+    data.cpfEdit = removeSpecialCharacters(data.cpfEdit);
+    data.telefoneEdit = removeSpecialCharacters(data.telefoneEdit);
+    data.cepEdit = removeSpecialCharacters(data.cepEdit);
+    data.data_nascimentoEdit = transformDate(data.data_nascimentoEdit);
+
+
     const assistenteEditada = {
       nome: data.nomeEdit,
       cpf: data.cpfEdit,
-      dNascimento: data.dataNascimentoEdit,
+      dNascimento: data.data_nascimentoEdit,
       telefone: data.telefoneEdit,
       email: data.emailEdit,
-      login: data.loginEdit,
-      observacao: data.observacao,
+      observacao: data.observacaoEdit,
+      login: assistente.login,
+      administrador:assistente.administrador,
+      senha:assistente.senha,
     };
 
-    const response = await editarAssistente(assistente.id, assistenteEditada);
+    const response = await editarAssistente(assistente.login, assistenteEditada);
     if (response.status === 200) {
-      queryClient.invalidateQueries("listar_assistentes");
-      setOpenEdit(false);
-      toast.success("Assistente editado com sucesso!");
+      try {
+        await queryClient.invalidateQueries("listar_assistentes");
+        setOpenEdit(false);
+        toast.success("Assistente editado com sucesso!");
+      } catch (error) {
+        // Handle the error
+        //console.error(error);
+      }
     }
   };
 
   const columnsTable = [
+    {
+      field: "actions",
+      headerName: "Ações",
+      type: "actions",
+      flex: 1,
+      getActions: (params: { id: GridRowId }) => [
+        <IconButton
+          id="meu-grid-actions-cell-item"
+          data-testid="teste-editar"
+          onClick={async () => {
+            carregarAssistentes(params.id);
+          }}
+        >
+          <AiFillEdit size={20} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+
+        <IconButton
+          data-testid="teste-excluir"
+          onClick={() => {
+            setId(params.id);
+            handleOpenConfirmation();
+          }}
+        >
+          <BsFillTrashFill size={18} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+      ],
+    },
     { field: "nome", headerName: "Nome", flex: 2 },
     { field: "cpf", headerName: "CPF", flex: 1 },
     { field: "observacao", headerName: "Observações", flex: 2 },
@@ -255,29 +345,6 @@ export function Assistentes() {
       headerName: "Administrador(a)",
       flex: 1,
       type: "boolean",
-    },
-    {
-      field: "actions",
-      headerName: "Ações",
-      type: "actions",
-      flex: 1,
-      getActions: (params: { id: GridRowId }) => [
-        <GridActionsCellItem
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
-          onClick={() => {
-            setId(params.id);
-            handleOpenConfirmation();
-          }}
-        />,
-        <GridActionsCellItem
-          icon={<AiFillEdit size={20} />}
-          label="Editar"
-          onClick={async () => {
-            carregarAssistentes(params.id);
-          }}
-        />,
-      ],
     },
   ];
 
@@ -309,7 +376,9 @@ export function Assistentes() {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormProvider {...methods}>
+          <FormProvider
+            {...methods}
+          >
             <FormText>Preencha corretamente os dados cadastrais.</FormText>
             <Form onSubmit={handleSubmit(registerAssistentes)}>
               <TextField
@@ -320,11 +389,11 @@ export function Assistentes() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
 
-              <CPFMask label="cpf" />
+              <ValueMask label="cpf" />
 
-              <CPFMask label="data_nascimento" />
+              <ValueMask label="data_nascimento" />
 
-              <CPFMask label="telefone" />
+              <ValueMask label="telefone" />
 
               <TextField
                 id="outlined-email"
@@ -344,10 +413,7 @@ export function Assistentes() {
                 sx={{ width: "100%", background: "#F5F4FF" }}
                 variant="outlined"
               >
-                <InputLabel
-                  htmlFor="outlined-adornment-password"
-                  required={true}
-                >
+                <InputLabel htmlFor="outlined-adornment-password" required={true}>
                   Senha
                 </InputLabel>
                 <OutlinedInput
@@ -394,9 +460,7 @@ export function Assistentes() {
                 <OutlinedInput
                   id="outlined-adornment-confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
-                  {...register("senha_confirmada", {
-                    validate: validatePassword,
-                  })}
+                  {...register("senha_confirmada", { validate: validatePassword })}
                   endAdornment={
                     <InputAdornment position="end">
                       {showConfirmPassword ? (
@@ -420,7 +484,7 @@ export function Assistentes() {
                       )}
                     </InputAdornment>
                   }
-                  label="Password"
+                  label="Password********"
                 />
                 {errors.senha_confirmada && (
                   <Typography
@@ -446,6 +510,9 @@ export function Assistentes() {
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
+        <FormProvider
+            {...methods}
+          >
           <FormText>Altere os dados cadastrais.</FormText>
           <Form onSubmit={handleSubmit(editAssistentes)}>
             <TextField
@@ -455,30 +522,9 @@ export function Assistentes() {
               {...register("nomeEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
-              id="outlined-cpf"
-              label="CPF"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("cpfEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dataNascimento"
-              label="Data de Nascimento"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("nascimentoEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-telefone"
-              label="Telefone"
-              required={true}
-              inputProps={{ maxLength: 11 }}
-              {...register("telefoneEdit")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            <ValueMask label="cpfEdit" />
+            <ValueMask label="data_nascimentoEdit" />
+            <ValueMask label="telefoneEdit" />
             <TextField
               id="outlined-email"
               label="E-mail"
@@ -487,17 +533,20 @@ export function Assistentes() {
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-login"
-              label="Login"
-              required={true}
-              inputProps={{ maxLength: 120 }}
-              {...register("loginEdit")}
+              id="outlined-observacao"
+              label="Observação"
+              required={false}
+              {...register("observacaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+
             <PrimaryButton text={"Editar"} />
           </Form>
+          </FormProvider>
         </Box>
       </Modal>
+
+
     </Container>
   );
 }

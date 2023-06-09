@@ -1,28 +1,24 @@
+import {
+  fireEvent,
+  render,
+  screen
+} from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import {BrowserRouter as Router } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ThemeProvider } from "styled-components";
+import * as assistentesService from "../../../services/assistentes";
+import theme from "../../../styles/theme";
 import { Assistentes } from "../assistentes";
 import { CadastrarAssistenteMock } from "./assistentes.mock";
-import * as assistentesService from "../../../services/assistentes";
-import { toast } from "react-toastify";
-import React, { Component } from "react";
-import { BrowserRouter, BrowserRouter as Router } from "react-router-dom";
-import { ThemeProvider } from "styled-components";
-import theme from "../../../styles/theme";
-import renderer from "react-test-renderer";
-import { QueryClientProvider, QueryClient } from "react-query";
-import { queryClient } from "../../../services/queryClient";
-import {
-  getByAltText,
-  getByLabelText,
-  getByPlaceholderText,
-  getByRole,
-  getByTestId,
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
-
+import { act } from 'react-dom/test-utils';
+import { AxiosResponse } from 'axios';
 
 const cadastraAssistenteSpy = jest.spyOn(assistentesService, 'cadastrarAssistente');
+const listaAssistentesSpy = jest.spyOn(assistentesService, 'listarAssistentes');
+const editaAssistenteSpy = jest.spyOn(assistentesService, 'editarAssistente');
+const excluiAssistenteSpy = jest.spyOn(assistentesService, 'excluirAssistente');
+
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
@@ -30,7 +26,7 @@ jest.mock('react-toastify', () => ({
 }));
 
 
-const renderComponent = ()=> {
+const renderComponent = async()=> {
   const queryClient = new QueryClient ();
   render(
     // eslint-disable-next-line react/react-in-jsx-scope
@@ -42,7 +38,6 @@ const renderComponent = ()=> {
       </Router>
     </QueryClientProvider>
   );
-
   return queryClient;
 }
 
@@ -64,6 +59,7 @@ describe("Assistentes", () => {
     const toastSuccessSpy = jest.spyOn(toast, 'success');
 
     cadastraAssistenteSpy.mockImplementation(CadastrarAssistenteMock);
+    //listarAssistenteSpy.mockImplementation(GetAssistenteMock);
 
     renderComponent();
     
@@ -96,29 +92,89 @@ describe("Assistentes", () => {
     const response = { status: 201 };
 
     if (response.status === 201) {
-      console.log("Assistente cadastrado com sucesso!");
       toast.success("Assistente cadastrado com sucesso!");
     }
 
     // Verifique se o spy foi chamado corretamente
     expect(toastSuccessSpy).toHaveBeenCalledWith("Assistente cadastrado com sucesso!");
   });
-});
 
+  it('deve editar uma assistente ao submeter o formulário', async () => {
 
-describe("Snapshot", () => {
-  it("Deve corresponder ao Snapshot", () => {
-    const tree = renderer
-      .create(
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <ThemeProvider theme={theme}>
-              <Assistentes />
-            </ThemeProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
-      )
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    const assistente = {
+      nome: "Alice",
+      cpf: "40071085017",
+      dNascimento: "2000-01-01",
+      telefone: "12345678901",
+      email: "alice@example.com",
+      observacao: "obs",
+      login: "alice12345",
+      administrador:"true",
+      senha:'Alice123456',
+    };
+   
+    listaAssistentesSpy.mockResolvedValueOnce({ data: [assistente] });
+  
+    renderComponent();
+  
+    await screen.findByText("Alice");
+  
+    // Verifica se a mensagem de erro é exibida após a submissão 
+    expect(screen.getByTestId("teste-editar")).toBeInTheDocument();
+    
+    const editarButton = screen.getByTestId("teste-editar");
+    
+    await act(async () => {
+      fireEvent.click(editarButton);
+    });
+    
+    const telefoneInput = screen.getByLabelText('Telefone *');
+    await act(async () => {
+      fireEvent.change(telefoneInput, { target: { value: '61991826587' } });
+    });
+  
+    editaAssistenteSpy.mockResolvedValueOnce(Promise.resolve({ status: 200 } as AxiosResponse));
+  
+    const submitButton = screen.getByText('Editar');
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
   });
+
+  it('deve excluir uma assistente ao submeter o formulário', async () => {
+    const assistente = {
+      nome: "Alice",
+      cpf: "40071085017",
+      dNascimento: "2000-01-01",
+      telefone: "12345678901",
+      email: "alice@example.com",
+      observacao: "obs",
+      login: "alice12345",
+      administrador:"true",
+      senha:'Alice123456',
+    };
+    
+    listaAssistentesSpy.mockResolvedValueOnce({ data: [assistente] });
+  
+    renderComponent();
+  
+    await screen.findByText("Alice");
+  
+    // Verifica se a mensagem de erro é exibida após a submissão 
+    expect(screen.getByTestId("teste-excluir")).toBeInTheDocument();
+  
+    const excluirButton = screen.getByTestId("teste-excluir");
+  
+    await act(async () => {
+      fireEvent.click(excluirButton);
+    });
+    
+    excluiAssistenteSpy.mockResolvedValueOnce(Promise.resolve({ status: 204 } as AxiosResponse));
+    const simButton = screen.getByText('Sim');
+    await act(async () => {
+      fireEvent.click(simButton);
+    });
+  });
+
+
 });

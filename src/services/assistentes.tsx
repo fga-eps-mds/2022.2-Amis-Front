@@ -2,10 +2,14 @@ import { AssistentesCadastrarDTO } from "../pages/assistentes/dtos/AssistentesCa
 import api from "./api";
 
 export const cadastrarAssistente = async (payload: AssistentesCadastrarDTO) => {
-  return await api
-    .post("/socialWorker/", payload)
-    .then((response) => response)
-    .catch((error) => error);
+
+  try {
+    const response = await api.post("/socialWorker/", payload);
+    return response;
+  } catch (error) {
+    //console.error(error);
+    return error;
+  }
 };
 
 export const listarAssistentes = async () => {
@@ -25,6 +29,7 @@ export const editarAssistente = async (
     .then((response) => response)
     .catch((error) => error);
 };
+
 
 export const excluirAssistente = async (assistenteId: string) => {
   return await api

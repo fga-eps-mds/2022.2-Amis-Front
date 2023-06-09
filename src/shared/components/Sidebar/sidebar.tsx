@@ -136,16 +136,16 @@ export function Sidebar() {
     {
       id: 7,
       name: "Sair",
-      path: "/sair",
+      path: "/login/logout",
       icon: (
         <BiLogOut
-          color={pathname === "/sair" ? "#da4d3d" : "#525252"}
+          color={pathname === "/login/logout" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
       handleClick: () => {
         auth.logout();
-        navigate("/");
+        navigate("/login/logout");
       },
     },
     {

@@ -317,8 +317,6 @@ export function Turmas(this: any) {
     const response = await listarAlunasNaTurma(idTurma);
     if (response.status === 200) {
       setAlunasTurma(response.data);
-      console.log(response.data);
-      console.log(alunasTurma);
     } else {
       setAlunasTurma([]);
     }
@@ -721,7 +719,6 @@ export function Turmas(this: any) {
                   return idTal.toString();
                 })
               );
-              console.log(matriculas);
             }}
           />
 
