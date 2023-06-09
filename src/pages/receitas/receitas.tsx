@@ -148,7 +148,6 @@ export function Receitas() {
 
   useQuery("carregaReceitas", async () => {
     await api.get("/receita/").then((response: any) => {
-      console.log(response.data);
       const temp: ListarReceitaDTO[] = [];
       if (response.status === 200) {
         response.data.forEach((value: ListarReceitaDTO) => {
@@ -162,7 +161,6 @@ export function Receitas() {
         });
         setDataTableReceitas(temp);
       }
-      console.log(temp);
     });
   });
 
@@ -191,8 +189,6 @@ export function Receitas() {
       ingredientes: tempIngredientes,
       modo_preparo: tempModPrep,
     } as ReceitasCadastrarDTO;
-
-    console.log(receita);
 
     await api.post("/receita/", receita).then((response: any) => {
       if (response.status === 201) {
