@@ -3,16 +3,18 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
   TextField,
 } from "@mui/material";
 import React, { useContext } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { AuthContext } from "../../context/AuthProvider";
+import { AuthContext, Roles } from "../../context/AuthProvider";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 
@@ -30,8 +32,9 @@ const Content = styled.div`
 `;
 
 const DivLogin = styled.div`
+  /* padding: 100px 0px; */
   width: 600px;
-  height: 450px;
+  max-height: 70vh;
   background: ${(props) => props.theme.colors.white};
   margin-top: 5%;
   border-radius: 10px;
@@ -63,27 +66,26 @@ const Link = styled.a`
   color: ${(props) => props.theme.colors.primary};
   cursor: pointer;
 `;
+interface Props {
+  login: string;
+  senha: string;
+  loginType: Roles;
+}
 
 export function Login() {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit } = useForm<Props>();
   const [showPassword, setShowPassword] = React.useState(false);
   const handleShowPassword = () => setShowPassword(!showPassword);
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Props) => {
     setLoading(true);
-    const { login, senha } = data;
-  
+    const { login, senha, loginType } = data;
+
     try {
-      const request = await auth.authenticate(login, senha);
-  
+      const request = await auth.authenticate(login, senha, loginType);
       if (request.token) {
         setLoading(false);
         navigate("/alunas");
@@ -143,6 +145,36 @@ export function Login() {
                 label="Password"
               />
             </FormControl>
+
+            <FormControl
+              sx={{ width: "60%", background: "#F5F4FF" }}
+              variant="outlined"
+            >
+              <InputLabel id="select-login-label">Tipo de Login</InputLabel>
+              <Select
+                labelId="select-login-label"
+                id="select-login"
+                label="Tipo de Login"
+                {...register("loginType", {
+                  required: "This field is required",
+                })}
+                // placeholder="Tipo de Login"x
+              >
+                <MenuItem key="socialWorker" value="socialWorker">
+                  Assistente Social
+                </MenuItem>
+                <MenuItem key="student" value="student">
+                  Estudante
+                </MenuItem>
+                <MenuItem key="teacher" value="teacher">
+                  Professor
+                </MenuItem>
+                <MenuItem key="supervisor" value="supervisor">
+                  Supervisor
+                </MenuItem>
+              </Select>
+            </FormControl>
+
             <Link>Esqueceu sua senha?</Link>
             <PrimaryButton>
               {loading ? (

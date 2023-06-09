@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
@@ -55,6 +55,7 @@ import {
   listarVagasTurma,
   confereTurmaMatricula,
 } from "../../services/turmas";
+import { AuthContext } from "../../context/AuthProvider";
 
 const Container = styled.div`
   width: 100%;
@@ -138,6 +139,7 @@ export function Turmas(this: any) {
     formState: { errors },
   } = useForm({});
   const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
+  const { role } = useContext(AuthContext);
 
   const registerTurmas = async (data: any) => {
     const turma = {
@@ -424,7 +426,11 @@ export function Turmas(this: any) {
       <Content>
         <Navbarlog text={"Turmas"} />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          {role !== "student" ? (
+            <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          ) : (
+            <></>
+          )}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
         <Dialog

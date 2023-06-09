@@ -17,7 +17,7 @@ import { FiSettings } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
-import { AuthContext } from "../../../context/AuthProvider";
+import { AuthContext, Roles } from "../../../context/AuthProvider";
 import { BsFillBookmarkStarFill } from "react-icons/bs";
 
 const Container = styled.div`
@@ -61,12 +61,21 @@ const Logo = styled.div`
   font-weight: 600;
 `;
 
+interface SideBarItemProps {
+  id: number;
+  name: string;
+  path: string;
+  icon: JSX.Element;
+  allowedRoles: Roles[];
+  handleClick?: () => void;
+}
+
 export function Sidebar() {
   const [pathname] = useState(window.location.pathname);
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const sidebarData = [
+  const sidebarData: SideBarItemProps[] = [
     {
       id: 1,
       name: "Tela Inicial",
@@ -77,6 +86,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
     {
       id: 2,
@@ -88,6 +98,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: ["teacher", "socialWorker"],
     },
     {
       id: 3,
@@ -99,6 +110,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
     //   id: 4,
@@ -121,6 +133,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: ["socialWorker"],
     },
     // {
     //   id: 6,
@@ -147,6 +160,7 @@ export function Sidebar() {
         auth.logout();
         navigate("/login/logout");
       },
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
     {
       id: 8,
@@ -164,17 +178,23 @@ export function Sidebar() {
   return (
     <Container>
       <Logo>AMIS</Logo>
-      {sidebarData.map((itemData, index) => (
-        <SidebarItem
-          key={index}
-          active={pathname === itemData.path}
-          to={itemData.path}
-          onClick={itemData.handleClick}
-        >
-          {itemData.icon}
-          <ItemText>{itemData.name}</ItemText>
-        </SidebarItem>
-      ))}
+      {sidebarData.map((itemData, index) => {
+        if (auth.role && itemData.allowedRoles.includes(auth.role)) {
+          return (
+            <SidebarItem
+              key={index}
+              active={pathname === itemData.path}
+              to={itemData.path}
+              onClick={itemData.handleClick}
+            >
+              {itemData.icon}
+              <ItemText>{itemData.name}</ItemText>
+            </SidebarItem>
+          );
+        } else {
+          return <></>;
+        }
+      })}
     </Container>
   );
 }
