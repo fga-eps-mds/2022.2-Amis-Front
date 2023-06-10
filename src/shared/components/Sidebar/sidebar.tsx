@@ -172,6 +172,19 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: [],
+    },
+    {
+      id: 8,
+      name: "Área Aluna",
+      path: "/cadastroInstrucao",
+      icon: (
+        <BiUser
+          color={pathname === "/cadastroInstrucao" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: [],
     },
   ];
 
