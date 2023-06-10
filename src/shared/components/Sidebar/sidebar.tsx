@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
 import { AuthContext, Roles } from "../../../context/AuthProvider";
 import { BsFillBookmarkStarFill } from "react-icons/bs";
+import { getUserLocalStorage } from "../../../services/auth";
 
 const Container = styled.div`
   width: 200px;
@@ -147,22 +148,6 @@ export function Sidebar() {
     //   ),
     // },
     {
-      id: 7,
-      name: "Sair",
-      path: "/login/logout",
-      icon: (
-        <BiLogOut
-          color={pathname === "/login/logout" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
-      handleClick: () => {
-        auth.logout();
-        navigate("/login/logout");
-      },
-      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
-    },
-    {
       id: 8,
       name: "Cursos",
       path: "/curso",
@@ -172,6 +157,23 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
+    },
+    {
+      id: 7,
+      name: "Sair",
+      path: `/login/${auth.role}/logout`,
+      icon: (
+        <BiLogOut
+          color={pathname === "/login/logout" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      handleClick: () => {
+        auth.logout();
+        navigate(`/login/${auth.role}/logout`);
+      },
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
   ];
 

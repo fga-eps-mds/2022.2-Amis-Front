@@ -1,9 +1,9 @@
 import { AlunasCadastrarDTO } from "../pages/alunas/dtos/AlunasCadastrar.dto";
-import api from "./api";
+import {apiUser} from "./api";
 
 export const cadastraAluna = async (payload: AlunasCadastrarDTO) => {
   try {
-    const response = await api.post("/student/", payload);
+    const response = await apiUser.post("/student/", payload);
     return response;
   } catch (error) {
     return error;
@@ -12,7 +12,7 @@ export const cadastraAluna = async (payload: AlunasCadastrarDTO) => {
 
 export const listarAlunas = async () => {
   
-  return await api
+  return await apiUser
     .get("/student/")
     .then((response) => response)
     .catch((error) => error);
@@ -21,7 +21,7 @@ export const listarAlunas = async () => {
 export const editarAluna = async (alunaId: string, aluna: Object) => {
   //console.log("Aluna id vai serrr:"+alunaId);
   try {
-    const response = await api.put("/student/" + alunaId, aluna);
+    const response = await apiUser.put("/student/" + alunaId, aluna);
     return response;
   } catch (error:any) {
     //console.error("Ocorreu um erro ao editar a aluna:", error.message);
@@ -43,7 +43,7 @@ export const editarAluna = async (alunaId: string, aluna: Object) => {
 };
 
 export const excluirAluna = async (alunaId: string) => {
-  return await api
+  return await apiUser
     .delete("/student/" + alunaId)
     .then((response) => response)
     .catch((error) => error);

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import api from "../../services/api";
+import {apiUser} from "../../services/api";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
@@ -147,7 +147,7 @@ export function Receitas() {
   const auth = useContext(AuthContext);
 
   useQuery("carregaReceitas", async () => {
-    await api.get("/receita/").then((response: any) => {
+    await apiUser.get("/receita/").then((response: any) => {
       const temp: ListarReceitaDTO[] = [];
       if (response.status === 200) {
         response.data.forEach((value: ListarReceitaDTO) => {
@@ -190,7 +190,7 @@ export function Receitas() {
       modo_preparo: tempModPrep,
     } as ReceitasCadastrarDTO;
 
-    await api.post("/receita/", receita).then((response: any) => {
+    await apiUser.post("/receita/", receita).then((response: any) => {
       if (response.status === 201) {
         toast.success("Receita cadastrada com sucesso!");
       } else {

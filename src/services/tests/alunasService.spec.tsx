@@ -6,10 +6,10 @@ import {
   excluirAluna,
 } from "../alunas";
 
-import api from "../api";
+import { apiUser } from "../api";
 
 // Criar uma instância do mock para o axios
-const mock = new MockAdapter(api);
+const mock = new MockAdapter(apiUser);
 
 describe("Testes do serviço de aluna", () => {
   afterEach(() => {
