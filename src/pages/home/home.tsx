@@ -9,7 +9,7 @@ import { QtdAlunasDTO } from "./dtos/QtdAlunas.dto";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { QtdAlunasFormDTO } from "./dtos/QtdAlunasForm.dto";
-import api from "../../services/api";
+import { baseApi, userApi } from "../../services/api";
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -95,12 +95,12 @@ export function Home() {
   const [qtdAlunaForm, setQtdAlunaForm] = useState<QtdAlunasFormDTO>();
 
   useQuery("quantidade_alunas", async () => {
-    const responseQtdAlunas = await api.get("/alunas/count/");
+    const responseQtdAlunas = await baseApi.get("/alunas/count/");
     setQtdAluna(responseQtdAlunas.data as QtdAlunasDTO);
   });
 
   useQuery("quantidade_alunasFormadas", async () => {
-    const responseQtdFormadas = await api.get("/alunas/count/formada");
+    const responseQtdFormadas = await baseApi.get("/alunas/count/formada");
     setQtdAlunaForm(responseQtdFormadas.data as QtdAlunasFormDTO);
   });
 

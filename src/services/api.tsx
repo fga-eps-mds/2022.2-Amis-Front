@@ -1,21 +1,21 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable no-template-curly-in-string */
 import axios from "axios";
 import { getUserLocalStorage } from "./auth";
 
-const api = axios.create({
+const baseApi = axios.create({
   baseURL: import.meta.env.VITE_AMIS_API_BASE_URL,
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const userLocalStorage = getUserLocalStorage();
-    config.headers.Authorization = `Bearer ${userLocalStorage?.token}`;
-    return config;
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+const userApi = axios.create({
+  baseURL: import.meta.env.VITE_AMIS_API_USER_URL,
+});
 
-export default api;
+const addAuthorizationHeader = (config:any) => {
+  const userLocalStorage = getUserLocalStorage();
+  config.headers.Authorization = `Bearer ${userLocalStorage?.token}`;
+  return config;
+};
+
+baseApi.interceptors.request.use(addAuthorizationHeader);
+userApi.interceptors.request.use(addAuthorizationHeader);
+
+export { baseApi, userApi };

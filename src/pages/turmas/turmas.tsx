@@ -50,10 +50,10 @@ import {
   listarTurmas,
   apagarTurmas,
   editarTurmas,
-  // cadastrarAluna,
-  // desmatricularAluna,
-  // listarAlunasNaTurma,
-  // listarAlunas,
+  cadastrarAluna,
+  desmatricularAluna,
+  listarAlunasNaTurma,
+  listarAlunas,
   listarVagasTurma,
   confereTurmaMatricula,
 } from "../../services/turmas";
@@ -252,54 +252,28 @@ export function Turmas(this: any) {
   useQuery("listar_turmas", async () => {
     const response = await listarTurmas();
     const temp: TurmasListarDTO[] = [];
-    response.data.forEach((value: TurmasListarDTO) => {
-      if (value.turno === "1") {
+    if (response.data && Array.isArray(response.data)) {
+        response.data.forEach((value: TurmasListarDTO, index: number) => {
+        const [year, month, day] = value.data_inicio.split("-");
+
+        const dataFormatada = `${day}/${month}/${year}`;
+
         temp.push({
-          id: value.id,
+          id:index,
+          nome_turma:value.nome_turma,
+          codigo: value.codigo,
           descricao: value.descricao,
+          //turno: value.turno,
           capacidade_turma: value.capacidade_turma,
           inicio_aula: value.inicio_aula,
           fim_aula: value.fim_aula,
-          data_inicio: value.data_inicio,
+          data_inicio: dataFormatada,
           data_fim: value.data_fim,
-          turno: "Matutino",
         });
-      }
-      if (value.turno === "2") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade_turma: value.capacidade_turma,
-          inicio_aula: value.inicio_aula,
-          fim_aula: value.fim_aula,
-          data_inicio: value.data_inicio,
-          data_fim: value.data_fim,
-          turno: "Vespertino",
-        });
-      }
-      if (value.turno === "3") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade_turma: value.capacidade_turma,
-          inicio_aula: value.inicio_aula,
-          fim_aula: value.fim_aula,
-          data_inicio: value.data_inicio,
-          data_fim: value.data_fim,
-          turno: "Noturno",
-        });
-      }
-      // temp.push({
-      //   id: value.id,
-      //   descricao: value.descricao,
-      //   turno: value.turno,
-      //   capacidade_turma: value.capacidade_turma,
-      //   inicio_aula: value.inicio_aula,
-      //   fim_aula: value.fim_aula,
-      //   data_inicio: value.data_inicio,
-      //   data_fim: value.data_fim,
-      // });
     });
+    }
+    //console.log("O temp:"+temp[0].capacidade_turma);
+
     setDataTable(temp);
   });
 
@@ -345,37 +319,37 @@ export function Turmas(this: any) {
     setOpenEdit(false);
   };
 
-  // const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
-  //   const turmaMatricula = {
-  //     idTurma: idDaTurma,
-  //     idAluna: String(idDaAluna),
-  //   } as unknown as TurmasMatricularDTO;
+  const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
+    const turmaMatricula = {
+      idTurma: idDaTurma,
+      idAluna: String(idDaAluna),
+    } as unknown as TurmasMatricularDTO;
 
-  //   if (matriculas.length > vagas?.vagasDisponiveis!) {
-  //     toast.error("Quantidade de vagas excedida.");
-  //   } else {
-  //     const response = await cadastrarAluna(turmaMatricula);
-  //     if (response.status === 201) {
-  //       toast.success("Aluna(s) matriculada(s) com sucesso!");
-  //       queryClient.invalidateQueries("listar_alunas");
-  //     }
-  //     setOpenMatricula(false);
-  //   }
-  // };
+    if (matriculas.length > vagas?.vagasDisponiveis!) {
+      toast.error("Quantidade de vagas excedida.");
+    } else {
+      const response = await cadastrarAluna(turmaMatricula);
+      if (response.status === 201) {
+        toast.success("Aluna(s) matriculada(s) com sucesso!");
+        queryClient.invalidateQueries("listar_alunas");
+      }
+      setOpenMatricula(false);
+    }
+  };
 
-  // const desmatAluna = async (idTurma: number, idAluna: number) => {
-  //   const response = await desmatricularAluna(idTurma, idAluna);
-  //   if (response.status === 204) {
-  //     toast.success("Aluna(s) removida(s) da turma com sucesso!");
-  //     setOpenList(false);
-  //   } else {
-  //     toast.error("Erro na remoção da(s) aluna(s) da turma.");
-  //   }
-  //   handleDesmatCloseConfirmation();
-  //   useQuery("consultaAlunasNaTurma", async () => {
-  //     await consultaAlunasNaTurma(idTurma);
-  //   });
-  // };
+  const desmatAluna = async (idTurma: number, idAluna: number) => {
+    const response = await desmatricularAluna(idTurma, idAluna);
+    if (response.status === 204) {
+      toast.success("Aluna(s) removida(s) da turma com sucesso!");
+      setOpenList(false);
+    } else {
+      toast.error("Erro na remoção da(s) aluna(s) da turma.");
+    }
+    handleDesmatCloseConfirmation();
+    useQuery("consultaAlunasNaTurma", async () => {
+      //await consultaAlunasNaTurma(idTurma);
+    });
+  };
 
   const columnsTableAlunas = [
     { field: "nome", headerName: "Nome", flex: 2 },
@@ -407,35 +381,35 @@ export function Turmas(this: any) {
     { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
   ];
 
-  // const consultaAlunasNaTurma = async (idTurma: number) => {
-  //   const response = await listarAlunasNaTurma(idTurma);
-  //   if (response.status === 200) {
-  //     setAlunasTurma(response.data);
-  //     console.log(response.data);
-  //     console.log(alunasTurma);
-  //   } else {
-  //     setAlunasTurma([]);
-  //   }
-  // };
+  const consultaAlunasNaTurma = async (idTurma: number) => {
+    const response = await listarAlunasNaTurma(idTurma);
+    if (response.status === 200) {
+      setAlunasTurma(response.data);
+      console.log(response.data);
+      console.log(alunasTurma);
+    } else {
+      setAlunasTurma([]);
+    }
+  };
 
-  // useQuery("listar_alunas", async () => {
-  //   const response = await listarAlunas();
-  //   const temp: AlunasListarDTO[] = [];
-  //   if (response.status === 200) {
-  //     response.data.forEach((value: AlunasListarDTO) => {
-  //       temp.push({
-  //         id: value.id,
-  //         login: value.login,
-  //         nome: value.nome,
-  //         cpf: value.cpf,
-  //         data_nascimento: value.data_nascimento,
-  //       });
-  //     });
-  //     setDataTableAlunas(temp);
-  //   } else {
-  //     setDataTableAlunas(temp);
-  //   }
-  // });
+  useQuery("listar_alunas", async () => {
+    const response = await listarAlunas();
+    const temp: AlunasListarDTO[] = [];
+    if (response.status === 200) {
+      response.data.forEach((value: AlunasListarDTO) => {
+        temp.push({
+          id: value.id,
+          login: value.login,
+          nome: value.nome,
+          cpf: value.cpf,
+          data_nascimento: value.data_nascimento,
+        });
+      });
+      setDataTableAlunas(temp);
+    } else {
+      setDataTableAlunas(temp);
+    }
+  });
 
   const listarIDTurma = async (idDaTurma: number) => {
     setIdTurma(idDaTurma);
@@ -453,8 +427,7 @@ export function Turmas(this: any) {
   };
 
   const columnsTable = [
-    { field: "descricao", headerName: "Turma", width: 250 },
-    { field: "turno", headerName: "Turno", width: 125 },
+    { field: "nome_turma", headerName: "Turma", width: 250 },
     { field: "capacidade_turma", headerName: "Número de vagas", width: 180 },
     { field: "inicio_aula", headerName: "Horário de Início", width: 180 },
     { field: "fim_aula", headerName: "Horário de Término", width: 180 },
@@ -553,7 +526,7 @@ export function Turmas(this: any) {
             <Button onClick={handleDesmatCloseConfirmation}>Não</Button>
             <Button
               onClick={async () => {
-                // await desmatAluna(Number(idTurma), Number(idAluna));
+                await desmatAluna(Number(idTurma), Number(idAluna));
               }}
               autoFocus
             >
@@ -802,12 +775,12 @@ export function Turmas(this: any) {
             </TableContainer>
           </div>
           {/* TABELA DE ALUNAS NA TURMA */}
-          <DataGrid
+          {/* <DataGrid
             rows={alunasTurma}
             columns={columnsTableAlunas}
             pageSize={10}
             rowsPerPageOptions={[10]}
-          />
+          /> */}
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
           >
@@ -859,7 +832,7 @@ export function Turmas(this: any) {
               </Table>
             </TableContainer>
           </div>
-          <DataGrid
+          {/* <DataGrid
             rows={dataTableAlunas}
             columns={columnsTableAlunasMatricular}
             pageSize={8}
@@ -878,7 +851,7 @@ export function Turmas(this: any) {
               );
               console.log(matriculas);
             }}
-          />
+          /> */}
 
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
@@ -886,9 +859,9 @@ export function Turmas(this: any) {
             {vagas?.vagasDisponiveis! >= 1 && (
               <PrimaryButton
                 text={"Matricular"}
-                // handleClick={async () =>
-                //   // await matriculaAluna(Number(idTurma), String(matriculas))
-                // }
+                handleClick={async () =>
+                  await matriculaAluna(Number(idTurma), String(matriculas))
+                }
               />
             )}
           </div>
