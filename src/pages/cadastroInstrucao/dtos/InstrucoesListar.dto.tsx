@@ -1,7 +1,6 @@
 export interface InstrucoesListarDTO {
   id: number;
-  nome: string;
-  login: string;
+  receita: string;
   curso: string;
   instrucao: string;
 }

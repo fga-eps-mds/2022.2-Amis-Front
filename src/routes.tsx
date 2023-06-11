@@ -6,7 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Alunas } from "./pages/alunas/alunas";
-import { CadastroInstrucao } from "./pages/cadastroInstrucao/cadastroInstrucao";
+import { Instrucao } from "./pages/cadastroInstrucao/instrucao";
 import { Home } from "./pages/home/home";
 import { Login } from "./pages/login/login";
 import { Receitas } from "./pages/receitas/receitas";
@@ -45,7 +45,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/receitas" element={<Receitas />} />
         <Route path="/alunas" element={<PrivateRoute component={Alunas} />} />
-        <Route path="/cadastroInstrucao" element={<PrivateRoute component={CadastroInstrucao}/>} />
+        <Route path="/instrucoes" element={<PrivateRoute component={Instrucao}/>} />
         <Route
           path="/assistentes"
           element={<PrivateRoute component={Assistentes}/>}
