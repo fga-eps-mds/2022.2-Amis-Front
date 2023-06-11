@@ -2,11 +2,11 @@ import axios from "axios";
 import { getUserLocalStorage } from "./auth";
 
 const baseApi = axios.create({
-  baseURL: import.meta.env.VITE_AMIS_API_BASE_URL,
+  baseURL: "http://localhost:9090/",
 });
 
 const userApi = axios.create({
-  baseURL: import.meta.env.VITE_AMIS_API_USER_URL,
+  baseURL: "http://localhost:9090/",
 });
 
 const addAuthorizationHeader = (config:any) => {

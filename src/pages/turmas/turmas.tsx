@@ -118,6 +118,7 @@ const style = {
 
 export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
+  const [turma, setTurma] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [idTurma, setIdTurma] = useState<GridRowId>(0);
   const [idAluna, setIdAluna] = useState<GridRowId>(0);
@@ -257,21 +258,19 @@ export function Turmas(this: any) {
     const temp: TurmasListarDTO[] = [];
     if (response.data && Array.isArray(response.data)) {
         response.data.forEach((value: TurmasListarDTO, index: number) => {
-        const [year, month, day] = value.data_inicio.split("-");
-
-        const dataFormatada = `${day}/${month}/${year}`;
-
+        // const [year, month, day] = value.data_inicio.split("-");
+        // const dataFormatada = `${day}/${month}/${year}`;
         temp.push({
           id:index,
           nome_turma:value.nome_turma,
           codigo: value.codigo,
-          descricao: value.descricao,
-          //turno: value.turno,
           capacidade_turma: value.capacidade_turma,
           inicio_aula: value.inicio_aula,
           fim_aula: value.fim_aula,
-          data_inicio: dataFormatada,
+          data_inicio: value.data_inicio,
           data_fim: value.data_fim,
+          fk_curso: value.fk_curso,
+          fk_professor: value.fk_professor,
         });
     });
     }
@@ -298,28 +297,51 @@ export function Turmas(this: any) {
     queryClient.invalidateQueries("listar_turmas");
   };
 
+  const carregarTurmas = async (id: any) => {
+    const response = dataTable.find((element: any) => {
+      if (element.id === id) {
+        return element;
+      }
+    });
+
+    const turma = response as TurmasListarDTO;
+
+    setTurma(turma);
+    setValue("nomeTurmaEdit", turma.nome_turma);
+    setValue("codigoTurmaEdit", turma.codigo);
+    setValue("capacidadeTurmaEdit",turma.capacidade_turma);
+    setValue("inicioAulaTurmaEdit", turma.inicio_aula);
+    setValue("fimAulaTurmaEdit", turma.fim_aula);
+    setValue("dataInicioTurmaEdit",turma.data_inicio);
+    setValue("dataFimTurmaEdit",turma.data_fim);
+
+    setOpenEdit(true);
+  };
+
   const editTurmas = async (data: any) => {
     const turmaEdit = {
-      codigo: data.codigo,
-      fk_curso: data.fk_curso,
-      fk_professor: data.fk_professor,
-      nome_turma: data.nome_turma,
-      descricao: data.descricao,
-      turno: data.turno,
-      capacidade_turma: data.capacidade_turma,
-      inicio_aula: data.inicio_aula,
-      fim_aula: data.fim_aula,
-      data_inicio: data.data_inicio,
-      data_fim: data.data_fim,
+      codigo: data.codigoTurmaEdit,
+      fk_curso: turma.fk_curso,
+      fk_professor: turma.fk_professor,
+      nome_turma: data.nomeTurmaEdit,
+      capacidade_turma: data.capacidadeTurmaEdit,
+      inicio_aula: data.inicioAulaTurmaEdit,
+      fim_aula: data.fimAulaTurmaEdit,
+      data_inicio: data.dataInicioTurmaEdit,
+      data_fim: data.dataFimTurmaEdit,
     } as TurmasCadastrarDTO;
 
+    const id = turmaEdit.codigo;
+
     const response = await editarTurmas(id.toString(), turmaEdit);
-    if (response.status === 200 || response.status === 204) {
+    if (response.status === 200 || response.status === 201) {
       toast.success("Turma atualizada com sucesso!");
     } else {
       toast.error("Erro na atualização da turma.");
     }
     setOpenEdit(false);
+
+    await queryClient.invalidateQueries("listar_turmas");
   };
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
@@ -473,6 +495,7 @@ export function Turmas(this: any) {
           icon={<AiFillEdit size={20} />}
           label="Editar"
           onClick={async () => {
+            carregarTurmas(params.id);
             setId(params.id);
             setOpenEdit(true);
           }}
@@ -580,13 +603,13 @@ export function Turmas(this: any) {
                 {...register("nome_turma")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              <TextField
+              {/* <TextField
                 id="outlined-descricao"
                 label="Descrição"
                 required={true}
                 {...register("descricao")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              />
+              /> */}
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">Turno</InputLabel>
                 <Select
@@ -670,25 +693,26 @@ export function Turmas(this: any) {
             <TextField
               id="outlined-turma"
               label="Turma"
+              defaultValue={turma.nome_turma}
               required={true}
-              {...register("turma")}
+              {...register("nomeTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <TextField
+            {/* <TextField
               id="outlined-descricao"
               label="Descrição"
               required={true}
-              {...register("descricao")}
+              {...register("descricaoTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
-            />
+            /> */}
             <TextField
               id="outlined-capacidade_turma"
               label="Número de vagas"
               required={true}
-              {...register("capacidade_turma")}
+              {...register("capacidadeTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <FormControl fullWidth>
+            {/* <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Turno</InputLabel>
               <Select
                 id="simple-select-label-turno"
@@ -703,33 +727,33 @@ export function Turmas(this: any) {
                 <MenuItem value={2 as any}>Vespertino</MenuItem>
                 <MenuItem value={3 as any}>Noturno</MenuItem>
               </Select>
-            </FormControl>
+            </FormControl> */}
             <TextField
               id="outlined-data_inicio"
               label="Data de Início"
               required={true}
-              {...register("data_inicio")}
+              {...register("dataInicioTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-data_fim"
               label="Data de Término"
               required={true}
-              {...register("data_fim")}
+              {...register("dataFimTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-inicio_aula"
               label="Horário de Inicio"
               required={true}
-              {...register("inicio_aula")}
+              {...register("inicioAulaTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
               id="outlined-fim_aula"
               label="Horário de Término"
               required={true}
-              {...register("fim_aula")}
+              {...register("fimAulaTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Editar"} />
@@ -738,60 +762,62 @@ export function Turmas(this: any) {
       </Modal>
       <Modal open={openList} onClose={() => setOpenList(false)}>
         <Box sx={style} style={{ width: 900 }}>
-          <FormText
-            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
-          >
-            Alunas matriculadas na turma
-          </FormText>
-          <div
-            style={{
-              justifyContent: "center",
-              display: "flex",
-              marginBottom: 50,
-            }}
-          >
-            <TableContainer
-              component={Paper}
-              style={{ width: 280, justifyContent: "center" }}
+          <FormProvider {...methods}>
+            <FormText
+              style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
             >
-              <Table
-                sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
-                aria-label="simple table"
+              Alunas matriculadas na turma
+            </FormText>
+            <div
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                marginBottom: 50,
+              }}
+            >
+              <TableContainer
+                component={Paper}
+                style={{ width: 280, justifyContent: "center" }}
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Vagas Totais</TableCell>
-                    <TableCell align="right">Vagas Disponíveis</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell align="left" style={{ textAlign: "center" }}>
-                      {vagas?.vagasTotais}
-                    </TableCell>
-                    <TableCell align="right" style={{ textAlign: "center" }}>
-                      {vagas?.vagasDisponiveis}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-          {/* TABELA DE ALUNAS NA TURMA */}
-          {/* <DataGrid
-            rows={alunasTurma}
-            columns={columnsTableAlunas}
-            pageSize={10}
-            rowsPerPageOptions={[10]}
-          /> */}
-          <div
-            style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
-          >
-            <PrimaryButton
-              text={"Fechar"}
-              handleClick={() => setOpenList(false)}
-            />
-          </div>
+                <Table
+                  sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
+                  aria-label="simple table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Vagas Totais</TableCell>
+                      <TableCell align="right">Vagas Disponíveis</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="left" style={{ textAlign: "center" }}>
+                        {vagas?.vagasTotais}
+                      </TableCell>
+                      <TableCell align="right" style={{ textAlign: "center" }}>
+                        {vagas?.vagasDisponiveis}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+            {/* TABELA DE ALUNAS NA TURMA */}
+            {/* <DataGrid
+              rows={alunasTurma}
+              columns={columnsTableAlunas}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+            /> */}
+            <div
+              style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
+            >
+              <PrimaryButton
+                text={"Fechar"}
+                handleClick={() => setOpenList(false)}
+              />
+            </div>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
