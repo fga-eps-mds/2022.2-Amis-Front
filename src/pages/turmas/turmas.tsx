@@ -30,6 +30,7 @@ import {
 import { useQuery } from "react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
+import { TurmasDTO } from "./dtos/Turmas.dto";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
 import { VagasListarDTO } from "./dtos/VagasListar.dto";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
@@ -249,6 +250,8 @@ export function Turmas(this: any) {
     }
   };
 
+
+  // faz uma requisição assincrona a função listar turmas
   useQuery("listar_turmas", async () => {
     const response = await listarTurmas();
     const temp: TurmasListarDTO[] = [];
