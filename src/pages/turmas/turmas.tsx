@@ -30,6 +30,7 @@ import {
 import { useQuery } from "react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
+import { TurmasDTO } from "./dtos/Turmas.dto";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
 import { VagasListarDTO } from "./dtos/VagasListar.dto";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
@@ -249,57 +250,31 @@ export function Turmas(this: any) {
     }
   };
 
+
+  // faz uma requisição assincrona a função listar turmas
   useQuery("listar_turmas", async () => {
     const response = await listarTurmas();
-    const temp: TurmasListarDTO[] = [];
-    response.data.forEach((value: TurmasListarDTO) => {
-      if (value.turno === "1") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade_turma: value.capacidade_turma,
-          inicio_aula: value.inicio_aula,
-          fim_aula: value.fim_aula,
-          data_inicio: value.data_inicio,
-          data_fim: value.data_fim,
-          turno: "Matutino",
-        });
-      }
-      if (value.turno === "2") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade_turma: value.capacidade_turma,
-          inicio_aula: value.inicio_aula,
-          fim_aula: value.fim_aula,
-          data_inicio: value.data_inicio,
-          data_fim: value.data_fim,
-          turno: "Vespertino",
-        });
-      }
-      if (value.turno === "3") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade_turma: value.capacidade_turma,
-          inicio_aula: value.inicio_aula,
-          fim_aula: value.fim_aula,
-          data_inicio: value.data_inicio,
-          data_fim: value.data_fim,
-          turno: "Noturno",
-        });
-      }
-      // temp.push({
-      //   id: value.id,
-      //   descricao: value.descricao,
-      //   turno: value.turno,
-      //   capacidade_turma: value.capacidade_turma,
-      //   inicio_aula: value.inicio_aula,
-      //   fim_aula: value.fim_aula,
-      //   data_inicio: value.data_inicio,
-      //   data_fim: value.data_fim,
-      // });
+    const temp: any[] = [];
+    // console.log(response) 
+    response.data.forEach((value: TurmasDTO) => {
+
+      temp.push({
+        id: value.codigo,
+        codigo: value.codigo,
+        nome_turma: value.nome_turma,
+        data_inicio: value.data_inicio,
+        data_fim: value.data_fim,
+        inicio_aula: value.inicio_aula,
+        fim_aula: value.fim_aula,
+        capacidade_turma: value.capacidade_turma,
+        fk_curso: value.fk_curso,
+        fk_professor: value.fk_professor,
+      });
+
     });
+
+    console.log(temp); //-- Esse temp tá vazio pq o DTO tá errado
+    
     setDataTable(temp);
   });
 
