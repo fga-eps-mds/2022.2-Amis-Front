@@ -1,9 +1,9 @@
 import { ProfessoresCadastrarDTO } from "../pages/professores/dtos/ProfessoresCadastrar.dto";
-import api from "./api";
+import { apiUser } from "./api";
 
 export const cadastraProfessor = async (payload: ProfessoresCadastrarDTO) => {
   try {
-    const response = await api.post("/teacher/", payload);
+    const response = await apiUser.post("/teacher/", payload);
     return response;
   } catch (error) {
     console.error(error);
@@ -12,11 +12,11 @@ export const cadastraProfessor = async (payload: ProfessoresCadastrarDTO) => {
 };
 
 export const listaProfessores = async () => {
-  return await api.get("/teacher/").then((response: any) => response);
+  return await apiUser.get("/teacher/").then((response: any) => response);
 };
 
 export const apagaProfessor = async (professorId: string) => {
-  return await api
+  return await apiUser
     .delete("/teacher/" + professorId)
     .then((response: any) => response);
 };
@@ -26,7 +26,7 @@ export const editaProfessor = async (
   professorEdit: ProfessoresCadastrarDTO
 ) => {
   //console.log("professor id:"+professorId)
-  return await api
+  return await apiUser
     .put("/teacher/" + professorId, professorEdit)
     .then((response: any) => response);
 };
