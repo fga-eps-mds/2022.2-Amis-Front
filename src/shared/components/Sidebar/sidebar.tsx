@@ -103,15 +103,15 @@ export function Sidebar() {
     },
     {
       id: 3,
-      name: "Turmas",
-      path: "/turmas",
+      name: "Assistentes",
+      path: "/assistentes",
       icon: (
-        <AiOutlineAudit
-          color={pathname === "/turmas" ? "#da4d3d" : "#525252"}
+        <BiUser
+          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
-      allowedRoles: ["teacher", "socialWorker", "student"],
+      allowedRoles: ["socialWorker"],
     },
     // {
     //   id: 4,
@@ -126,15 +126,15 @@ export function Sidebar() {
     // },
     {
       id: 5,
-      name: "Assistentes",
-      path: "/assistentes",
+      name: "Turmas",
+      path: "/turmas",
       icon: (
-        <BiUser
-          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
+        <AiOutlineAudit
+          color={pathname === "/turmas" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
-      allowedRoles: ["socialWorker"],
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
     //   id: 6,

@@ -88,7 +88,7 @@ export function Login() {
       const request = await auth.authenticate(login, senha, loginType);
       if (request.token) {
         setLoading(false);
-        navigate("/alunas");
+        navigate("/curso");
       } else {
         toast.error("Não foi possível entrar, verifique as credenciais!");
         setLoading(false);
