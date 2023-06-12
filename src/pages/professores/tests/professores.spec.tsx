@@ -76,7 +76,7 @@ describe("Professores", () => {
     const inputEmail = screen.getByLabelText("E-mail");
     const inputSenha = screen.getByLabelText("Senha *");
     const inputConfirmarSenha = screen.getByLabelText("Confirmar senha *");
-    const inputCursos = screen.getByLabelText("Cursos");
+    const inputCursos = screen.getByLabelText("Habilidades *");
 
     fireEvent.change(nomeInput, { target: { value: 'Pedro' } });
     fireEvent.change(inputLogin, { target: { value: 'pedro.goncalves' } });

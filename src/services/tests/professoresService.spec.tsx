@@ -6,10 +6,10 @@ import {
   apagaProfessor,
 } from "../professores";
 
-import api from "../api";
+import {apiUser} from "../api";
 
 // Criar uma instância do mock para o axios
-const mock = new MockAdapter(api);
+const mock = new MockAdapter(apiUser);
 
 describe("Testes do serviço de professor", () => {
   afterEach(() => {
@@ -29,7 +29,7 @@ describe("Testes do serviço de professor", () => {
       email: 'lorrayne@gmail.com',
       senha: 'Senha123',
       senha_confirmada: 'Senha123',
-      cursos: 'curso 1',
+      habilidades: 'curso 1',
     };
     
 
@@ -75,7 +75,7 @@ describe("Testes do serviço de professor", () => {
       email: 'lorrayne@gmail.com',
       senha: 'Senha123',
       senha_confirmada: 'Senha123',
-      cursos: 'curso 1',
+      habilidades: 'curso 1',
     };
 
     // Configurar o comportamento simulado da chamada PUT
@@ -120,7 +120,7 @@ describe("Testes do serviço de professor", () => {
       email: 'maria@gmail.com',
       senha: 'Senha123',
       senha_confirmada: 'Senha123',
-      cursos: 'curso 1',
+      habilidades: 'curso 1',
     };
 
     // Configurar o comportamento simulado da chamada POST com um status de erro 500

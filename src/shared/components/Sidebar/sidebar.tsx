@@ -114,6 +114,18 @@ export function Sidebar() {
       ),
       allowedRoles: ["socialWorker"],
     },
+    {
+      id: 6,
+      name: "Professores",
+      path: "/professores",
+      icon: (
+        <FaChalkboardTeacher
+          color={pathname === "/professores" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["teacher", "socialWorker", "student"],
+    },
     // {
     //   id: 4,
     //   name: "Relatórios",
@@ -136,17 +148,6 @@ export function Sidebar() {
         />
       ),
       allowedRoles: ["teacher", "socialWorker", "student"],
-    },
-    {
-      id: 6,
-      name: "Professores",
-      path: "/professores",
-      icon: (
-        <FaChalkboardTeacher
-          color={pathname === "/professores" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
     },
     // {
     //   id: 6,
