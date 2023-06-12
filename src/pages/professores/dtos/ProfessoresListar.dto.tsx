@@ -8,5 +8,5 @@ export interface ProfessoresListarDTO {
   login: string;
   data_nascimento: string;
   telefone: string;
-  cursos: string;
+  habilidades: string;
 }

@@ -124,7 +124,6 @@ export function Professores() {
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedProfeesor, setSelectedProfessor] = useState(null);
-  const [selectedCursosP, setSelectedCursosP] = useState([]);
   const [nextId, setNextId] = useState(1); // Variável de estado para o próximo ID
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
@@ -139,7 +138,6 @@ export function Professores() {
   } = methods;
   
 
-  const selectedCursos = watch("cursos");
 
   const cadastrarProfessores = async (data: any) => {
 
@@ -152,7 +150,7 @@ export function Professores() {
       login: data.login,
       data_nascimento: data.data_nascimento,
       telefone: data.telefone,
-      cursos: data.cursos,
+      habilidades: data.habilidades,
       //senha_confirmada: data.senha_confirmada,
     } as ProfessoresCadastrarDTO;
 
@@ -242,7 +240,7 @@ export function Professores() {
         codigo:value.codigo,
         email:value.email,
         telefone:value.telefone,
-        cursos:value.cursos,
+        habilidades:value.habilidades,
       });
     });
     setDataTable(temp);
@@ -280,7 +278,7 @@ export function Professores() {
     setValue("data_nascimentoEdit", professor.data_nascimento);
     setValue("telefoneEdit", professor.telefone);
     setValue("emailEdit", professor.email);
-    setValue("cursosEdit",professor.cursos);
+    setValue("habilidadesEdit",professor.habilidades);
     
     
     setOpenEdit(true);
@@ -343,7 +341,7 @@ export function Professores() {
       data_nascimento: data.data_nascimentoEdit,
       telefone: data.telefoneEdit,
       senha:professor.senha,
-      cursos:data.cursosEdit,
+      habilidades:data.habilidadesEdit,
     } as ProfessoresCadastrarDTO;
     
     const response = await editaProfessor(id.toString(), professorEdit);
@@ -374,7 +372,6 @@ export function Professores() {
           onClick={async () => {
             carregarProfessores(params.id);
             setId(params.id);
-            setSelectedCursosP(professor.cursos);
             setOpenEdit(true);
           }}
         />,
@@ -449,6 +446,14 @@ export function Professores() {
                 required={false}
                 {...register("email")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-habilidades"
+                label="Habilidades"
+                required={true}
+                {...register("habilidades")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                
               />
               <TextField
                 id="outlined-login"
@@ -537,26 +542,6 @@ export function Professores() {
                   </Typography>
                 )}
               </FormControl>
-
-
-              <Autocomplete
-                multiple
-                disablePortal
-                id="outlined-cursos"
-                options={["curso 1", "curso 2", "curso 3"]}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-                onChange={(event, value) => {
-                  setValue("cursos", value.join(",")); // Atualiza o valor do campo "cursos" com o array de opções selecionadas
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    required={false}
-                    label="Cursos"
-                    value={Array.isArray(selectedCursos) ? selectedCursos.join(", ") : ""}
-                  />
-                )}
-              />
               <PrimaryButton text={"Confirmar"} />
             </Form>
           </FormProvider>
@@ -586,22 +571,6 @@ export function Professores() {
                 required={true}
                 {...register("emailEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              <Autocomplete
-                disablePortal
-                id="outlined-cursos"
-                options={["curso 1", "curso 2", "curso 3"]}
-                defaultValue={professor.cursos}
-                onChange={(event, value) => setValue("cursosEdit", value)}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    required={false}
-                    label="Cursos"
-                    value={Array.isArray(selectedCursos) ? selectedCursos.join(", ") : ""}
-                  />
-                )}
               />
               <PrimaryButton text={"Editar"} />
             </Form>

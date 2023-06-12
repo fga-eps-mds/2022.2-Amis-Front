@@ -7,6 +7,6 @@ export interface ProfessoresCadastrarDTO {
   login: string;
   data_nascimento: string;
   telefone: string;
-  cursos: string;
+  habilidades: string;
   senha_confirmada:string;
 }
