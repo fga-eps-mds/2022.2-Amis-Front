@@ -6,10 +6,10 @@ import {
   excluirAluna,
 } from "../alunas";
 
-import api from "../api";
+import { apiUser } from "../api";
 
 // Criar uma instância do mock para o axios
-const mock = new MockAdapter(api);
+const mock = new MockAdapter(apiUser);
 
 describe("Testes do serviço de aluna", () => {
   afterEach(() => {
@@ -135,8 +135,8 @@ describe("Testes do serviço de aluna", () => {
       descricao_endereco:'Descricao...',
     };
 
-    // Configurar o comportamento simulado da chamada POST com um status de erro 500
-    mock.onPost("/student/", payload).reply(500, {
+
+    mock.onPost("/student/", payload).reply(422, {
       error: "Erro ao cadastrar a aluna",
     });
 
@@ -145,7 +145,8 @@ describe("Testes do serviço de aluna", () => {
 
     // Verificar se a resposta foi um erro
     expect(response instanceof Error).toBe(true);
-    expect(response.message).toBe("Request failed with status code 500");
+    
+    expect(response.message).toBe("Request failed with status code 422");
   });
 
 

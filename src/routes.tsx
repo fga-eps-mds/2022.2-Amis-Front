@@ -15,6 +15,7 @@ import { Professores } from "./pages/professores/professores";
 import { AuthContext } from "./context/AuthProvider";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
+import { Curso } from "./pages/curso/cursos";
 
 interface Props {
   component: React.ComponentType;
@@ -33,8 +34,7 @@ export const PrivateRoute: React.FC<Props> = ({
       </Backdrop>
     );
   }
-  return <RouteComponent/>
-
+  
   return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
 };
 
@@ -44,13 +44,11 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/receitas" element={<Receitas />} />
-        {/* <Route path="/alunas" element={<PrivateRoute component={Alunas} />} /> */}
-
-        <Route path="/alunas" element={<Alunas />} />
-        <Route path="/assistentes"element={<Assistentes />}
-        />
-        <Route path="/professores" element={<Professores />} />
-        <Route path="/turmas" element={<Turmas />} />
+        <Route path="/alunas" element={<PrivateRoute component={Alunas} />} />
+        <Route path="/assistentes" element={<PrivateRoute component={Assistentes} />}/>
+        <Route path="/professores" element={<PrivateRoute component={Professores} />} />
+        <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
+        <Route path="/curso" element={<PrivateRoute component={Curso} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />
