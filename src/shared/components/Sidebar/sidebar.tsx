@@ -22,9 +22,9 @@ import { BsFillBookmarkStarFill } from "react-icons/bs";
 
 const Container = styled.div`
   width: 200px;
-  height: 100%;
   border: none;
   background: white;
+  position: sticky;
 `;
 
 const SidebarItem = styled(({ active, ...props }) => <Link {...props} />)`
@@ -148,6 +148,30 @@ export function Sidebar() {
     // },
     {
       id: 7,
+      name: "Cursos",
+      path: "/curso",
+      icon: (
+        <BiBookHeart
+          color={pathname === "/curso" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: [],
+    },
+    {
+      id: 8,
+      name: "Área Aluna",
+      path: "/cadastroInstrucao",
+      icon: (
+        <BiUser
+          color={pathname === "/cadastroInstrucao" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: [],
+    },
+    {
+      id: 9,
       name: "Sair",
       path: "/login/logout",
       icon: (
@@ -161,17 +185,6 @@ export function Sidebar() {
         navigate("/login/logout");
       },
       allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
-    },
-    {
-      id: 8,
-      name: "Cursos",
-      path: "/curso",
-      icon: (
-        <BiBookHeart
-          color={pathname === "/curso" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
     },
   ];
 
