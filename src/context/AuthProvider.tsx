@@ -37,15 +37,16 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<Roles | undefined>(undefined);
 
-  async function authenticate(email: string, senha: string, role: Roles) {
-    const response = await LoginRequest(email, senha, role);
+  async function authenticate(email: string, senha: string, role2: Roles) {
+    const response = await LoginRequest(email, senha, role2);
 
     const payload = {
+      role: role2,
       token: response?.token,
       email: response?.email,
     };
 
-    setRole(role);
+    setRole(role2);
     setUser(payload);
     setUserLocalStorage(payload);
     return response;
@@ -54,7 +55,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     async function loadUser() {
       const userLocalStorage = await getUserLocalStorage();
-
+      setRole(userLocalStorage.role);
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       if (userLocalStorage) {
