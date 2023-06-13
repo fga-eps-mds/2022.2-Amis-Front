@@ -14,6 +14,7 @@ import {
   BiUser,
 } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
@@ -112,6 +113,18 @@ export function Sidebar() {
         />
       ),
       allowedRoles: ["socialWorker"],
+    },
+    {
+      id: 6,
+      name: "Professores",
+      path: "/professores",
+      icon: (
+        <FaChalkboardTeacher
+          color={pathname === "/professores" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
     //   id: 4,

@@ -25,7 +25,6 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
-
 const renderComponent = async()=> {
   const queryClient = new QueryClient ();
   render(
@@ -79,7 +78,7 @@ describe("Assistentes", () => {
     fireEvent.change(nomeInput, { target: { value: 'Lorrayne Cardozo' } });
     fireEvent.change(inputCpf, { target: { value: '62454225077' } });
     fireEvent.change(inputDataNascimento, { target: { value: '27122000' } });
-    fireEvent.change(inputTelefone, { target: { value: '61984847799' } });
+    fireEvent.change(inputTelefone, { target: { value: '61999650299' } });
     fireEvent.change(inputEmail, { target: { value: 'lorrayne@gmail.com' } });
     fireEvent.change(inputSenha, { target: { value: 'senha123' } });
     fireEvent.change(inputConfirmarSenha, { target: { value: 'senha123' } });

@@ -68,6 +68,7 @@ describe("Alunas", () => {
     const inputCidade = screen.getByLabelText("Cidade *");
     const inputdEndereco = screen.getByLabelText("Descrição do Endereço *");
     const inputCep = screen.getByLabelText("CEP *");
+
     await act(async () => {
       fireEvent.change(nomeInput, { target: { value: "Alejandra" } });
       fireEvent.change(inputCpf, { target: { value: "89402523065" } });
@@ -84,6 +85,7 @@ describe("Alunas", () => {
       const submitButton = screen.getByRole("button", { name: "Confirmar" });
       fireEvent.click(submitButton);
     });
+
     const response = { status: 201 };
     if (response.status === 201) {
       toast.success("Aluna cadastrada com sucesso!");

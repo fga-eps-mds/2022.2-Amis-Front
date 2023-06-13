@@ -103,7 +103,7 @@ export function Assistentes() {
 
     // VALIDAÇÕES
 
-    const cpfValido = validateCPF(assistente.cpf);
+    const cpfValido = (assistente.cpf);
     if (!cpfValido) {
       return;
     }
