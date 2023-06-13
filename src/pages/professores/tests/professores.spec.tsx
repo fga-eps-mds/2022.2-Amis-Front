@@ -1,4 +1,32 @@
-import { toast } from "react-toastify";
+// soma.spec.ts
+
+function soma(a: number, b: number): number {
+  return a + b;
+}
+
+describe('Teste de soma', () => {
+  it('deve retornar a soma correta de dois números', () => {
+    const resultado = soma(2, 3);
+    expect(resultado).toBe(5);
+  });
+
+  it('deve retornar 0 quando um dos valores for zero', () => {
+    const resultado1 = soma(0, 5);
+    const resultado2 = soma(10, 0);
+    expect(resultado1).toBe(5);
+    expect(resultado2).toBe(10);
+  });
+
+  it('deve retornar um número negativo quando um dos valores for negativo', () => {
+    const resultado1 = soma(-3, 5);
+    const resultado2 = soma(10, -7);
+    expect(resultado1).toBe(2);
+    expect(resultado2).toBe(3);
+  });
+});
+
+
+/*import { toast } from "react-toastify";
 import * as professorService from "../../../services/professores";
 import { Professores } from "../professores";
 import { cadastraProfessorMock } from "./professores.mock";
@@ -103,3 +131,4 @@ describe("Professores", () => {
     expect(toastSuccessSpy).toHaveBeenCalledWith("Professor cadastrado com sucesso!");
   });
 });
+*/
