@@ -15,12 +15,18 @@ interface IUser {
   token?: string;
 }
 
+export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IAuthContext extends IUser {
   user: IUser | null;
-  authenticate: (email: string, senha: string) => Promise<IUser>;
+  authenticate: (
+    email: string,
+    senha: string,
+    role: Roles
+  ) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
+  role?: Roles;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
@@ -29,15 +35,18 @@ const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 const AuthProvider: React.FC<Props> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<Roles | undefined>(undefined);
 
-  async function authenticate(email: string, senha: string) {
-    const response = await LoginRequest(email, senha);
+  async function authenticate(email: string, senha: string, rolee: Roles) {
+    const response = await LoginRequest(email, senha, rolee);
 
     const payload = {
       token: response?.token,
+      role: rolee,
       email: response?.email,
     };
 
+    setRole(rolee);
     setUser(payload);
     setUserLocalStorage(payload);
     return response;
@@ -46,7 +55,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     async function loadUser() {
       const userLocalStorage = await getUserLocalStorage();
-
+      setRole(userLocalStorage.role)
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       if (userLocalStorage) {
@@ -73,6 +82,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         authenticate,
         logout,
         loading,
+        role,
       }}
     >
       {children}

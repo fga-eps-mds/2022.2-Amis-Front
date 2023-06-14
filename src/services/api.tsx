@@ -1,12 +1,13 @@
 import axios from "axios";
 import { getUserLocalStorage } from "./auth";
 
-const baseApi = axios.create({
-  baseURL: "http://localhost:9090/",
+
+const apiUser = axios.create({
+  baseURL: import.meta.env.VITE_AMIS_API_BASE_URL_USER,
 });
 
-const userApi = axios.create({
-  baseURL: "http://localhost:9090/",
+const apiClassroom = axios.create({
+  baseURL: import.meta.env.VITE_AMIS_API_BASE_URL_CLASSROOM,
 });
 
 const addAuthorizationHeader = (config:any) => {
@@ -15,7 +16,7 @@ const addAuthorizationHeader = (config:any) => {
   return config;
 };
 
-baseApi.interceptors.request.use(addAuthorizationHeader);
-userApi.interceptors.request.use(addAuthorizationHeader);
+apiUser.interceptors.request.use(addAuthorizationHeader);
+apiClassroom.interceptors.request.use(addAuthorizationHeader);
 
-export { baseApi, userApi };
+export {apiUser, apiClassroom};

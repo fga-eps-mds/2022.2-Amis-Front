@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "jest ",
     "test:cov": "jest --ci --coverage --testLocationInResults"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "axios-mock-adapter": "^1.21.4",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.7",
+    "email-validator": "^2.0.4",
     "jest-junit": "^15.0.0",
     "jest-sonar": "^0.2.15",
     "jest-sonar-reporter": "^2.0.0",

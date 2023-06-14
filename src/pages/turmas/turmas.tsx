@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
@@ -61,6 +61,8 @@ import {
 import { parse, compareAsc } from 'date-fns';
 import { AiFillEdit } from "react-icons/ai";
 import { excluirAssistente } from "../../services/assistentes";
+import { AuthContext } from "../../context/AuthProvider";
+
 
 const Container = styled.div`
   width: 100%;
@@ -179,6 +181,8 @@ export function Turmas(this: any) {
     formState: { errors },
   } = methods;
   const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
+  const { role } = useContext(
+  );
 
   const selectedCursos = watch("fk_curso", ""); // Make sure "fk_curso" matches the correct input name
   const selectedProfessor = watch("fk_professor", "");
@@ -424,8 +428,6 @@ export function Turmas(this: any) {
     const response = await listarAlunasNaTurma(idTurma);
     if (response.status === 200) {
       setAlunasTurma(response.data);
-      console.log(response.data);
-      console.log(alunasTurma);
     } else {
       setAlunasTurma([]);
     }
@@ -516,7 +518,11 @@ export function Turmas(this: any) {
       <Content>
         <Navbarlog text={"Turmas"} />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          {role !== "student" ? (
+            <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          ) : (
+            <></>
+          )}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTable} />
         <Dialog
@@ -804,7 +810,6 @@ export function Turmas(this: any) {
                   return idTal.toString();
                 })
               );
-              console.log(matriculas);
             }}
           /> */}
 

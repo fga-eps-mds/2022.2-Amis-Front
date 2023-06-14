@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import { Footer } from "../../shared/components/Footer/footer";
 import styled from "styled-components";
@@ -10,6 +9,7 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { QtdAlunasFormDTO } from "./dtos/QtdAlunasForm.dto";
 import { baseApi, userApi } from "../../services/api";
+
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -91,7 +91,7 @@ const TituloReceitas = styled.h1`
 `;
 
 export function Home() {
-  const [qtdAluna, setQtdAluna] = useState<QtdAlunasDTO>();
+  /*const [qtdAluna, setQtdAluna] = useState<QtdAlunasDTO>();
   const [qtdAlunaForm, setQtdAlunaForm] = useState<QtdAlunasFormDTO>();
 
   useQuery("quantidade_alunas", async () => {
@@ -102,7 +102,8 @@ export function Home() {
   useQuery("quantidade_alunasFormadas", async () => {
     const responseQtdFormadas = await baseApi.get("/alunas/count/formada");
     setQtdAlunaForm(responseQtdFormadas.data as QtdAlunasFormDTO);
-  });
+  });*/
+
 
   return (
     <div>
@@ -177,11 +178,11 @@ export function Home() {
       </DivText>
       <DivCounter>
         <DivEachCounter>
-          <CounterNumber>{qtdAluna?.count}</CounterNumber>
+          <CounterNumber></CounterNumber>
           <CounterText>Mulheres atendidas</CounterText>
         </DivEachCounter>
         <DivEachCounter>
-          <CounterNumber>{qtdAlunaForm?.count}</CounterNumber>
+          <CounterNumber></CounterNumber>
           <CounterText>Formações profissionais</CounterText>
         </DivEachCounter>
       </DivCounter>

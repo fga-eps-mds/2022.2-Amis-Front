@@ -2,12 +2,25 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { AiOutlineHome, AiOutlineAudit } from "react-icons/ai";
-import { BiLogOut, BiUser } from "react-icons/bi";
+import {
+  BiBook,
+  BiBookAdd,
+  BiBookAlt,
+  BiBookBookmark,
+  BiBookHeart,
+  BiBookOpen,
+  BiBookmarkAltPlus,
+  BiLogOut,
+  BiUser,
+} from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
-import { AuthContext } from "../../../context/AuthProvider";
+import { AuthContext, Roles } from "../../../context/AuthProvider";
+import { BsFillBookmarkStarFill } from "react-icons/bs";
+import { getUserLocalStorage } from "../../../services/auth";
 
 const Container = styled.div`
   width: 200px;
@@ -50,12 +63,21 @@ const Logo = styled.div`
   font-weight: 600;
 `;
 
+interface SideBarItemProps {
+  id: number;
+  name: string;
+  path: string;
+  icon: JSX.Element;
+  allowedRoles: Roles[];
+  handleClick?: () => void;
+}
+
 export function Sidebar() {
   const [pathname] = useState(window.location.pathname);
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const sidebarData = [
+  const sidebarData: SideBarItemProps[] = [
     {
       id: 1,
       name: "Tela Inicial",
@@ -66,6 +88,7 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
     {
       id: 2,
@@ -77,17 +100,31 @@ export function Sidebar() {
           size={22}
         />
       ),
+      allowedRoles: ["teacher", "socialWorker"],
     },
     {
       id: 3,
-      name: "Turmas",
-      path: "/turmas",
+      name: "Assistentes",
+      path: "/assistentes",
       icon: (
-        <AiOutlineAudit
-          color={pathname === "/turmas" ? "#da4d3d" : "#525252"}
+        <BiUser
+          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
+      allowedRoles: ["socialWorker"],
+    },
+    {
+      id: 6,
+      name: "Professores",
+      path: "/professores",
+      icon: (
+        <FaChalkboardTeacher
+          color={pathname === "/professores" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker"],
     },
     // {
     //   id: 4,
@@ -102,14 +139,15 @@ export function Sidebar() {
     // },
     {
       id: 5,
-      name: "Assistentes",
-      path: "/assistentes",
+      name: "Turmas",
+      path: "/turmas",
       icon: (
-        <BiUser
-          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
+        <AiOutlineAudit
+          color={pathname === "/turmas" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
     //   id: 6,
@@ -123,36 +161,55 @@ export function Sidebar() {
     //   ),
     // },
     {
+      id: 8,
+      name: "Cursos",
+      path: "/curso",
+      icon: (
+        <BiBookHeart
+          color={pathname === "/curso" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
+    },
+    {
       id: 7,
       name: "Sair",
-      path: "/sair",
+      path: `/login/${auth.role}/logout`,
       icon: (
         <BiLogOut
-          color={pathname === "/sair" ? "#da4d3d" : "#525252"}
+          color={pathname === "/login/logout" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
       handleClick: () => {
         auth.logout();
-        navigate("/");
+        navigate(`/login/${auth.role}/logout`);
       },
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
   ];
 
   return (
     <Container>
       <Logo>AMIS</Logo>
-      {sidebarData.map((itemData, index) => (
-        <SidebarItem
-          key={index}
-          active={pathname === itemData.path}
-          to={itemData.path}
-          onClick={itemData.handleClick}
-        >
-          {itemData.icon}
-          <ItemText>{itemData.name}</ItemText>
-        </SidebarItem>
-      ))}
+      {sidebarData.map((itemData, index) => {
+        if (auth.role && itemData.allowedRoles.includes(auth.role)) {
+          return (
+            <SidebarItem
+              key={index}
+              active={pathname === itemData.path}
+              to={itemData.path}
+              onClick={itemData.handleClick}
+            >
+              {itemData.icon}
+              <ItemText>{itemData.name}</ItemText>
+            </SidebarItem>
+          );
+        } else {
+          return <></>;
+        }
+      })}
     </Container>
   );
 }

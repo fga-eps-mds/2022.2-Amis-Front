@@ -1,11 +1,10 @@
 import { TurmasCadastrarDTO } from "../pages/turmas/dtos/TurmasCadastrar.dto";
 import { TurmasMatricularDTO } from "../pages/turmas/dtos/TurmasMatricular.dto";
-import { baseApi, userApi }  from "./api";
+import { apiClassroom } from "./api";
 
 export const cadastrarTurmas = async (payload: TurmasCadastrarDTO) => {
-  return await userApi
-    .post("/classRoom/", payload)
-    .then((response: any) => response);
+  return await apiClassroom.post("/turmas/", payload).then((response: any) => response);
+
 };
 
 // export const cadastrarTurmas = async (payload: TurmasCadastrarDTO) => {
@@ -39,12 +38,12 @@ export const cadastrarTurmas = async (payload: TurmasCadastrarDTO) => {
 // };
 
 export const listarTurmas = async () => {
-  return await userApi.get("/classRoom/").then((response: any) => response);
+  return await apiClassroom.get("/turmas/").then((response: any) => response);
 };
 
 export const apagarTurmas = async (turmaId: string) => {
-  return await userApi
-    .delete("/classRoom/" + turmaId)
+  return await apiClassroom
+    .delete("/turmas/" + turmaId)
     .then((response: any) => response);
 };
 
@@ -84,35 +83,37 @@ export const editarTurmas = async (
 };
 
 export const cadastrarAluna = async (payload: TurmasMatricularDTO) => {
-  return await userApi
+  return await apiClassroom
     .post("/matricula/", payload)
     .then((response: any) => response);
 };
 
 export const desmatricularAluna = async (idTurma: number, idAluna: number) => {
-  return await userApi
+
+  return await apiClassroom
     .delete("/matricula/" + idTurma + "/" + idAluna)
     .then((response: any) => response);
 };
 
 export const listarAlunasNaTurma = async (idTurma: number) => {
-  return await userApi
+
+  return await apiClassroom
     .get("/matricula/" + idTurma)
     .then((response: any) => response);
 };
 
 export const listarAlunas = async () => {
-  return await baseApi.get("/student/").then((response: any) => response);
+  return await apiClassroom.get("/student/").then((response: any) => response);
 };
 
 export const listarVagasTurma = async (idTurmaVagas: number) => {
-  return await userApi
+  return await apiClassroom
     .get("/matricula/turma/" + idTurmaVagas)
     .then((response: any) => response);
 };
 
 export const confereTurmaMatricula = async (idTurmaVagas: string) => {
-  return await userApi
+  return await apiClassroom
     .get("/matricula/turma/" + idTurmaVagas)
     .then(
       (response: any) =>
