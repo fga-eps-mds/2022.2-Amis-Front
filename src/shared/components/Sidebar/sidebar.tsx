@@ -124,7 +124,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: ["teacher", "socialWorker", "student"],
+      allowedRoles: ["socialWorker"],
     },
     // {
     //   id: 4,

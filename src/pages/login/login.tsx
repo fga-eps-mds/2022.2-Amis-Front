@@ -83,7 +83,7 @@ export function Login() {
   const onSubmit = async (data: Props) => {
     setLoading(true);
     const { login, senha, loginType } = data;
-
+    console.log(data);
     try {
       const request = await auth.authenticate(login, senha, loginType);
       if (request.token) {
