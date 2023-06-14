@@ -181,8 +181,7 @@ export function Turmas(this: any) {
     formState: { errors },
   } = methods;
   const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
-  const { role } = useContext(
-  );
+  const { role } = useContext(AuthContext);
 
   const selectedCursos = watch("fk_curso", ""); // Make sure "fk_curso" matches the correct input name
   const selectedProfessor = watch("fk_professor", "");
@@ -434,12 +433,12 @@ export function Turmas(this: any) {
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await listarAlunas();
+    /*const response = await listarAlunas();
     const temp: AlunasListarDTO[] = [];
     if (response.status === 200) {
-      response.data.forEach((value: AlunasListarDTO) => {
+      response.data.forEach((value: AlunasListarDTO, index: number) => {
         temp.push({
-          id: value.id,
+          id: index,
           login: value.login,
           nome: value.nome,
           cpf: value.cpf,
@@ -449,7 +448,7 @@ export function Turmas(this: any) {
       setDataTableAlunas(temp);
     } else {
       setDataTableAlunas(temp);
-    }
+    }*/
   });
 
   const listarIDTurma = async (idDaTurma: number) => {

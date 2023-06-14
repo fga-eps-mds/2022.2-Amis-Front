@@ -3,7 +3,7 @@ import { TurmasMatricularDTO } from "../pages/turmas/dtos/TurmasMatricular.dto";
 import { apiClassroom } from "./api";
 
 export const cadastrarTurmas = async (payload: TurmasCadastrarDTO) => {
-  return await apiClassroom.post("/turmas/", payload).then((response: any) => response);
+  return await apiClassroom.post("/classRoom/", payload).then((response: any) => response);
 
 };
 
@@ -38,12 +38,12 @@ export const cadastrarTurmas = async (payload: TurmasCadastrarDTO) => {
 // };
 
 export const listarTurmas = async () => {
-  return await apiClassroom.get("/turmas/").then((response: any) => response);
+  return await apiClassroom.get("/classRoom/").then((response: any) => response);
 };
 
 export const apagarTurmas = async (turmaId: string) => {
   return await apiClassroom
-    .delete("/turmas/" + turmaId)
+    .delete("/classRoom/" + turmaId)
     .then((response: any) => response);
 };
 
@@ -52,7 +52,7 @@ export const editarTurmas = async (
   turmaEdit: TurmasCadastrarDTO
 ) => {
   try{
-    const response = await userApi
+    const response = await apiClassroom
       .put("/classRoom/" + turmaId, turmaEdit)
       .then((response: any) => response);
       return response;
@@ -61,15 +61,15 @@ export const editarTurmas = async (
             // Ocorreu um erro de resposta da API
             const { status, data } = error.response;
             if (status === 422) {
-              console.error(error.response);
+              //console.error(error.response);
               throw new Error(`Erro ao cadastrar a turma. Dados inválidos: ${data}`);
             } else {
-              console.error(error.response); 
+              //console.error(error.response); 
               Error(`Erro ao cadastrar a turma. Código de status: ${status}. Detalhes: ${data}`);
             }
           } else if (error.request) {
             // A requisição foi feita, mas não houve resposta da API
-            console.error(error);
+            //console.error(error);
             throw new Error(
               "Não foi possível cadastrar a turma. Por favor, verifique sua conexão de rede e tente novamente."
             );
