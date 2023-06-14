@@ -472,7 +472,7 @@ export function Turmas(this: any) {
       headerName: "Ações",
       type: "actions",
       flex: 1,
-      width: 120,
+      width: 50,
       getActions: (params:any) => [
         <IconButton
           id="meu-grid-actions-cell-item"
@@ -502,10 +502,10 @@ export function Turmas(this: any) {
         </IconButton>,
       ],
     },
-    { field: "nome_turma", headerName: "Turma", width: 100 },
-    { field: "capacidade_turma", headerName: "Número de vagas", width: 120 },
+    { field: "nome_turma", headerName: "Turma", width: 150 },
+    { field: "capacidade_turma", headerName: "Número de vagas", width: 135 },
     { field: "inicio_aula", headerName: "Horário de Início", width: 120 },
-    { field: "fim_aula", headerName: "Horário de Término", width: 150 },
+    { field: "fim_aula", headerName: "Horário de Término", width: 140 },
     { field: "data_inicio", headerName: "Data de Início", width: 120 },
     { field: "data_fim", headerName: "Data de Término", width: 120 },
   ];
