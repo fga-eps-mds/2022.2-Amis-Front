@@ -632,7 +632,7 @@ export function Turmas(this: any) {
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
               id="outlined-turma"
-              label="Turma"
+              label="Nome da Turma"
               defaultValue={turma.nome_turma}
               required={true}
               {...register("nomeTurmaEdit")}
