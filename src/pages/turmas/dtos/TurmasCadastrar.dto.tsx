@@ -8,4 +8,5 @@ export interface TurmasCadastrarDTO {
   capacidade_turma: number;
   fk_curso: number;
   fk_professor: string;
+  descricao: string;
 }
