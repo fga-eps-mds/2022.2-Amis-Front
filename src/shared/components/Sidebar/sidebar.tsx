@@ -161,14 +161,14 @@ export function Sidebar() {
     {
       id: 8,
       name: "Área Aluna",
-      path: "/cadastroInstrucao",
+      path: "/instrucoes",
       icon: (
         <BiUser
-          color={pathname === "/cadastroInstrucao" ? "#da4d3d" : "#525252"}
+          color={pathname === "/instrucoes" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
-      allowedRoles: [],
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     {
       id: 9,
