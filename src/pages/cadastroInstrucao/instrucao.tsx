@@ -133,71 +133,74 @@ export function Instrucao() {
     }
   };
 
-  useQuery("listarInstrucao", async () => {
-    const response = await listarInstrucao();
+  const deletarInstrucao = async () => {
+    const response = await excluirInstrucao(id.toString());
 
-    const temp: InstrucoesListarDTO[] = [];
-    response.data.forEach((value: InstrucoesListarDTO, index: number) => {});
-  });
+    if (response.status === 204) {
+      toast.success("Instrução excluída com sucesso!");
+    } else {
+      toast.error("Erro ao excluir Instrução");
+    }
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = methods;
+    const {
+      register,
+      handleSubmit,
+      watch,
+      setValue,
+      formState: { errors },
+    } = methods;
 
-  return (
-    <Container>
-      <Sidebar />
-      <Content>
-        <Navbarlog text={"Instruções"} />
-        <DivButtons>
-          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-        </DivButtons>
-        <VisualizarInstrucao />
-        {}
-      </Content>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <FormText>
-            Preencha corretamente os dados cadastrais da instrução
-          </FormText>
-          <Form onSubmit={handleSubmit(registerInstrucao)}>
-            <TextField
-              id="outlined-nomReceita"
-              label="Nome da receita"
-              required={true}
-              inputProps={{ maxLenght: 70 }}
-              {...register("nomeReceita")}
-              sx={{ width: "100%", backgroud: "F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nomCurso"
-              label="Curso"
-              required={true}
-              inputProps={{ maxLenght: 70 }}
-              {...register("curso")}
-              sx={{ width: "100%", backgroud: "F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nomInstrucao"
-              label="Instrução"
-              required={true}
-              inputProps={{ maxLenght: 100 }}
-              {...register("instrucao")}
-              sx={{
-                width: "100%",
-                marginBottom: "5rem",
-                backgroud: "F5F4FF",
-                paddingBottom: "10px",
-              }}
-            />
-            <PrimaryButton text="Cadastrar" />
-          </Form>
-        </Box>
-      </Modal>
-    </Container>
-  );
+    return (
+      <Container>
+        <Sidebar />
+        <Content>
+          <Navbarlog text={"Instruções"} />
+          <DivButtons>
+            <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          </DivButtons>
+          <VisualizarInstrucao />
+          {}
+        </Content>
+        <Modal open={open} onClose={handleClose}>
+          <Box sx={style}>
+            <FormText>
+              Preencha corretamente os dados cadastrais da instrução
+            </FormText>
+            <Form onSubmit={handleSubmit(registerInstrucao)}>
+              <TextField
+                id="outlined-nomReceita"
+                label="Nome da receita"
+                required={true}
+                inputProps={{ maxLenght: 70 }}
+                {...register("nomeReceita")}
+                sx={{ width: "100%", backgroud: "F5F4FF" }}
+              />
+              <TextField
+                id="outlined-nomCurso"
+                label="Curso"
+                required={true}
+                inputProps={{ maxLenght: 70 }}
+                {...register("curso")}
+                sx={{ width: "100%", backgroud: "F5F4FF" }}
+              />
+              <TextField
+                id="outlined-nomInstrucao"
+                label="Instrução"
+                required={true}
+                inputProps={{ maxLenght: 100 }}
+                {...register("instrucao")}
+                sx={{
+                  width: "100%",
+                  marginBottom: "5rem",
+                  backgroud: "F5F4FF",
+                  paddingBottom: "10px",
+                }}
+              />
+              <PrimaryButton text="Cadastrar" />
+            </Form>
+          </Box>
+        </Modal>
+      </Container>
+    );
+  };
 }
