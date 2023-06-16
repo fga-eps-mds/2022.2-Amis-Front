@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import { useQuery } from "react-query";
 import { InstrucoesCadastrarDTO } from "./dtos/InstrucoesCadastrar.dto";
+import { InstrucoesListarDTO } from "./dtos/InstrucoesListar.dto";
 import VisualizarInstrucao from "./visualizarInstrucao";
 import {
   Box,
@@ -113,8 +114,12 @@ export function Instrucao() {
   const [openEdit, setOpenEdit] = useState(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
   const handleCloseConfirmation = () => setOpenConfirmation(false);
-
-  const methods = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
 
   const registerInstrucao = async (data: any) => {
     const instrucao = {
@@ -141,66 +146,59 @@ export function Instrucao() {
     } else {
       toast.error("Erro ao excluir Instrução");
     }
-
-    const {
-      register,
-      handleSubmit,
-      watch,
-      setValue,
-      formState: { errors },
-    } = methods;
-
-    return (
-      <Container>
-        <Sidebar />
-        <Content>
-          <Navbarlog text={"Instruções"} />
-          <DivButtons>
-            <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-          </DivButtons>
-          <VisualizarInstrucao />
-          {}
-        </Content>
-        <Modal open={open} onClose={handleClose}>
-          <Box sx={style}>
-            <FormText>
-              Preencha corretamente os dados cadastrais da instrução
-            </FormText>
-            <Form onSubmit={handleSubmit(registerInstrucao)}>
-              <TextField
-                id="outlined-nomReceita"
-                label="Nome da receita"
-                required={true}
-                inputProps={{ maxLenght: 70 }}
-                {...register("nomeReceita")}
-                sx={{ width: "100%", backgroud: "F5F4FF" }}
-              />
-              <TextField
-                id="outlined-nomCurso"
-                label="Curso"
-                required={true}
-                inputProps={{ maxLenght: 70 }}
-                {...register("curso")}
-                sx={{ width: "100%", backgroud: "F5F4FF" }}
-              />
-              <TextField
-                id="outlined-nomInstrucao"
-                label="Instrução"
-                required={true}
-                inputProps={{ maxLenght: 100 }}
-                {...register("instrucao")}
-                sx={{
-                  width: "100%",
-                  marginBottom: "5rem",
-                  backgroud: "F5F4FF",
-                  paddingBottom: "10px",
-                }}
-              />
-              <PrimaryButton text="Cadastrar" />
-            </Form>
-          </Box>
-        </Modal>
-      </Container>
-    );
   };
+
+  return (
+    <Container>
+      {" "}
+      <Sidebar />
+      <Content>
+        <Navbarlog text={"Instruções"} />
+        <DivButtons>
+          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+        </DivButtons>
+        <VisualizarInstrucao />
+        {}
+      </Content>
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={style}>
+          <FormText>
+            Preencha corretamente os dados cadastrais da instrução
+          </FormText>
+          <Form onSubmit={handleSubmit(registerInstrucao)}>
+            <TextField
+              id="outlined-nomReceita"
+              label="Nome da receita"
+              required={true}
+              inputProps={{ maxLenght: 70 }}
+              {...register("nomeReceita")}
+              sx={{ width: "100%", backgroud: "F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nomCurso"
+              label="Curso"
+              required={true}
+              inputProps={{ maxLenght: 70 }}
+              {...register("curso")}
+              sx={{ width: "100%", backgroud: "F5F4FF" }}
+            />
+            <TextField
+              id="outlined-nomInstrucao"
+              label="Instrução"
+              required={true}
+              inputProps={{ maxLenght: 100 }}
+              {...register("instrucao")}
+              sx={{
+                width: "100%",
+                marginBottom: "5rem",
+                backgroud: "F5F4FF",
+                paddingBottom: "10px",
+              }}
+            />
+            <PrimaryButton text="Cadastrar" />
+          </Form>
+        </Box>
+      </Modal>
+    </Container>
+  );
 }

@@ -34,7 +34,7 @@ export const PrivateRoute: React.FC<Props> = ({
       </Backdrop>
     );
   }
-  console.log(auth.user)
+  console.log(auth.user);
   return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
 };
 
@@ -45,10 +45,13 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/receitas" element={<Receitas />} />
         <Route path="/alunas" element={<PrivateRoute component={Alunas} />} />
-        <Route path="/instrucoes" element={<PrivateRoute component={Instrucao}/>} />
+        <Route
+          path="/instrucoes"
+          element={<PrivateRoute component={Instrucao} />}
+        />
         <Route
           path="/assistentes"
-          element={<PrivateRoute component={Assistentes}/>}
+          element={<PrivateRoute component={Assistentes} />}
         />
         <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
         <Route path="/curso" element={<PrivateRoute component={Curso} />} />
