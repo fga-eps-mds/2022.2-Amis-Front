@@ -147,7 +147,9 @@ export function Receitas() {
   const auth = useContext(AuthContext);
 
   useQuery("carregaReceitas", async () => {
+
     await apiUser.get("/receita/").then((response: any) => {
+
       const temp: ListarReceitaDTO[] = [];
       if (response.status === 200) {
         response.data.forEach((value: ListarReceitaDTO) => {
@@ -190,7 +192,9 @@ export function Receitas() {
       modo_preparo: tempModPrep,
     } as ReceitasCadastrarDTO;
 
+
     await apiUser.post("/receita/", receita).then((response: any) => {
+
       if (response.status === 201) {
         toast.success("Receita cadastrada com sucesso!");
       } else {

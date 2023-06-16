@@ -34,7 +34,7 @@ export const PrivateRoute: React.FC<Props> = ({
       </Backdrop>
     );
   }
-  
+
   return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
 };
 

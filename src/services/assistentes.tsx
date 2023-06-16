@@ -32,6 +32,7 @@ export const editarAssistente = async (
 
 
 export const excluirAssistente = async (assistenteId: string) => {
+
   return await apiUser
     .delete("/socialWorker/" + assistenteId)
     .then((response) => response)
