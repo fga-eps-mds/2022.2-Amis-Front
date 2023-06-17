@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import React, { SyntheticEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
@@ -43,12 +41,14 @@ import {
 } from "react-icons/bs";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricular.dto";
 import { toast } from "react-toastify";
+import { FaList } from "react-icons/fa";
 import ValueMask from "../../shared/components/Masks/ValueMask";
 import { queryClient } from "../../services/queryClient";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
 import {
   cadastrarTurmas,
   listarTurmas,
+  listarTurma,
   apagarTurmas,
   editarTurmas,
   cadastrarAluna,
@@ -58,11 +58,10 @@ import {
   listarVagasTurma,
   confereTurmaMatricula,
 } from "../../services/turmas";
-import { parse, compareAsc } from 'date-fns';
+import { parse, compareAsc } from "date-fns";
 import { AiFillEdit } from "react-icons/ai";
 import { excluirAssistente } from "../../services/assistentes";
 import { AuthContext } from "../../context/AuthProvider";
-
 
 const Container = styled.div`
   width: 100%;
@@ -120,8 +119,8 @@ const style = {
 };
 
 function compareDates(date1: string, date2: string): number {
-  const parsedDate1 = parse(date1, 'dd/MM/yy', new Date());
-  const parsedDate2 = parse(date2, 'dd/MM/yy', new Date());
+  const parsedDate1 = parse(date1, "dd/MM/yy", new Date());
+  const parsedDate2 = parse(date2, "dd/MM/yy", new Date());
 
   return compareAsc(parsedDate1, parsedDate2);
 }
@@ -171,7 +170,7 @@ export function Turmas(this: any) {
   const [matriculas, setMatriculas] = useState(Array);
   const [codigo, setCodigo] = useState<GridRowId>(0);
   const [selectedTurma, setSelectedTurma] = useState<GridRowId>(0);
-  
+
   const methods = useForm({});
   const {
     register,
@@ -210,8 +209,7 @@ export function Turmas(this: any) {
     // if (turma.nome_turma.length > 70) {
     //   toast.error("Nome da turma inválido, use menos de 70 caracteres.");
     //   return;
-    // }    
-
+    // }
 
     if (!validateHorarios(turma.inicio_aula, turma.fim_aula)) {
       // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
@@ -229,7 +227,7 @@ export function Turmas(this: any) {
     turma.data_inicio = transformDate(turma.data_inicio);
     turma.data_fim = transformDate(turma.data_fim);
 
-    console.log(turma)
+    console.log(turma);
 
     const response = await cadastrarTurmas(turma);
     if (response.status === 201) {
@@ -240,22 +238,21 @@ export function Turmas(this: any) {
     }
   };
 
-
   // faz uma requisição assincrona a função listar turmas
   useQuery("listar_turmas", async () => {
     const response = await listarTurmas();
     const temp: TurmasListarDTO[] = [];
     if (response.data && Array.isArray(response.data)) {
-        response.data.forEach((value: TurmasListarDTO, index: number) => {
+      response.data.forEach((value: TurmasListarDTO, index: number) => {
         const [y, m, d] = value.data_inicio.split("-");
         const dataInicio = `${d}/${m}/${y}`;
 
         const [year, month, day] = value.data_fim.split("-");
         const dataFim = `${day}/${month}/${year}`;
-        
+
         temp.push({
-          id:index,
-          nome_turma:value.nome_turma,
+          id: index,
+          nome_turma: value.nome_turma,
           codigo: value.codigo,
           capacidade_turma: value.capacidade_turma,
           inicio_aula: value.inicio_aula,
@@ -264,17 +261,30 @@ export function Turmas(this: any) {
           data_fim: dataFim,
           fk_curso: value.fk_curso,
           fk_professor: value.fk_professor,
-          descricao: value.descricao
+          descricao: value.descricao,
         });
-    });
+      });
     }
-    //console.log("O temp:"+temp[0].capacidade_turma);
+    // console.log("O temp:"+temp[0].capacidade_turma);
 
     setDataTable(temp);
   });
 
+  const carregarAddAlunaTurna = async (id: any) => {
+    const response = dataTable.find((element: any) => {
+      if (element.id === id) {
+        return element;
+      }
+    });
+
+    const turma = response as TurmasListarDTO;
+    setTurma(turma);
+    const idTurma = turma.codigo;
+    await listarVagas(Number(idTurma));
+  };
+
   const deleteTurmas = async () => {
-    console.log(selectedTurma.toString())
+    console.log(selectedTurma.toString());
     const response = await apagarTurmas(selectedTurma.toString());
 
     if (response.status === 204) {
@@ -282,10 +292,9 @@ export function Turmas(this: any) {
     } else {
       toast.error("Erro ao excluir a turma.");
     }
-    
+
     handleCloseConfirmation();
     queryClient.invalidateQueries("listar_turmas");
-  
   };
 
   const carregarTurmas = async (id: any) => {
@@ -300,24 +309,22 @@ export function Turmas(this: any) {
     setTurma(turma);
     setValue("nomeTurmaEdit", turma.nome_turma);
     setValue("codigoTurmaEdit", turma.codigo);
-    setValue("capacidadeTurmaEdit",turma.capacidade_turma);
+    setValue("capacidadeTurmaEdit", turma.capacidade_turma);
     setValue("inicioAulaTurmaEdit", turma.inicio_aula);
     setValue("fimAulaTurmaEdit", turma.fim_aula);
-    setValue("dataInicioTurmaEdit",turma.data_inicio);
-    setValue("dataFimTurmaEdit",turma.data_fim);
-    setValue("descricaoEdit",turma.descricao);
+    setValue("dataInicioTurmaEdit", turma.data_inicio);
+    setValue("dataFimTurmaEdit", turma.data_fim);
+    setValue("descricaoEdit", turma.descricao);
 
     setOpenEdit(true);
   };
 
-  const editTurmas = async (data: any) => {    
-
-    if (compareDates(data.inicioAulaTurmaEdit, turma.fimAulaTurmaEdit) > 0 ) {
+  const editTurmas = async (data: any) => {
+    if (compareDates(data.inicioAulaTurmaEdit, turma.fimAulaTurmaEdit) > 0) {
       // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
       toast.error("A data de início deve ser anterior à data de fim.");
       return;
     }
-    
 
     if (!validateHorarios(data.inicioAulaTurmaEdit, data.fimAulaTurmaEdit)) {
       // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
@@ -335,7 +342,6 @@ export function Turmas(this: any) {
     data.dataInicioTurmaEdit = transformDate(data.dataInicioTurmaEdit);
     data.dataFimTurmaEdit = transformDate(data.dataFimTurmaEdit);
 
-
     const turmaEdit = {
       codigo: data.codigoTurmaEdit,
       fk_curso: turma.fk_curso,
@@ -346,9 +352,8 @@ export function Turmas(this: any) {
       fim_aula: data.fimAulaTurmaEdit,
       data_inicio: data.dataInicioTurmaEdit,
       data_fim: data.dataFimTurmaEdit,
-      descricao: data.descricaoEdit
+      descricao: data.descricaoEdit,
     } as TurmasCadastrarDTO;
-
 
     const response = await editarTurmas(id.toString(), turmaEdit);
     if (response.status === 200 || response.status === 201) {
@@ -389,7 +394,7 @@ export function Turmas(this: any) {
     }
     handleDesmatCloseConfirmation();
     useQuery("consultaAlunasNaTurma", async () => {
-      //await consultaAlunasNaTurma(idTurma);
+      // await consultaAlunasNaTurma(idTurma);
     });
   };
 
@@ -433,22 +438,35 @@ export function Turmas(this: any) {
   };
 
   useQuery("listar_alunas", async () => {
-    /*const response = await listarAlunas();
+    const response = await listarAlunas();
+
     const temp: AlunasListarDTO[] = [];
-    if (response.status === 200) {
+    if (response.data && Array.isArray(response.data)) {
       response.data.forEach((value: AlunasListarDTO, index: number) => {
+        const [year, month, day] = value.data_nascimento.split("-");
+        const dataFormatada = `${day}/${month}/${year}`;
         temp.push({
-          id: index,
+          id: index, // Adiciona um id único com base no índice
           login: value.login,
           nome: value.nome,
           cpf: value.cpf,
-          data_nascimento: value.data_nascimento,
+          data_nascimento: dataFormatada,
+          telefone: value.telefone,
+          email: value.email,
+          status: value.status,
+          deficiencia: value.deficiencia,
+          bairro: value.bairro,
+          cidade: value.cidade,
+          cep: value.cep,
+          descricao_endereco: value.descricao_endereco,
+          senha: value.senha,
         });
       });
+      console.log(temp);
       setDataTableAlunas(temp);
     } else {
       setDataTableAlunas(temp);
-    }*/
+    }
   });
 
   const listarIDTurma = async (idDaTurma: number) => {
@@ -460,8 +478,9 @@ export function Turmas(this: any) {
   };
 
   const listarVagas = async (idTurmaVagas: number) => {
-    const response = await listarVagasTurma(idTurmaVagas);
+    const response = await listarTurma(idTurmaVagas);
     if (response.status === 200) {
+      response.data.vagasDisponiveis = response.data.capacidade_turma;
       setVagas(response.data as VagasListarDTO);
     }
   };
@@ -471,43 +490,60 @@ export function Turmas(this: any) {
       field: "actions",
       headerName: "Ações",
       type: "actions",
-      flex: 1,
-      width: 50,
-      getActions: (params:any) => [
-        <IconButton
-          id="meu-grid-actions-cell-item"
-          data-testid="teste-editar"
+      width: 200,
+      getActions: (params: { id: GridRowId }) => [
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<BsFillPersonPlusFill size={20} />}
+          label="MatricularAlunas"
+          onClick={async () => {
+            await listarIDTurma(Number(params.id));
+            carregarAddAlunaTurna(params.id);
+            await queryClient.invalidateQueries("listar_alunas");
+            setOpenMatricula(true);
+          }}
+        />,
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<FaList size={20} />}
+          label="ListarAlunas"
+          onClick={async () => {
+            setAlunasTurma([]);
+            setOpenList(true);
+            // await consultaAlunasNaTurma(Number(params.id));
+            await listarIDTurma(Number(params.id));
+            setId(params.id);
+            const idTurma = params.id;
+            await listarVagas(Number(idTurma));
+          }}
+        />,
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<AiFillEdit size={20} />}
+          label="Editar"
           onClick={async () => {
             carregarTurmas(params.id);
-            setCodigo(params.id);
-          }}
-        >
-          <AiFillEdit size={20} />
-          <Typography variant="body2"></Typography>
-        </IconButton>,
-
-        <IconButton
-          data-testid="teste-excluir"
-          onClick={() => {
             setId(params.id);
-            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
-            if (selectedRow) {
-              setSelectedTurma((selectedRow as any).codigo);
-              handleOpenConfirmation();
-            }
+            setOpenEdit(true);
           }}
-        >
-          <BsFillTrashFill size={18} />
-          <Typography variant="body2"></Typography>
-        </IconButton>,
+        />,
+        // eslint-disable-next-line react/jsx-key
+        <GridActionsCellItem
+          icon={<BsFillTrashFill size={18} />}
+          label="Deletar"
+          onClick={() => {
+            // carregarExcluirTurma(params.id);
+            handleOpenConfirmation();
+          }}
+        />,
       ],
     },
-    { field: "nome_turma", headerName: "Turma", width: 150 },
-    { field: "capacidade_turma", headerName: "Número de vagas", width: 135 },
-    { field: "inicio_aula", headerName: "Horário de Início", width: 120 },
-    { field: "fim_aula", headerName: "Horário de Término", width: 140 },
-    { field: "data_inicio", headerName: "Data de Início", width: 120 },
-    { field: "data_fim", headerName: "Data de Término", width: 120 },
+    { field: "nome_turma", headerName: "Turma", width: 250 },
+    { field: "capacidade_turma", headerName: "Número de vagas", width: 180 },
+    { field: "inicio_aula", headerName: "Horário de Início", width: 180 },
+    { field: "fim_aula", headerName: "Horário de Término", width: 180 },
+    { field: "data_inicio", headerName: "Data de Início", width: 165 },
+    { field: "data_fim", headerName: "Data de Término", width: 165 },
   ];
 
   return (
@@ -617,8 +653,7 @@ export function Turmas(this: any) {
                 {...register("descricao")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              
-            
+
               <PrimaryButton text={"Cadastrar"} />
             </Form>
           </FormProvider>
@@ -626,8 +661,7 @@ export function Turmas(this: any) {
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
-        <FormText>Altere os dados da turma.</FormText>
-                  
+          <FormText>Altere os dados da turma.</FormText>
 
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
@@ -723,7 +757,7 @@ export function Turmas(this: any) {
                   <TableBody>
                     <TableRow>
                       <TableCell align="left" style={{ textAlign: "center" }}>
-                        {vagas?.vagasTotais}
+                        {vagas?.capacidade_turma}
                       </TableCell>
                       <TableCell align="right" style={{ textAlign: "center" }}>
                         {vagas?.vagasDisponiveis}
@@ -733,15 +767,21 @@ export function Turmas(this: any) {
                 </Table>
               </TableContainer>
             </div>
-            {/* TABELA DE ALUNAS NA TURMA */}
-            {/* <DataGrid
-              rows={alunasTurma}
-              columns={columnsTableAlunas}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
-            /> */}
+            {/* { TABELA DE ALUNAS NA TURMA} */}
+            {
+              <DataGrid
+                rows={alunasTurma}
+                columns={columnsTableAlunas}
+                pageSize={10}
+                rowsPerPageOptions={[10]}
+              />
+            }
             <div
-              style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                marginTop: 20,
+              }}
             >
               <PrimaryButton
                 text={"Fechar"}
@@ -782,7 +822,7 @@ export function Turmas(this: any) {
                 <TableBody>
                   <TableRow>
                     <TableCell align="left" style={{ textAlign: "center" }}>
-                      {vagas?.vagasTotais}
+                      {vagas?.capacidade_turma}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
                       {vagas?.vagasDisponiveis}
@@ -792,25 +832,27 @@ export function Turmas(this: any) {
               </Table>
             </TableContainer>
           </div>
-          {/* <DataGrid
-            rows={dataTableAlunas}
-            columns={columnsTableAlunasMatricular}
-            pageSize={8}
-            rowsPerPageOptions={[8]}
-            disableSelectionOnClick={true}
-            checkboxSelection={true}
-            onSelectionModelChange={(dataTableAlunas) => {
-              const selectedIDs = new Set(dataTableAlunas);
-              const selectedRowData = dataTableAlunas.filter(
-                async () => await listarIDAluna(Number(selectedIDs.has(id)))
-              );
-              setMatriculas(
-                selectedRowData.map(function (idTal) {
-                  return idTal.toString();
-                })
-              );
-            }}
-          /> */}
+          {
+            <DataGrid
+              rows={dataTableAlunas}
+              columns={columnsTableAlunasMatricular}
+              pageSize={8}
+              rowsPerPageOptions={[8]}
+              disableSelectionOnClick={true}
+              checkboxSelection={true}
+              onSelectionModelChange={(dataTableAlunas) => {
+                const selectedIDs = new Set(dataTableAlunas);
+                const selectedRowData = dataTableAlunas.filter(
+                  async () => await listarIDAluna(Number(selectedIDs.has(id)))
+                );
+                setMatriculas(
+                  selectedRowData.map(function (idTal) {
+                    return idTal.toString();
+                  })
+                );
+              }}
+            />
+          }
 
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}

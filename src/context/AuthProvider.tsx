@@ -18,11 +18,7 @@ interface IUser {
 export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IAuthContext extends IUser {
   user: IUser | null;
-  authenticate: (
-    email: string,
-    senha: string,
-    role: Roles
-  ) => Promise<IUser>;
+  authenticate: (email: string, senha: string, role: Roles) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -55,7 +51,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     async function loadUser() {
       const userLocalStorage = await getUserLocalStorage();
-      setRole(userLocalStorage.role)
+      setRole(userLocalStorage.role);
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       if (userLocalStorage) {
