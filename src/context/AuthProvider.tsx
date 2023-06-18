@@ -21,7 +21,7 @@ interface IAuthContext extends IUser {
   authenticate: (
     email: string,
     senha: string,
-    selectedRole: Roles
+    role: Roles
   ) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -46,7 +46,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       email: response?.email,
     };
 
-    setRole(role2);
+    setRole(role);
     setUser(payload);
     setUserLocalStorage(payload);
     return response;

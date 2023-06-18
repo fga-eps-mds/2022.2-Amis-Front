@@ -4,7 +4,7 @@ import { Roles } from "../context/AuthProvider";
 // import api from "./api";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_AMIS_API_LOGIN_URL,
+  baseURL: import.meta.env.VITE_AMIS_API_BASE_URL_USER,
 });
 
 export async function LoginRequest(

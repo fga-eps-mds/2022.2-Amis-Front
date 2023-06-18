@@ -6,10 +6,10 @@ import {
   excluirAluna,
 } from "../alunas";
 
-import api from "../api";
+import { apiUser } from "../api";
 
 // Criar uma instância do mock para o axios
-const mock = new MockAdapter(api);
+const mock = new MockAdapter(apiUser);
 
 describe("Testes do serviço de aluna", () => {
   afterEach(() => {
@@ -43,7 +43,7 @@ describe("Testes do serviço de aluna", () => {
     });
 
     // Chamar a função de cadastro de aluna
-    const response = await cadastraAluna(payload);
+    const response: any = await cadastraAluna(payload);
 
     // Verificar se a resposta foi bem-sucedida
     expect(response.status).toBe(201);
@@ -141,7 +141,7 @@ describe("Testes do serviço de aluna", () => {
     });
 
     // Chamar a função de cadastro de aluna
-    const response = await cadastraAluna(payload);
+    const response: any = await cadastraAluna(payload);
 
     // Verificar se a resposta foi um erro
     expect(response instanceof Error).toBe(true);

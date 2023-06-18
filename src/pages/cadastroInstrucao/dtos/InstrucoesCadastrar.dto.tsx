@@ -1,5 +1,6 @@
 export interface InstrucoesCadastrarDTO {
-  receita: string;
-  curso: string;
-  instrucao: string;
+  nome: string;
+  idCurso: number;
+  descricao: string;
+  dataCadastro: string;
 }

@@ -1,43 +1,23 @@
+import {
+  Box,
+  Modal,
+  TextField
+} from "@mui/material";
 import { GridRowId } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+import {
+  cadastrarInstrucao
+} from "../../services/instrucoes";
+import { queryClient } from "../../services/queryClient";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
-import { useForm } from "react-hook-form";
-import { AiFillEdit } from "react-icons/ai";
-import { BsFillTrashFill } from "react-icons/bs";
-import styled from "styled-components";
-import { toast } from "react-toastify";
-import { useQuery } from "react-query";
 import { InstrucoesCadastrarDTO } from "./dtos/InstrucoesCadastrar.dto";
-import { InstrucoesListarDTO } from "./dtos/InstrucoesListar.dto";
 import VisualizarInstrucao from "./visualizarInstrucao";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Modal,
-  TextField,
-  Typography,
-  IconButton,
-} from "@mui/material";
-import {
-  cadastrarInstrucao,
-  editarInstrucao,
-  excluirInstrucao,
-  listarInstrucao,
-} from "../../services/instrucoes";
-import {
-  getContainerStyles,
-  getContentStyles,
-  getDivButtonsStyles,
-  getFormStyles,
-  getFormTextStyles,
-  getInlineStyles,
-} from "../../shared/components/Style/style";
-import { queryClient } from "../../services/queryClient";
+
 const Container = styled.div`
   width: 100%;
   height: 100vh;
@@ -102,6 +82,12 @@ const style = {
   overflowY: "scroll",
 };
 
+interface Item1 {
+  nome: string;
+  idCurso: string;
+  descricao: string;
+}
+
 export function Instrucao() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -120,33 +106,36 @@ export function Instrucao() {
     setValue,
     formState: { errors },
   } = useForm();
+ 
 
   const registerInstrucao = async (data: any) => {
+    const currentDate = new Date().toISOString().split('T')[0];
+    
     const instrucao = {
-      receita: data.receita,
-      curso: data.curso,
-      instrucao: data.descricao,
+      nome: data.nomeReceita,
+      idCurso: data.curso,
+      descricao: data.instrucao,
+      dataCadastro: currentDate.toString(),
     } as InstrucoesCadastrarDTO;
+
 
     const response = await cadastrarInstrucao(instrucao);
 
     if (response.status === 201) {
       setOpen(false);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      queryClient.invalidateQueries("Listar_Instrucao");
-      toast.success("Instrucao cadastrado com sucesso!");
+      toast.success("Instrução cadastrada com sucesso!");
     }
   };
 
-  const deletarInstrucao = async () => {
-    const response = await excluirInstrucao(id.toString());
+  // const deletarInstrucao = async () => {
+  //   const response = await excluirInstrucao(id.toString());
 
-    if (response.status === 204) {
-      toast.success("Instrução excluída com sucesso!");
-    } else {
-      toast.error("Erro ao excluir Instrução");
-    }
-  };
+  //   if (response.status === 204) {
+  //     toast.success("Instrução excluída com sucesso!");
+  //   } else {
+  //     toast.error("Erro ao excluir Instrução");
+  //   }
+  // };
 
   return (
     <Container>
@@ -168,7 +157,7 @@ export function Instrucao() {
           <Form onSubmit={handleSubmit(registerInstrucao)}>
             <TextField
               id="outlined-nomReceita"
-              label="Nome da receita"
+              label="Título"
               required={true}
               inputProps={{ maxLenght: 70 }}
               {...register("nomeReceita")}

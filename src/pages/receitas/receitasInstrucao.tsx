@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 import React, { useContext, useState } from "react";
-import api from "../../services/api";
+import { apiClassroom} from "../../services/api";
 import styled from "styled-components";
 import { Navbar } from "../../shared/components/Navbar/navbar";
 import Title from "../../shared/components/Title/Title";
@@ -154,7 +154,7 @@ export function ReceitasInstrucao() {
   const auth = useContext(AuthContext);
 
   const removeReceita = async (id: number) => {
-    await api.delete("/receita/" + id).then((response: any) => {
+    await apiClassroom.delete("/receita/" + id).then((response: any) => {
       if (response.status === 204) {
         toast.success("Receita excluída com sucesso!");
       } else {
@@ -164,7 +164,7 @@ export function ReceitasInstrucao() {
   };
 
   useQuery("carregaReceitas", async () => {
-    await api.get(`/receita/${index}`).then((response: any) => {
+    await apiClassroom.get(`/receita/${index}`).then((response: any) => {
       if (response.status === 200) {
         setReceitaDetail(response.data);
       }

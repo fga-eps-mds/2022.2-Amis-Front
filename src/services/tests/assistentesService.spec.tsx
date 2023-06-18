@@ -6,10 +6,10 @@ import {
   excluirAssistente,
 } from "../assistentes";
 
-import api from "../api";
+import { apiUser } from "../api";
 
 // Criar uma instância do mock para o axios
-const mock = new MockAdapter(api);
+const mock = new MockAdapter(apiUser);
 
 describe("Testes do serviço de assistentes", () => {
   afterEach(() => {
@@ -38,7 +38,7 @@ describe("Testes do serviço de assistentes", () => {
     });
 
     // Chamar a função de cadastro de assistente
-    const response = await cadastrarAssistente(payload);
+    const response: any = await cadastrarAssistente(payload);
 
     // Verificar se a resposta foi bem-sucedida
     expect(response.status).toBe(201);
@@ -126,7 +126,7 @@ describe("Testes do serviço de assistentes", () => {
     });
 
     // Chamar a função de cadastro de assistente
-    const response = await cadastrarAssistente(payload);
+    const response: any = await cadastrarAssistente(payload);
 
     // Verificar se a resposta foi um erro
     expect(response instanceof Error).toBe(true);

@@ -156,7 +156,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: [],
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
     {
       id: 8,
@@ -168,7 +168,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     {
       id: 9,
