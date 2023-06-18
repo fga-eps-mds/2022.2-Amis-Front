@@ -16,6 +16,7 @@ import { AuthContext } from "./context/AuthProvider";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
 import { Curso } from "./pages/curso/cursos";
+import { Supervisor } from "./pages/supervisor/supervisor";
 
 interface Props {
   component: React.ComponentType;
@@ -45,10 +46,20 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/receitas" element={<Receitas />} />
         <Route path="/alunas" element={<PrivateRoute component={Alunas} />} />
-        <Route path="/assistentes" element={<PrivateRoute component={Assistentes} />}/>
-        <Route path="/professores" element={<PrivateRoute component={Professores} />} />
+        <Route
+          path="/assistentes"
+          element={<PrivateRoute component={Assistentes} />}
+        />
+        <Route
+          path="/professores"
+          element={<PrivateRoute component={Professores} />}
+        />
         <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
         <Route path="/curso" element={<PrivateRoute component={Curso} />} />
+        <Route
+          path="/supervisor"
+          element={<PrivateRoute component={Supervisor} />}
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />

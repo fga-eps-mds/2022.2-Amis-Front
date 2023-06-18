@@ -115,7 +115,7 @@ export function Sidebar() {
       allowedRoles: ["socialWorker"],
     },
     {
-      id: 6,
+      id: 4,
       name: "Professores",
       path: "/professores",
       icon: (
@@ -127,7 +127,7 @@ export function Sidebar() {
       allowedRoles: ["socialWorker"],
     },
     // {
-    //   id: 4,
+    //   id: 5,
     //   name: "Relatórios",
     //   path: "/relatorios",
     //   icon: (
@@ -138,7 +138,7 @@ export function Sidebar() {
     //   ),
     // },
     {
-      id: 5,
+      id: 6,
       name: "Turmas",
       path: "/turmas",
       icon: (
@@ -150,7 +150,7 @@ export function Sidebar() {
       allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
-    //   id: 6,
+    //   id: 7,
     //   name: "Configurações",
     //   path: "/configurações",
     //   icon: (
@@ -173,9 +173,21 @@ export function Sidebar() {
       allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
     {
-      id: 7,
+      id: 9,
+      name: "Supervisor",
+      path: "/supervisor",
+      icon: (
+        <BiBookHeart
+          color={pathname === "/supervisor" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker", "supervisor"],
+    },
+    {
+      id: 10,
       name: "Sair",
-      path: `/login/${auth.role}/logout`,
+      path: `/login/${auth.role as string}/logout`,
       icon: (
         <BiLogOut
           color={pathname === "/login/logout" ? "#da4d3d" : "#525252"}
