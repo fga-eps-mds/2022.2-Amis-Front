@@ -168,6 +168,10 @@ export function Turmas(this: any) {
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
   const [vagas, setVagas] = useState<VagasListarDTO>();
   const [matriculas, setMatriculas] = useState(Array);
+  const [alunasSelecionadas, setAlunasSelecionadas] = useState<string[]>([]);
+  const [alunasInicialmenteSelecionadas, setAlunasInicialmenteSelecionadas] =
+    useState<string[]>([]);
+
   const [codigo, setCodigo] = useState<GridRowId>(0);
   const [selectedTurma, setSelectedTurma] = useState<GridRowId>(0);
 
@@ -371,6 +375,7 @@ export function Turmas(this: any) {
       idTurma: idDaTurma,
       idAluna: String(idDaAluna),
     } as unknown as TurmasMatricularDTO;
+    console.log(turmaMatricula);
 
     if (matriculas.length > vagas?.vagasDisponiveis!) {
       toast.error("Quantidade de vagas excedida.");
@@ -431,9 +436,10 @@ export function Turmas(this: any) {
   const consultaAlunasNaTurma = async (idTurma: number) => {
     const response = await listarAlunasNaTurma(idTurma);
     if (response.status === 200) {
-      setAlunasTurma(response.data);
+      setAlunasInicialmenteSelecionadas(response.data.map((aluna) => aluna.id));
     } else {
       setAlunasTurma([]);
+      setAlunasInicialmenteSelecionadas([]);
     }
   };
 
@@ -473,7 +479,7 @@ export function Turmas(this: any) {
     setIdTurma(idDaTurma);
   };
 
-  const listarIDAluna = async (idDaAluna: number) => {
+  const listarIDAluna = (idDaAluna: number) => {
     setIdAluna(idDaAluna);
   };
 
@@ -825,7 +831,8 @@ export function Turmas(this: any) {
                       {vagas?.capacidade_turma}
                     </TableCell>
                     <TableCell align="right" style={{ textAlign: "center" }}>
-                      {vagas?.vagasDisponiveis}
+                      {vagas &&
+                        vagas.vagasDisponiveis - alunasSelecionadas.length}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -840,16 +847,16 @@ export function Turmas(this: any) {
               rowsPerPageOptions={[8]}
               disableSelectionOnClick={true}
               checkboxSelection={true}
-              onSelectionModelChange={(dataTableAlunas) => {
-                const selectedIDs = new Set(dataTableAlunas);
-                const selectedRowData = dataTableAlunas.filter(
-                  async () => await listarIDAluna(Number(selectedIDs.has(id)))
-                );
-                setMatriculas(
-                  selectedRowData.map(function (idTal) {
-                    return idTal.toString();
-                  })
-                );
+              onSelectionModelChange={(selectionModel) => {
+                setAlunasSelecionadas(selectionModel as string[]);
+
+                const selectedRowData = selectionModel.map((id) => {
+                  const aluna = listarIDAluna(Number(id));
+                  console.log(id);
+                  return id;
+                });
+
+                setMatriculas(selectedRowData);
               }}
             />
           }
@@ -857,7 +864,7 @@ export function Turmas(this: any) {
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
           >
-            {vagas?.vagasDisponiveis! >= 1 && (
+            {vagas?.capacidade_turma >= alunasSelecionadas.length && (
               <PrimaryButton
                 text={"Matricular"}
                 handleClick={async () =>
