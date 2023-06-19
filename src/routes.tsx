@@ -16,6 +16,7 @@ import { AuthContext } from "./context/AuthProvider";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
 import { Curso } from "./pages/curso/cursos";
+import { CentroProdutivo } from "./pages/centroProdutivo/centroProdutivo";
 
 interface Props {
   component: React.ComponentType;
@@ -35,7 +36,7 @@ export const PrivateRoute: React.FC<Props> = ({
     );
   }
 
-  return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
+  return <RouteComponent/> ;
 };
 
 export default function AppRoutes() {
@@ -49,6 +50,7 @@ export default function AppRoutes() {
         <Route path="/professores" element={<PrivateRoute component={Professores} />} />
         <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
         <Route path="/curso" element={<PrivateRoute component={Curso} />} />
+        <Route path="/centroProdutivo" element={<PrivateRoute component={CentroProdutivo} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />
