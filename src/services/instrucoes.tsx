@@ -9,10 +9,9 @@ export const cadastrarInstrucao = async (payload: InstrucoesCadastrarDTO) => {
     .catch((error) => error);
 };
 
-
 export const listarInstrucoes = async () => {
-    return await apiClassroom
-      .get("/instrucaoCapacitacao/")
-      .then((response) => response)
-      .catch((error) => error);
-  };
+  return await apiClassroom
+    .get("/instrucaoCapacitacao/")
+    .then((response) => response)
+    .catch((error) => error);
+};

@@ -1,16 +1,10 @@
-import {
-  Box,
-  Modal,
-  TextField
-} from "@mui/material";
+import { Box, Modal, TextField } from "@mui/material";
 import { GridRowId } from "@mui/x-data-grid";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import {
-  cadastrarInstrucao
-} from "../../services/instrucoes";
+import { cadastrarInstrucao } from "../../services/instrucoes";
 import { queryClient } from "../../services/queryClient";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
@@ -106,18 +100,16 @@ export function Instrucao() {
     setValue,
     formState: { errors },
   } = useForm();
- 
 
   const registerInstrucao = async (data: any) => {
-    const currentDate = new Date().toISOString().split('T')[0];
-    
+    const currentDate = new Date().toISOString().split("T")[0];
+
     const instrucao = {
       nome: data.nomeReceita,
       idCurso: data.curso,
       descricao: data.instrucao,
       dataCadastro: currentDate.toString(),
     } as InstrucoesCadastrarDTO;
-
 
     const response = await cadastrarInstrucao(instrucao);
 
