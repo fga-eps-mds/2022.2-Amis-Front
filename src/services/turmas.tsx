@@ -95,7 +95,7 @@ export const editarTurmas = async (
 
 export const cadastrarAluna = async (payload: TurmasMatricularDTO) => {
   return await apiClassroom
-    .post("/register/turma/", payload)
+    .post("/register/", payload)
     .then((response: any) => response);
 };
 

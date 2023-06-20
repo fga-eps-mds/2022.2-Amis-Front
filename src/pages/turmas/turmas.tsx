@@ -151,7 +151,7 @@ export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
   const [turma, setTurma] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
-  const [idTurma, setIdTurma] = useState<GridRowId>(0);
+  const [codigoTurma, setcodigoTurma] = useState<GridRowId>(0);
   const [idAluna, setIdAluna] = useState<GridRowId>(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -283,8 +283,8 @@ export function Turmas(this: any) {
 
     const turma = response as TurmasListarDTO;
     setTurma(turma);
-    const idTurma = turma.codigo;
-    await listarVagas(Number(idTurma));
+    const codigoTurma = turma.codigo;
+    await listarVagas(Number(codigoTurma));
   };
 
   const deleteTurmas = async () => {
@@ -372,7 +372,7 @@ export function Turmas(this: any) {
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
     const turmaMatricula = {
-      idTurma: idDaTurma,
+      codigoTurma: idDaTurma,
       idAluna: String(idDaAluna),
     } as unknown as TurmasMatricularDTO;
     console.log(turmaMatricula);
@@ -389,8 +389,8 @@ export function Turmas(this: any) {
     }
   };
 
-  const desmatAluna = async (idTurma: number, idAluna: number) => {
-    const response = await desmatricularAluna(idTurma, idAluna);
+  const desmatAluna = async (codigoTurma: number, idAluna: number) => {
+    const response = await desmatricularAluna(codigoTurma, idAluna);
     if (response.status === 204) {
       toast.success("Aluna(s) removida(s) da turma com sucesso!");
       setOpenList(false);
@@ -399,7 +399,7 @@ export function Turmas(this: any) {
     }
     handleDesmatCloseConfirmation();
     useQuery("consultaAlunasNaTurma", async () => {
-      // await consultaAlunasNaTurma(idTurma);
+      // await consultaAlunasNaTurma(codigoTurma);
     });
   };
 
@@ -433,8 +433,8 @@ export function Turmas(this: any) {
     { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
   ];
 
-  const consultaAlunasNaTurma = async (idTurma: number) => {
-    const response = await listarAlunasNaTurma(idTurma);
+  const consultaAlunasNaTurma = async (codigoTurma: number) => {
+    const response = await listarAlunasNaTurma(codigoTurma);
     if (response.status === 200) {
       setAlunasInicialmenteSelecionadas(response.data.map((aluna) => aluna.id));
     } else {
@@ -475,16 +475,16 @@ export function Turmas(this: any) {
     }
   });
 
-  const listarIDTurma = async (idDaTurma: number) => {
-    setIdTurma(idDaTurma);
+  const listarcodigoTurma = async (idDaTurma: number) => {
+    setcodigoTurma(idDaTurma);
   };
 
   const listarIDAluna = (idDaAluna: number) => {
     setIdAluna(idDaAluna);
   };
 
-  const listarVagas = async (idTurmaVagas: number) => {
-    const response = await listarTurma(idTurmaVagas);
+  const listarVagas = async (codigoTurmaVagas: number) => {
+    const response = await listarTurma(codigoTurmaVagas);
     if (response.status === 200) {
       response.data.vagasDisponiveis = response.data.capacidade_turma;
       setVagas(response.data as VagasListarDTO);
@@ -503,7 +503,7 @@ export function Turmas(this: any) {
           icon={<BsFillPersonPlusFill size={20} />}
           label="MatricularAlunas"
           onClick={async () => {
-            await listarIDTurma(Number(params.id));
+            await listarcodigoTurma(Number(params.id));
             carregarAddAlunaTurna(params.id);
             await queryClient.invalidateQueries("listar_alunas");
             setOpenMatricula(true);
@@ -517,10 +517,10 @@ export function Turmas(this: any) {
             setAlunasTurma([]);
             setOpenList(true);
             // await consultaAlunasNaTurma(Number(params.id));
-            await listarIDTurma(Number(params.id));
+            await listarcodigoTurma(Number(params.id));
             setId(params.id);
-            const idTurma = params.id;
-            await listarVagas(Number(idTurma));
+            const codigoTurma = params.id;
+            await listarVagas(Number(codigoTurma));
           }}
         />,
         // eslint-disable-next-line react/jsx-key
@@ -595,7 +595,7 @@ export function Turmas(this: any) {
             <Button onClick={handleDesmatCloseConfirmation}>Não</Button>
             <Button
               onClick={async () => {
-                await desmatAluna(Number(idTurma), Number(idAluna));
+                await desmatAluna(Number(codigoTurma), Number(idAluna));
               }}
               autoFocus
             >
@@ -868,7 +868,7 @@ export function Turmas(this: any) {
               <PrimaryButton
                 text={"Matricular"}
                 handleClick={async () =>
-                  await matriculaAluna(Number(idTurma), String(matriculas))
+                  await matriculaAluna(Number(codigoTurma), String(matriculas))
                 }
               />
             )}

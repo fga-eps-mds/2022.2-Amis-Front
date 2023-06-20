@@ -1,4 +1,4 @@
 export interface TurmasMatricularDTO {
-  idTurma: number;
+  codigoTurma: number;
   idAluna: string;
 }
