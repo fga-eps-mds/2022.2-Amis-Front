@@ -1,6 +1,7 @@
 export interface InstrucoesListarDTO {
   id: number;
-  receita: string;
-  curso: string;
-  instrucao: string;
+  nome: string;
+  idCurso: string;
+  descricao: string;
+  dataCadastro: string,
 }
