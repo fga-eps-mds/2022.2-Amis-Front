@@ -164,6 +164,7 @@ export function Supervisor() {
       toast.error("Telefone inválido", {
         position: "bottom-right",
       });
+      return;
     }
 
     payload.cpf = payload.cpf.replace(/\D/g, "");
@@ -174,13 +175,10 @@ export function Supervisor() {
       .join("-");
 
     await cadastrarSupervisor(payload);
+    toast.success("Supervisionador Cadastrado Com Sucesso");
   }
 
   const columnsTable: TableProps["columns"] = [
-    { field: "login", headerName: "SUPERVISOR ID", flex: 1 },
-    { field: "nome", headerName: "NOME COMPLETO", flex: 1 },
-    { field: "cpf", headerName: "CPF", flex: 1 },
-    { field: "data_nascimento", headerName: "DATA NASCIMENTO", flex: 1 },
     {
       field: "actions",
       headerName: "Ações",
@@ -211,6 +209,10 @@ export function Supervisor() {
         </IconButton>,
       ],
     },
+    { field: "login", headerName: "SUPERVISOR ID", flex: 1 },
+    { field: "nome", headerName: "NOME COMPLETO", flex: 1 },
+    { field: "cpf", headerName: "CPF", flex: 1 },
+    { field: "data_nascimento", headerName: "DATA NASCIMENTO", flex: 1 },
   ];
 
   return (
@@ -338,7 +340,7 @@ export function Supervisor() {
               />
               <ValueMask label="data_nascimento" />
               <ValueMask label="telefone" />
-              <PrimaryButton text={"Confirmar"} />
+              <PrimaryButton text={"Editar"} />
             </Form>
           </FormProvider>
         </Box>
