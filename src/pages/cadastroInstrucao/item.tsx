@@ -116,8 +116,8 @@ export function Item(props: any) {
       }
     };
     return (
-      <div style={styles.item} onClick={handleClick}>
-        <div>
+      <div style={styles.item}>
+        <div onClick={handleClick}>
           <div style={{ fontWeight: 'bold', justifyContent: 'space-between', display: 'flex', paddingBottom: '20px' }}>
             <h3>{props.titulo}</h3>
             <h3 style={{ color: 'red' }}>Curso {props.subtitulo}</h3>

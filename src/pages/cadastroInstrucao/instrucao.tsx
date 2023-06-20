@@ -136,10 +136,11 @@ export function Instrucao() {
       idCurso: data.idCursoEdit,
       descricao: data.descricaoEdit,
       dataCadastro: instrucao.dataCadastro,
+      id: instrucao.id
       
     } as InstrucoesCadastrarDTO;
     const response = await editarInstrucao(instrucao.id, instrucaoEditada);
-      if (response.status === 200 || response.status === 204) {
+      if (response.status === 200 || response.status === 204 || response.status === 201) {
         toast.success("Instrução atualizada com sucesso!");
       } else {
         toast.error("Erro na atualização da instrução.");
