@@ -45,6 +45,7 @@ import { FaList } from "react-icons/fa";
 import ValueMask from "../../shared/components/Masks/ValueMask";
 import { queryClient } from "../../services/queryClient";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
+import {listaAlunaAtual} from "../../services/alunas"
 import {
   cadastrarTurmas,
   listarTurmas,
@@ -150,6 +151,7 @@ function validateHorarios(inicio_aula: string, fim_aula: string): boolean {
 export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
   const [turma, setTurma] = useState(Object);
+  const [alunaSelecionada, setAlunaSelecionada] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [codigoTurma, setcodigoTurma] = useState<GridRowId>(0);
   const [idAluna, setIdAluna] = useState<GridRowId>(0);
@@ -169,8 +171,6 @@ export function Turmas(this: any) {
   const [vagas, setVagas] = useState<VagasListarDTO>();
   const [matriculas, setMatriculas] = useState(Array);
   const [alunasSelecionadas, setAlunasSelecionadas] = useState<string[]>([]);
-  const [alunasInicialmenteSelecionadas, setAlunasInicialmenteSelecionadas] =
-    useState<string[]>([]);
 
   const [codigo, setCodigo] = useState<GridRowId>(0);
   const [selectedTurma, setSelectedTurma] = useState<GridRowId>(0);
@@ -231,7 +231,7 @@ export function Turmas(this: any) {
     turma.data_inicio = transformDate(turma.data_inicio);
     turma.data_fim = transformDate(turma.data_fim);
 
-    console.log(turma);
+    //console.log(turma);
 
     const response = await cadastrarTurmas(turma);
     if (response.status === 201) {
@@ -274,21 +274,36 @@ export function Turmas(this: any) {
     setDataTable(temp);
   });
 
-  const carregarAddAlunaTurna = async (id: any) => {
+  const carregarAddAlunaTurma = async (id: any) => {
+    //console.log("O id da turma:"+id);
     const response = dataTable.find((element: any) => {
       if (element.id === id) {
         return element;
       }
     });
-
     const turma = response as TurmasListarDTO;
+  //console.log("A turma:"+turma.nome_turma);
     setTurma(turma);
-    const codigoTurma = turma.codigo;
-    await listarVagas(Number(codigoTurma));
+    setcodigoTurma(turma.codigo);
+    await consultaAlunasNaTurma(turma.codigo);
+    await listarVagas(turma.codigo);
   };
 
+  // const carregarAlunaSelecionada = async (id: any) => {
+  //   //console.log("O id da aluna:"+id);
+  //   const response = dataTableAlunas.find((element: any) => {
+  //     if (element.id === id) {
+  //       return element;
+  //     }
+  //   });
+
+  //   const aluna = response as AlunasListarDTO;
+  //   setAlunaSelecionada(aluna);
+  //   //console.log("login da aluna: "+aluna.login);
+  // };
+
   const deleteTurmas = async () => {
-    console.log(selectedTurma.toString());
+    //console.log(selectedTurma.toString());
     const response = await apagarTurmas(selectedTurma.toString());
 
     if (response.status === 204) {
@@ -368,14 +383,14 @@ export function Turmas(this: any) {
     setOpenEdit(false);
 
     await queryClient.invalidateQueries("listar_turmas");
-  };
+    };
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
     const turmaMatricula = {
       codigoTurma: idDaTurma,
       idAluna: String(idDaAluna),
     } as unknown as TurmasMatricularDTO;
-    console.log(turmaMatricula);
+    //console.log(turmaMatricula);
 
     if (matriculas.length > vagas?.vagasDisponiveis!) {
       toast.error("Quantidade de vagas excedida.");
@@ -406,7 +421,7 @@ export function Turmas(this: any) {
   const columnsTableAlunas = [
     { field: "nome", headerName: "Nome", flex: 2 },
     { field: "cpf", headerName: "CPF", flex: 1 },
-    { field: "dNascimento", headerName: "Data de Nascimento", flex: 1 },
+    { field: "data_nascimento", headerName: "Data de Nascimentos", flex: 1 },
     {
       field: "actions",
       headerName: "Desmatricular",
@@ -430,60 +445,86 @@ export function Turmas(this: any) {
   const columnsTableAlunasMatricular = [
     { field: "nome", headerName: "Nome", width: 420 },
     { field: "cpf", headerName: "CPF", width: 150 },
-    { field: "dNascimento", headerName: "Data de Nascimento", width: 150 },
+    { field: "data_nascimento", headerName: "Data de Nascimento", flex: 2 },
   ];
 
   const consultaAlunasNaTurma = async (codigoTurma: number) => {
     const response = await listarAlunasNaTurma(codigoTurma);
+    console.log("O status:"+response.status);
     if (response.status === 200) {
-      setAlunasInicialmenteSelecionadas(response.data.map((aluna) => aluna.id));
-    } else {
+      console.log("Foi aqui")
+      const temp: any[] = [];
+      if (response.data && Array.isArray(response.data)) {
+        for (let index = 0; index < response.data.length; index++) {
+          const value = response.data[index];
+          const response2 = await listaAlunaAtual(value.idAluna);
+          //console.log(response2.data.nome);
+          const nomeDaAluna=response2.data.nome;
+          const cpfDaAluna=response2.data.cpf;
+          const [year, month, day] = response2.data.data_nascimento.split("-");
+          const dataFormatada = `${day}/${month}/${year}`;
+          temp.push({
+            id: index, // Adiciona um id único com base no índice
+            idAluna: value.idAluna,
+            nome: nomeDaAluna,
+            cpf:cpfDaAluna,
+            data_nascimento:dataFormatada,
+          });
+        }
+        setAlunasTurma(temp);
+        //console.log("Isso que busquei:" + temp[2].idAluna);
+      } else {
+        setAlunasTurma(temp);
+      }
+    }
+    else {
+      console.log("Deu erro");
+      toast.error(
+        "A turma não tem alunas matriculas!"
+      );
       setAlunasTurma([]);
-      setAlunasInicialmenteSelecionadas([]);
     }
   };
 
   useQuery("listar_alunas", async () => {
     const response = await listarAlunas();
-
-    const temp: AlunasListarDTO[] = [];
-    if (response.data && Array.isArray(response.data)) {
-      response.data.forEach((value: AlunasListarDTO, index: number) => {
-        const [year, month, day] = value.data_nascimento.split("-");
-        const dataFormatada = `${day}/${month}/${year}`;
-        temp.push({
-          id: index, // Adiciona um id único com base no índice
-          login: value.login,
-          nome: value.nome,
-          cpf: value.cpf,
-          data_nascimento: dataFormatada,
-          telefone: value.telefone,
-          email: value.email,
-          status: value.status,
-          deficiencia: value.deficiencia,
-          bairro: value.bairro,
-          cidade: value.cidade,
-          cep: value.cep,
-          descricao_endereco: value.descricao_endereco,
-          senha: value.senha,
+    if (response.status === 200) {
+      const temp: AlunasListarDTO[] = [];
+      if (response.data && Array.isArray(response.data)) {
+        response.data.forEach((value: AlunasListarDTO, index: number) => {
+          const [year, month, day] = value.data_nascimento.split("-");
+          const dataFormatada = `${day}/${month}/${year}`;
+          temp.push({
+            id: index, // Adiciona um id único com base no índice
+            login: value.login,
+            nome: value.nome,
+            cpf: value.cpf,
+            data_nascimento: dataFormatada,
+            telefone: value.telefone,
+            email: value.email,
+            status: value.status,
+            deficiencia: value.deficiencia,
+            bairro: value.bairro,
+            cidade: value.cidade,
+            cep: value.cep,
+            descricao_endereco: value.descricao_endereco,
+            senha: value.senha,
+          });
         });
-      });
-      console.log(temp);
-      setDataTableAlunas(temp);
-    } else {
-      setDataTableAlunas(temp);
+        //console.log(temp);
+        setDataTableAlunas(temp);
+      } else {
+        setDataTableAlunas([]);
+      }
     }
   });
-
-  const listarcodigoTurma = async (idDaTurma: number) => {
-    setcodigoTurma(idDaTurma);
-  };
 
   const listarIDAluna = (idDaAluna: number) => {
     setIdAluna(idDaAluna);
   };
 
   const listarVagas = async (codigoTurmaVagas: number) => {
+
     const response = await listarTurma(codigoTurmaVagas);
     if (response.status === 200) {
       response.data.vagasDisponiveis = response.data.capacidade_turma;
@@ -503,8 +544,8 @@ export function Turmas(this: any) {
           icon={<BsFillPersonPlusFill size={20} />}
           label="MatricularAlunas"
           onClick={async () => {
-            await listarcodigoTurma(Number(params.id));
-            carregarAddAlunaTurna(params.id);
+            //await listarcodigoTurma(Number(params.id));
+            carregarAddAlunaTurma(params.id);
             await queryClient.invalidateQueries("listar_alunas");
             setOpenMatricula(true);
           }}
@@ -515,12 +556,12 @@ export function Turmas(this: any) {
           label="ListarAlunas"
           onClick={async () => {
             setAlunasTurma([]);
+            carregarAddAlunaTurma(params.id);
+            //await listarcodigoTurma(Number(params.id));
+            //setId(params.id);
+            //const codigoTurma = params.id;
+            //await listarVagas(Number(codigoTurma));
             setOpenList(true);
-            // await consultaAlunasNaTurma(Number(params.id));
-            await listarcodigoTurma(Number(params.id));
-            setId(params.id);
-            const codigoTurma = params.id;
-            await listarVagas(Number(codigoTurma));
           }}
         />,
         // eslint-disable-next-line react/jsx-key
@@ -731,6 +772,7 @@ export function Turmas(this: any) {
           </Form>
         </Box>
       </Modal>
+      {/* Modal para listar */}
       <Modal open={openList} onClose={() => setOpenList(false)}>
         <Box sx={style} style={{ width: 900 }}>
           <FormProvider {...methods}>
@@ -797,6 +839,7 @@ export function Turmas(this: any) {
           </FormProvider>
         </Box>
       </Modal>
+      {/* Modal para matricular alunas */}
       <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
         <Box sx={style} style={{ width: 920 }}>
           <FormText
@@ -848,12 +891,22 @@ export function Turmas(this: any) {
               disableSelectionOnClick={true}
               checkboxSelection={true}
               onSelectionModelChange={(selectionModel) => {
+                
                 setAlunasSelecionadas(selectionModel as string[]);
 
                 const selectedRowData = selectionModel.map((id) => {
-                  const aluna = listarIDAluna(Number(id));
-                  console.log(id);
-                  return id;
+                  //console.log("To procurando pelo id:"+id)
+                  const response = dataTableAlunas.find((element: any) => {
+                    if (element.id === id) {
+                      return element;
+                    }
+                  });
+              
+                  const aluna = response as AlunasListarDTO;       
+                  const alunaLogin = aluna.login;
+                  //console.log("O login selecionado:"+aluna.login);
+                  setAlunaSelecionada(aluna);
+                  return alunaLogin;
                 });
 
                 setMatriculas(selectedRowData);

@@ -45,6 +45,7 @@ export const listarTurmas = async () => {
 };
 
 export const listarTurma = async (turmaId: Number) => {
+  //console.log("Aquii")
   return await apiClassroom
     .get("/classRoom/" + turmaId)
     .then((response: any) => response);
@@ -94,6 +95,7 @@ export const editarTurmas = async (
 };
 
 export const cadastrarAluna = async (payload: TurmasMatricularDTO) => {
+//console.log("O payload"+payload.codigoTurma);
   return await apiClassroom
     .post("/register/", payload)
     .then((response: any) => response);
@@ -106,8 +108,9 @@ export const desmatricularAluna = async (idTurma: number, idAluna: number) => {
 };
 
 export const listarAlunasNaTurma = async (idTurma: number) => {
+  //console.log("Id da turma q esta chamando:"+idTurma);
   return await apiClassroom
-    .get("/matricula/" + idTurma)
+    .get("/register/" + idTurma)
     .then((response: any) => response);
 };
 
