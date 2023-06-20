@@ -39,6 +39,7 @@ import {
   import { CentrosCadastrarDTO } from "./dtos/CentrosCadastrar.dto";
   import { CentrosListarDTO } from "./dtos/CentrosListar.dto";
   import { AuthContext } from "../../context/AuthProvider";
+  import ValueMask from "../../shared/components/Masks/ValueMask";
   
   const Container = styled.div`
     width: 100%;
@@ -90,7 +91,7 @@ import {
     boxShadow: 24,
     p: 4,
     padding: "50px",
-    height: "85%",
+    height: "50%",
     overflow: "hidden",
     overflowY: "scroll",
   };
@@ -117,9 +118,10 @@ import {
   
     const registerCentro = async (data: any) => {
       const centro = {
-        dataAlocacao: data.dataAlocacao,
+        data_agendada: data.data_agendada,
         descricao: data.descricao,
         status: data.status,
+        turno : data.turno
       } as CentrosCadastrarDTO;
   
       const response = await cadastrarCentro(centro);
@@ -136,12 +138,13 @@ import {
   
       const temp: CentrosListarDTO[] = [];
       response.data.forEach((value: CentrosListarDTO, index: number) => {
-        //console.log(value.nome);
+        console.log(value);
         temp.push({
           id: value.id,
-          dataAlocacao: value.dataAlocacao,
+          data_agendada: value.data_agendada,
           descricao: value.descricao,
           status: value.status,
+          turno : value.turno,
         });
       });
       setDataTable(temp);
@@ -168,9 +171,10 @@ import {
       const centro = response as CentrosListarDTO;
       setCentro(centro);
       setValue("idEdit", centro.id);
-      setValue("dataAlocacaoEdit", centro.dataAlocacao);
+      setValue("dataAlocacaoEdit", centro.data_agendada);
       setValue("descricaoEdit", centro.descricao);
       setValue("statusEdit", centro.status);
+      setValue("turnoEdit", centro.turno);
       setOpenEdit(true);
     };
   
@@ -178,9 +182,10 @@ import {
   
       const centroEditado = {
         id: data.idEdit,
-        dataAlocacao: data.dataAlocacaoEdit,
+        data_agendada: data.data_agendadaEdit,
         descricao: data.descricaoEdit,
         status: data.statusEdit,
+        turno : data.turnoEdit,
       };
   
       const response = await editarCentro(centroEditado.id.toString(), centroEditado);
@@ -228,8 +233,9 @@ import {
       },
       { field: "id", headerName: "Código", flex: 2 },
       { field: "descricao", headerName: "Descrição", flex: 2 },
-      { field: "dataAlocacao", headerName: "Data de Alocação do centro", flex: 2 },
+      { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
       { field: "status", headerName: "Status", flex: 2 },
+      { field: "turno", headerName: "Turno", flex: 2 },
     ];
   
     return (
@@ -237,7 +243,7 @@ import {
         {" "}
         <Sidebar />
         <Content>
-          <Navbarlog text={"Centros"} />
+          <Navbarlog text={"Centros Produtivos"} />
           <DivButtons>
           {role !== "student" ? (
               <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
@@ -271,7 +277,7 @@ import {
                 id="outlined-descricao"
                 label="Descrição"
                 required={true}
-                inputProps={{ maxLength: 170 }}
+                inputProps={{ maxLength: 500 }}
                 {...register("descricao")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
@@ -290,6 +296,8 @@ import {
                   <MenuItem value={2 as any}>Ocupado</MenuItem>
                 </Select>
               </FormControl>
+              <ValueMask label="data_nascimento" />
+              
               <PrimaryButton text={"Confirmar"} />
             </Form>
           </Box>
@@ -328,6 +336,7 @@ import {
                   <MenuItem value={1 as any}>Disponível</MenuItem>
                   <MenuItem value={2 as any}>Ocupado</MenuItem>
                 </Select>
+
               </FormControl>
               <PrimaryButton text={"Editar"} />
             </Form>

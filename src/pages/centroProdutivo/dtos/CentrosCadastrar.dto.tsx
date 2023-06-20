@@ -1,5 +1,6 @@
 export interface CentrosCadastrarDTO {
-    dataAlocacao: string;
+    data_agendada: string;
     descricao: string;
     status: boolean;
+    turno : number;
   }

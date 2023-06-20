@@ -1,30 +1,30 @@
 import { CentrosCadastrarDTO } from "../pages/centroProdutivo/dtos/CentrosCadastrar.dto";
-import { apiClassroom } from "./api";
+import { apiProduction} from "./api";
 
 export const cadastrarCentro = async (payload: CentrosCadastrarDTO) => {
-  return await apiClassroom
-    .post("/Centro/", payload)
+  return await apiProduction
+    .post("/centro/", payload)
     .then((response) => response)
     .catch((error) => error);
 };
 
 export const listarCentro = async () => {
-  return await apiClassroom
-    .get("/Centro/")
+  return await apiProduction
+    .get("/centro/")
     .then((response) => response)
     .catch((error) => error);
 };
 
 export const editarCentro = async (CentroId: string, Centro: Object) => {
-  return await apiClassroom
-    .put("/Centro/" + CentroId, Centro)
+  return await apiProduction
+    .put("/centro/" + CentroId, Centro)
     .then((response) => response)
     .catch((error) => error);
 };
 
 export const excluirCentro = async (CentroId: string) => {
-  return await apiClassroom
-    .delete("/Centro/" + CentroId)
+  return await apiProduction
+    .delete("/centro/" + CentroId)
     .then((response) => response)
     .catch((error) => error);
 };

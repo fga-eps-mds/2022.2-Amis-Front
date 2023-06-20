@@ -36,7 +36,7 @@ export const PrivateRoute: React.FC<Props> = ({
     );
   }
 
-  return <RouteComponent/> ;
+  return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
 };
 
 export default function AppRoutes() {

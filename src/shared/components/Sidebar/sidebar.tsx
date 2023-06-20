@@ -12,6 +12,7 @@ import {
   BiBookmarkAltPlus,
   BiLogOut,
   BiUser,
+  BiBuilding,
 } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -172,6 +173,20 @@ export function Sidebar() {
       ),
       allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
+
+    {
+      id: 9,
+      name: "Centros Produtivos",
+      path: "/centroProdutivo",
+      icon: (
+        <BiBuilding
+          color={pathname === "/centroProdutivo" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
+    },
+
     {
       id: 7,
       name: "Sair",
