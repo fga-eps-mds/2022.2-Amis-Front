@@ -161,18 +161,6 @@ export function Sidebar() {
     //   ),
     // },
     {
-      id: 8,
-      name: "Cursos",
-      path: "/curso",
-      icon: (
-        <BiBookHeart
-          color={pathname === "/curso" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
-      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
-    },
-    {
       id: 7,
       name: "Cursos",
       path: "/curso",

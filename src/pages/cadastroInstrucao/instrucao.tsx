@@ -110,6 +110,7 @@ export function Instrucao() {
       descricao: data.instrucao,
       dataCadastro: currentDate.toString(),
     } as InstrucoesCadastrarDTO;
+    console.log(instrucao);
 
     const response = await cadastrarInstrucao(instrucao);
 

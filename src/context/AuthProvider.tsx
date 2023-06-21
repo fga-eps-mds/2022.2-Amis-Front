@@ -43,11 +43,10 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     const payload = {
       role: role2,
       token: response?.token,
-      role: rolee,
       email: response?.email,
     };
 
-    setRole(rolee);
+    setRole(role2);
     setUser(payload);
     setUserLocalStorage(payload);
     return response;
