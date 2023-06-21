@@ -108,7 +108,7 @@ export const desmatricularAluna = async (idTurma: number, idAluna: number) => {
 };
 
 export const listarAlunasNaTurma = async (idTurma: number) => {
-  //console.log("Id da turma q esta chamando:"+idTurma);
+  console.log("Id da turma q esta chamando:"+idTurma);
   return await apiClassroom
     .get("/register/" + idTurma)
     .then((response: any) => response);

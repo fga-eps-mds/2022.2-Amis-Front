@@ -169,6 +169,7 @@ export function Turmas(this: any) {
   const [dataTable, setDataTable] = useState(Array<Object>);
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
   const [vagas, setVagas] = useState<VagasListarDTO>();
+  const [vagasAtual, setVagasAtual] = useState<number>();
   const [matriculas, setMatriculas] = useState(Array);
   const [alunasSelecionadas, setAlunasSelecionadas] = useState<string[]>([]);
 
@@ -285,7 +286,8 @@ export function Turmas(this: any) {
   //console.log("A turma:"+turma.nome_turma);
     setTurma(turma);
     setcodigoTurma(turma.codigo);
-    await consultaAlunasNaTurma(turma.codigo);
+    await consultaAlunasNaTurma(turma.codigo,"false");
+
     await listarVagas(turma.codigo);
   };
 
@@ -448,41 +450,57 @@ export function Turmas(this: any) {
     { field: "data_nascimento", headerName: "Data de Nascimento", flex: 2 },
   ];
 
-  const consultaAlunasNaTurma = async (codigoTurma: number) => {
+  const consultaAlunasNaTurma = async (codigoTurma: number,status:string): Promise<number> => {
     const response = await listarAlunasNaTurma(codigoTurma);
-    console.log("O status:"+response.status);
-    if (response.status === 200) {
-      console.log("Foi aqui")
-      const temp: any[] = [];
-      if (response.data && Array.isArray(response.data)) {
-        for (let index = 0; index < response.data.length; index++) {
-          const value = response.data[index];
-          const response2 = await listaAlunaAtual(value.idAluna);
-          //console.log(response2.data.nome);
-          const nomeDaAluna=response2.data.nome;
-          const cpfDaAluna=response2.data.cpf;
-          const [year, month, day] = response2.data.data_nascimento.split("-");
-          const dataFormatada = `${day}/${month}/${year}`;
-          temp.push({
-            id: index, // Adiciona um id único com base no índice
-            idAluna: value.idAluna,
-            nome: nomeDaAluna,
-            cpf:cpfDaAluna,
-            data_nascimento:dataFormatada,
-          });
+    //console.log("Fui chamado:"+response.status);
+    if (status=="false"){
+      if (response.status === 200) {
+        //console.log("Foi aqui")
+        const temp: any[] = [];
+        if (response.data && Array.isArray(response.data)) {
+          for (let index = 0; index < response.data.length; index++) {
+            const value = response.data[index];
+            const response2 = await listaAlunaAtual(value.idAluna);
+            console.log(response2.data.nome);
+            const nomeDaAluna=response2.data.nome;
+            const cpfDaAluna=response2.data.cpf;
+            //const [year, month, day] = response2.data.data_nascimento.split("-");
+            //const dataFormatada = `${day}/${month}/${year}`;
+            temp.push({
+              id: index, // Adiciona um id único com base no índice
+              idAluna: value.idAluna,
+              nome: nomeDaAluna,
+              cpf:cpfDaAluna,
+              data_nascimento:value.data_nascimento,
+            });
+          }
+          setAlunasTurma(temp);
+          console.log("Isso que busquei:" + temp[0].idAluna);
+          return 0;
+        } else {
+          console.log("nenhuma aluna");
+          setAlunasTurma(temp);
+          return 0;
         }
-        setAlunasTurma(temp);
-        //console.log("Isso que busquei:" + temp[2].idAluna);
-      } else {
-        setAlunasTurma(temp);
+      }
+      else {
+        console.log("Deu erro");
+        toast.error(
+          "A turma não tem alunas matriculas!"
+        );
+        setAlunasTurma([]);
+        return 0;
       }
     }
-    else {
-      console.log("Deu erro");
-      toast.error(
-        "A turma não tem alunas matriculas!"
-      );
-      setAlunasTurma([]);
+    else{
+      //console.log("codigo da turma no consultarAlunasTurma: "+codigoTurma);
+
+      const response2 = await listarAlunasNaTurma(codigoTurma);
+
+      setVagasAtual(response2.data.length);
+      //console.log("Vagas atual:"+response2.data.length);
+      return response2.data.length;
+      //console.log("Entrou vagas atual");
     }
   };
 
@@ -524,10 +542,11 @@ export function Turmas(this: any) {
   };
 
   const listarVagas = async (codigoTurmaVagas: number) => {
-
     const response = await listarTurma(codigoTurmaVagas);
+    const response2 = await consultaAlunasNaTurma(codigoTurmaVagas,"true");
+    //console.log("codigo da turma no listarvagas"+codigoTurmaVagas);
     if (response.status === 200) {
-      response.data.vagasDisponiveis = response.data.capacidade_turma;
+      response.data.vagasDisponiveis = response.data.capacidade_turma-response2;
       setVagas(response.data as VagasListarDTO);
     }
   };
