@@ -17,7 +17,7 @@ import {
   } from "@mui/material";
   import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
   import { useState, useContext } from "react";
-  import { useForm } from "react-hook-form";
+  import { FormProvider, useForm } from "react-hook-form";
   import { AiFillEdit } from "react-icons/ai";
   import {
     BsFillTrashFill
@@ -91,7 +91,7 @@ import {
     boxShadow: 24,
     p: 4,
     padding: "50px",
-    height: "50%",
+    height: "75%",
     overflow: "hidden",
     overflowY: "scroll",
   };
@@ -102,6 +102,7 @@ import {
     const handleClose = () => setOpen(false);
     const handleOpenConfirmation = () => setOpenConfirmation(true);
     const handleCloseConfirmation = () => setOpenConfirmation(false);
+    const methods = useForm();
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const [selectedCentro, setSelectedCentro] = useState(null);
     const [Centro, setCentro] = useState(Object);
@@ -123,13 +124,15 @@ import {
         status: data.status,
         turno : data.turno
       } as CentrosCadastrarDTO;
-  
+      console.log(data);
       const response = await cadastrarCentro(centro);
   
       if (response.status === 201) {
         setOpen(false);
         queryClient.invalidateQueries("listar_centro");
         toast.success("Centro cadastrado com sucesso!");
+      } else {
+        toast.error("Campos inválidos");
       }
     };
   
@@ -271,38 +274,57 @@ import {
         </Content>
         <Modal open={open} onClose={handleClose}>
           <Box sx={style}>
-            <FormText>Preencha corretamente os dados cadastrais.</FormText>
-            <Form onSubmit={handleSubmit(registerCentro)}>
-            <TextField
-                id="outlined-descricao"
-                label="Descrição"
-                required={true}
-                inputProps={{ maxLength: 500 }}
-                {...register("descricao")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label" required={true}>
-                  Status
-                </InputLabel>
-                <Select
-                  id="simple-select-label-status"
-                  labelId="simple-select-status"
-                  label="Status"
-                  {...register("status")}
+          <FormProvider {...methods}>
+              <FormText>Preencha corretamente os dados cadastrais.</FormText>
+              <Form onSubmit={handleSubmit(registerCentro)}>
+              <TextField
+                  id="outlined-descricao"
+                  label="Descrição"
+                  required={true}
+                  inputProps={{ maxLength: 500 }}
+                  {...register("descricao")}
                   sx={{ width: "100%", background: "#F5F4FF" }}
-                >
-                  <MenuItem value={1 as any}>Disponível</MenuItem>
-                  <MenuItem value={2 as any}>Ocupado</MenuItem>
-                </Select>
-              </FormControl>
-              <ValueMask label="data_nascimento" />
-              
-              <PrimaryButton text={"Confirmar"} />
-            </Form>
+                />
+                <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label" required={true}>
+                    Status
+                  </InputLabel>
+                  <Select
+                    id="simple-select-label-status"
+                    labelId="simple-select-status"
+                    label="Status"
+                    {...register("status")}
+                    sx={{ width: "100%", background: "#F5F4FF" }}
+                  >
+                    <MenuItem value={1 as any}>Disponível</MenuItem>
+                    <MenuItem value={2 as any}>Ocupado</MenuItem>
+                  </Select>
+                  </FormControl>
+
+                  <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label" required={true}>
+                    Turno
+                  </InputLabel>
+                  <Select
+                    id="simple-select-label-turno"
+                    labelId="simple-select-turno"
+                    label="Turno"
+                    {...register("turno")}
+                    sx={{ width: "100%", background: "#F5F4FF" }}
+                  >
+                    <MenuItem value={1 as any}>Matutino</MenuItem>
+                    <MenuItem value={2 as any}>Vespertino</MenuItem>
+                    <MenuItem value={3 as any}>Noturno</MenuItem>
+                    <MenuItem value={4 as any}>Diurno</MenuItem>
+                  </Select>
+                </FormControl>
+                <ValueMask label="data_agendada" />
+                <PrimaryButton text={"Confirmar"} />
+              </Form>
+            </FormProvider>
           </Box>
         </Modal>
-        <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+        {/* <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
           <Box sx={style}>
             <FormText>Altere os dados cadastrados</FormText>
             <Form onSubmit={handleSubmit(editCentro)}>
@@ -341,7 +363,7 @@ import {
               <PrimaryButton text={"Editar"} />
             </Form>
           </Box>
-        </Modal>
+        </Modal> */}
       </Container>
     );
   }
