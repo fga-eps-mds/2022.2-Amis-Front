@@ -41,6 +41,12 @@ import {
   import { AuthContext } from "../../context/AuthProvider";
   import ValueMask from "../../shared/components/Masks/ValueMask";
   
+  function transformDate(date: any) {
+    const parts = date.split('/');
+    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return transformedDate;
+  }
+  
   const Container = styled.div`
     width: 100%;
     height: 100vh;
@@ -114,12 +120,14 @@ import {
       handleSubmit,
       setValue,
       formState: { errors },
-    } = useForm();
+    } = methods;
     const { role } = useContext(AuthContext);
+
   
     const registerCentro = async (data: any) => {
+      const dataFormatada = transformDate(data.data_agendada);
       const centro = {
-        data_agendada: data.data_agendada,
+        data_agendada: dataFormatada,
         descricao: data.descricao,
         status: data.status,
         turno : data.turno
@@ -174,7 +182,7 @@ import {
       const centro = response as CentrosListarDTO;
       setCentro(centro);
       setValue("idEdit", centro.id);
-      setValue("dataAlocacaoEdit", centro.data_agendada);
+      setValue("data_agendadaEdit", centro.data_agendada);
       setValue("descricaoEdit", centro.descricao);
       setValue("statusEdit", centro.status);
       setValue("turnoEdit", centro.turno);
@@ -184,7 +192,7 @@ import {
     const editCentro = async (data: any) => {
   
       const centroEditado = {
-        id: data.idEdit,
+        id: Centro.id,
         data_agendada: data.data_agendadaEdit,
         descricao: data.descricaoEdit,
         status: data.statusEdit,
@@ -198,8 +206,7 @@ import {
           setOpenEdit(false);
           toast.success("Centro editado com sucesso!");
         } catch (error) {
-          // Handle the error
-          //console.error(error);
+          toast.error("Campos inválidos")
         }
       }
     };
@@ -318,14 +325,17 @@ import {
                     <MenuItem value={4 as any}>Diurno</MenuItem>
                   </Select>
                 </FormControl>
+
                 <ValueMask label="data_agendada" />
+                
                 <PrimaryButton text={"Confirmar"} />
               </Form>
             </FormProvider>
           </Box>
         </Modal>
-        {/* <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+        <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
           <Box sx={style}>
+          <FormProvider {...methods}>
             <FormText>Altere os dados cadastrados</FormText>
             <Form onSubmit={handleSubmit(editCentro)}>
             <TextField
@@ -352,7 +362,7 @@ import {
                   id="simple-select-label-status"
                   labelId="simple-select-status"
                   label="Status"
-                  {...register("status")}
+                  {...register("statusEdit")}
                   sx={{ width: "100%", background: "#F5F4FF" }}
                 >
                   <MenuItem value={1 as any}>Disponível</MenuItem>
@@ -360,10 +370,32 @@ import {
                 </Select>
 
               </FormControl>
+
+              <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label" required={true}>
+                    Turno
+                  </InputLabel>
+                  <Select
+                    id="simple-select-label-turno"
+                    labelId="simple-select-turno"
+                    label="Turno"
+                    {...register("turnoEdit")}
+                    sx={{ width: "100%", background: "#F5F4FF" }}
+                  >
+                    <MenuItem value={1 as any}>Matutino</MenuItem>
+                    <MenuItem value={2 as any}>Vespertino</MenuItem>
+                    <MenuItem value={3 as any}>Noturno</MenuItem>
+                    <MenuItem value={4 as any}>Diurno</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <ValueMask label="data_agendadaEdit" />
+
               <PrimaryButton text={"Editar"} />
             </Form>
+            </FormProvider>
           </Box>
-        </Modal> */}
+        </Modal>
       </Container>
     );
   }
