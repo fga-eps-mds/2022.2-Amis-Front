@@ -1,7 +1,6 @@
 import axios from "axios";
 import { getUserLocalStorage } from "./auth";
 
-
 const apiUser = axios.create({
   baseURL: import.meta.env.VITE_AMIS_API_BASE_URL_USER,
 });

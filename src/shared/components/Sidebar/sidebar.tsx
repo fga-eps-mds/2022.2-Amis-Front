@@ -25,9 +25,9 @@ import { getUserLocalStorage } from "../../../services/auth";
 
 const Container = styled.div`
   width: 200px;
-  height: 100%;
   border: none;
   background: white;
+  position: sticky;
 `;
 
 const SidebarItem = styled(({ active, ...props }) => <Link {...props} />)`
@@ -162,7 +162,7 @@ export function Sidebar() {
     //   ),
     // },
     {
-      id: 8,
+      id: 7,
       name: "Cursos",
       path: "/curso",
       icon: (
@@ -188,7 +188,19 @@ export function Sidebar() {
     },
 
     {
-      id: 7,
+      id: 8,
+      name: "Área Aluna",
+      path: "/instrucoes",
+      icon: (
+        <BiUser
+          color={pathname === "/instrucoes" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["teacher", "socialWorker", "student"],
+    },
+    {
+      id: 9,
       name: "Sair",
       path: `/login/${auth.role}/logout`,
       icon: (
