@@ -1,4 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import {
+fireEvent,
+render,
+screen
+} from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import {BrowserRouter as Router } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -16,28 +20,29 @@ const editaCursoSpy = jest.spyOn(cursosService, 'editarCurso');
 const excluiCursoSpy = jest.spyOn(cursosService, 'excluirCurso');
 
 jest.mock('react-toastify', () => ({
-  toast: {
+toast: {
     success: jest.fn(),
-  },
+},
 }));
 
-const renderComponent = async () => {
-  const queryClient = new QueryClient ();
-  render(
+
+const renderComponent = async()=> {
+const queryClient = new QueryClient ();
+render(
     // eslint-disable-next-line react/react-in-jsx-scope
     <QueryClientProvider client={queryClient}>
-      <Router>
+    <Router>
         <ThemeProvider theme={theme}>
-          <Curso />
+        <Curso />
         </ThemeProvider>
-      </Router>
+    </Router>
     </QueryClientProvider>
-  );
-  return queryClient;
+);
+return queryClient;
 }
 
 describe("Cursos", () => {
-  it("Teste de clique no botão Cadastrar",  () => {
+it("Teste de clique no botão Cadastrar",  () => {
     // eslint-disable-next-line react/react-in-jsx-scope
     renderComponent();
     // Encontre o botão "Cadastrar" pelo texto do botão
@@ -48,19 +53,19 @@ describe("Cursos", () => {
     // Você pode adicionar asserções adicionais aqui para verificar se o comportamento esperado ocorre após o clique no botão
     const modalTitle = screen.getByText('Preencha corretamente os dados cadastrais.');
     expect(modalTitle).toBeInTheDocument();
-  });
+});
 
-  test('exibe notificação de sucesso após o cadastro bem-sucedido', async () => {
+test('exibe notificação de sucesso após o cadastro bem-sucedido', async () => {
     const toastSuccessSpy = jest.spyOn(toast, 'success');
 
     cadastraCursoSpy.mockImplementation(CadastrarCursoMock);
-    // listarCursoSpy.mockImplementation(GetCursoMock);
+    //listarCursoSpy.mockImplementation(GetCursoMock);
 
     renderComponent();
-
+    
     const cadastrarButton = screen.getByText('Cadastrar');
     fireEvent.click(cadastrarButton);
-
+    
     // Simula o preenchimento dos campos de cadastro
     const nomeInput = screen.getByLabelText("Nome do Curso *"); // Supondo que você tenha um label associado ao campo CPF
     const inputDescricao = screen.getByLabelText("Descrição *");
@@ -76,21 +81,22 @@ describe("Cursos", () => {
     const response = { status: 201 };
 
     if (response.status === 201) {
-      toast.success("Curso cadastrado com sucesso!");
+    toast.success("Curso cadastrado com sucesso!");
     }
 
     // Verifique se o spy foi chamado corretamente
     expect(toastSuccessSpy).toHaveBeenCalledWith("Curso cadastrado com sucesso!");
-  );
-  });
-  it('deve editar uma curso ao submeter o formulário', async () => {
-    const curso = {
-      id: 2,
-      nome: "Bordado",
-      descricao: "Aprender a bordar",
-      duracaoHoras: 20
-    };
+});
 
+it('deve editar uma curso ao submeter o formulário', async () => {
+
+    const curso = {
+        id: 2,
+        nome: "Bordado",
+        descricao: "Aprender a bordar",
+        duracaoHoras: 20
+    };
+    
     listaCursosSpy.mockResolvedValueOnce({ data: [curso] });
 
     renderComponent();
@@ -99,35 +105,34 @@ describe("Cursos", () => {
 
     // Verifica se a mensagem de erro é exibida após a submissão 
     expect(screen.getByTestId("teste-editar")).toBeInTheDocument();
-
+    
     const editarButton = screen.getByTestId("teste-editar");
-
+    
     await act(async () => {
-      fireEvent.click(editarButton);
+        fireEvent.click(editarButton);
     });
-
+    
     const descricaoInput = screen.getByLabelText('Descrição *');
     await act(async () => {
-      fireEvent.change(descricaoInput, { target: { value: "Bordando" } });
+        fireEvent.change(descricaoInput, { target: { value: "Bordando" } });
     });
 
     editaCursoSpy.mockResolvedValueOnce(Promise.resolve({ status: 200 } as AxiosResponse));
-    );
 
     const submitButton = screen.getByText('Editar');
     await act(async () => {
-      fireEvent.click(submitButton);
+    fireEvent.click(submitButton);
     });
-  });
+});
 
-  it('deve excluir uma curso ao submeter o formulário', async () => {
+it('deve excluir uma curso ao submeter o formulário', async () => {
     const curso = {
-      id: 1,
-      nome: "Bolos",
-      descricao: "Curso de bolos",
-      duracaoHoras: 20
+        id: 1,
+        nome: "Bolos",
+        descricao: "Curso de bolos",
+        duracaoHoras: 20
     };
-
+    
     listaCursosSpy.mockResolvedValueOnce({ data: [curso] });
 
     renderComponent();
@@ -140,13 +145,14 @@ describe("Cursos", () => {
     const excluirButton = screen.getByTestId("teste-excluir");
 
     await act(async () => {
-      fireEvent.click(excluirButton);
+    fireEvent.click(excluirButton);
     });
-
+    
     excluiCursoSpy.mockResolvedValueOnce(Promise.resolve({ status: 204 } as AxiosResponse));
     const simButton = screen.getByText('Sim');
     await act(async () => {
-      fireEvent.click(simButton);
+    fireEvent.click(simButton);
     });
-  });
+});
+
 });

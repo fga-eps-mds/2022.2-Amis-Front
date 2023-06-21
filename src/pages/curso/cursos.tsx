@@ -15,7 +15,9 @@ import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
 import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillEdit } from "react-icons/ai";
-import { BsFillTrashFill } from "react-icons/bs";
+import {
+  BsFillTrashFill
+} from "react-icons/bs";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -130,7 +132,7 @@ export function Curso() {
 
     const temp: CursosListarDTO[] = [];
     response.data.forEach((value: CursosListarDTO, index: number) => {
-      // console.log(value.nome);
+      //console.log(value.nome);
       temp.push({
         id: value.id,
         nome: value.nome,
@@ -150,8 +152,8 @@ export function Curso() {
       toast.error("Erro ao excluir urso");
     }
 
-    handleCloseConfirmation();
-    await queryClient.invalidateQueries("listar_curso");
+      handleCloseConfirmation();
+      await queryClient.invalidateQueries("listar_curso");
   };
   const carregarCurso = async (id: any) => {
     const response = dataTable.find((element: any) => {
@@ -169,18 +171,16 @@ export function Curso() {
   };
 
   const editCurso = async (data: any) => {
+
     const cursoEditado = {
       id: data.idEdit,
       nome: data.nomeEdit,
       descricao: data.descricaoEdit,
       duracaoHoras: data.duracaoEdit,
     };
-    console.log(curso.id);
+    console.log(curso.id)
 
-    const response = await editarCurso(
-      cursoEditado.id.toString(),
-      cursoEditado
-    );
+    const response = await editarCurso(cursoEditado.id.toString(), cursoEditado);
     if (response.status === 201) {
       try {
         await queryClient.invalidateQueries("listar_curso");
@@ -188,7 +188,7 @@ export function Curso() {
         toast.success("Curso editado com sucesso!");
       } catch (error) {
         // Handle the error
-        // console.error(error);
+        //console.error(error);
       }
     }
   };
@@ -210,6 +210,7 @@ export function Curso() {
           <AiFillEdit size={20} />
           <Typography variant="body2"></Typography>
         </IconButton>,
+
         <IconButton
           data-testid="teste-excluir"
           onClick={() => {
@@ -293,7 +294,7 @@ export function Curso() {
         <Box sx={style}>
           <FormText>Altere os dados cadastrados</FormText>
           <Form onSubmit={handleSubmit(editCurso)}>
-            <TextField
+          <TextField
               id="outlined-codigo"
               label="Código"
               required={true}
