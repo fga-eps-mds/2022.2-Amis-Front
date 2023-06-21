@@ -43,6 +43,7 @@ export const listarTurmas = async () => {
 
 export const apagarTurmas = async (turmaId: string) => {
   return await apiClassroom
+
     .delete("/classRoom/" + turmaId)
     .then((response: any) => response);
 };
@@ -89,14 +90,12 @@ export const cadastrarAluna = async (payload: TurmasMatricularDTO) => {
 };
 
 export const desmatricularAluna = async (idTurma: number, idAluna: number) => {
-
   return await apiClassroom
     .delete("/matricula/" + idTurma + "/" + idAluna)
     .then((response: any) => response);
 };
 
 export const listarAlunasNaTurma = async (idTurma: number) => {
-
   return await apiClassroom
     .get("/matricula/" + idTurma)
     .then((response: any) => response);
