@@ -14,11 +14,13 @@ import {
   BiUser,
 } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
+import { FaChalkboardTeacher } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
 import { AuthContext, Roles } from "../../../context/AuthProvider";
 import { BsFillBookmarkStarFill } from "react-icons/bs";
+import { getUserLocalStorage } from "../../../services/auth";
 
 const Container = styled.div`
   width: 200px;
@@ -102,15 +104,27 @@ export function Sidebar() {
     },
     {
       id: 3,
-      name: "Turmas",
-      path: "/turmas",
+      name: "Assistentes",
+      path: "/assistentes",
       icon: (
-        <AiOutlineAudit
-          color={pathname === "/turmas" ? "#da4d3d" : "#525252"}
+        <BiUser
+          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
-      allowedRoles: ["teacher", "socialWorker", "student"],
+      allowedRoles: ["socialWorker"],
+    },
+    {
+      id: 6,
+      name: "Professores",
+      path: "/professores",
+      icon: (
+        <FaChalkboardTeacher
+          color={pathname === "/professores" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker"],
     },
     // {
     //   id: 4,
@@ -125,15 +139,15 @@ export function Sidebar() {
     // },
     {
       id: 5,
-      name: "Assistentes",
-      path: "/assistentes",
+      name: "Turmas",
+      path: "/turmas",
       icon: (
-        <BiUser
-          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
+        <AiOutlineAudit
+          color={pathname === "/turmas" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
-      allowedRoles: ["socialWorker"],
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
     //   id: 6,
@@ -146,6 +160,18 @@ export function Sidebar() {
     //     />
     //   ),
     // },
+    {
+      id: 8,
+      name: "Cursos",
+      path: "/curso",
+      icon: (
+        <BiBookHeart
+          color={pathname === "/curso" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
+    },
     {
       id: 7,
       name: "Cursos",
@@ -173,7 +199,7 @@ export function Sidebar() {
     {
       id: 9,
       name: "Sair",
-      path: "/login/logout",
+      path: `/login/${auth.role}/logout`,
       icon: (
         <BiLogOut
           color={pathname === "/login/logout" ? "#da4d3d" : "#525252"}
@@ -182,7 +208,7 @@ export function Sidebar() {
       ),
       handleClick: () => {
         auth.logout();
-        navigate("/login/logout");
+        navigate(`/login/${auth.role}/logout`);
       },
       allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },

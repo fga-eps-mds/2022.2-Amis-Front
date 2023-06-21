@@ -12,6 +12,7 @@ import { Login } from "./pages/login/login";
 import { Receitas } from "./pages/receitas/receitas";
 import { Assistentes } from "./pages/assistentes/assistentes";
 import { Turmas } from "./pages/turmas/turmas";
+import { Professores } from "./pages/professores/professores";
 import { AuthContext } from "./context/AuthProvider";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
@@ -49,10 +50,8 @@ export default function AppRoutes() {
           path="/instrucoes"
           element={<PrivateRoute component={Instrucao} />}
         />
-        <Route
-          path="/assistentes"
-          element={<PrivateRoute component={Assistentes} />}
-        />
+        <Route path="/assistentes" element={<PrivateRoute component={Assistentes} />}/>
+        <Route path="/professores" element={<PrivateRoute component={Professores} />} />
         <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
         <Route path="/curso" element={<PrivateRoute component={Curso} />} />
         <Route path="/login" element={<Login />} />

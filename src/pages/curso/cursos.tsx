@@ -12,7 +12,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
@@ -32,6 +32,7 @@ import Sidebar from "../../shared/components/Sidebar/sidebar";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import { CursosCadastrarDTO } from "./dtos/CursosCadastrar.dto";
 import { CursosListarDTO } from "./dtos/CursosListar.dto";
+import { AuthContext } from "../../context/AuthProvider";
 
 const Container = styled.div`
   width: 100%;
@@ -106,6 +107,7 @@ export function Curso() {
     setValue,
     formState: { errors },
   } = useForm();
+  const { role } = useContext(AuthContext);
 
   const registerCurso = async (data: any) => {
     const curso = {
@@ -233,8 +235,11 @@ export function Curso() {
       <Content>
         <Navbarlog text={"Cursos"} />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-          <PrimaryButton text={"Exportar"} handleClick={handleClose} />
+        {role !== "student" ? (
+            <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+        ) : (
+            <></>
+        )}
         </DivButtons>
         <DataTable data={dataTable} columns={columnsTableCursos} />
         <Dialog

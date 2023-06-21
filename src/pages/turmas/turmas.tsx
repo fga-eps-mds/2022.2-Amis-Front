@@ -7,12 +7,14 @@ import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import DataTable from "../../shared/components/TablePagination/tablePagination";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import {
+  Autocomplete,
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogTitle,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Modal,
@@ -25,10 +27,12 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useQuery } from "react-query";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
+import { TurmasDTO } from "./dtos/Turmas.dto";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
 import { VagasListarDTO } from "./dtos/VagasListar.dto";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
@@ -37,10 +41,9 @@ import {
   BsFillPersonPlusFill,
   BsFillPersonDashFill,
 } from "react-icons/bs";
-import { FaList } from "react-icons/fa";
-import { AiFillEdit } from "react-icons/ai";
 import { TurmasMatricularDTO } from "./dtos/TurmasMatricular.dto";
 import { toast } from "react-toastify";
+import ValueMask from "../../shared/components/Masks/ValueMask";
 import { queryClient } from "../../services/queryClient";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
 import {
@@ -55,7 +58,11 @@ import {
   listarVagasTurma,
   confereTurmaMatricula,
 } from "../../services/turmas";
+import { parse, compareAsc } from 'date-fns';
+import { AiFillEdit } from "react-icons/ai";
+import { excluirAssistente } from "../../services/assistentes";
 import { AuthContext } from "../../context/AuthProvider";
+
 
 const Container = styled.div`
   width: 100%;
@@ -112,8 +119,38 @@ const style = {
   overflowY: "scroll",
 };
 
+function compareDates(date1: string, date2: string): number {
+  const parsedDate1 = parse(date1, 'dd/MM/yy', new Date());
+  const parsedDate2 = parse(date2, 'dd/MM/yy', new Date());
+
+  return compareAsc(parsedDate1, parsedDate2);
+}
+
+function validateHorarios(inicio_aula: string, fim_aula: string): boolean {
+  const [inicioHora, inicioMinuto] = inicio_aula.split(":").map(Number);
+  const [fimHora, fimMinuto] = fim_aula.split(":").map(Number);
+
+  if (
+    inicioHora >= 0 &&
+    inicioHora <= 23 &&
+    inicioMinuto >= 0 &&
+    inicioMinuto <= 59 &&
+    fimHora >= 0 &&
+    fimHora <= 23 &&
+    fimMinuto >= 0 &&
+    fimMinuto <= 59 &&
+    (inicioHora < fimHora ||
+      (inicioHora === fimHora && inicioMinuto < fimMinuto))
+  ) {
+    return true; // inicio_aula é anterior a fim_aula e dentro do intervalo válido
+  }
+
+  return false; // inicio_aula não é anterior a fim_aula ou fora do intervalo válido
+}
+
 export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
+  const [turma, setTurma] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [idTurma, setIdTurma] = useState<GridRowId>(0);
   const [idAluna, setIdAluna] = useState<GridRowId>(0);
@@ -132,25 +169,67 @@ export function Turmas(this: any) {
   const [dataTableAlunas, setDataTableAlunas] = useState(Array<Object>);
   const [vagas, setVagas] = useState<VagasListarDTO>();
   const [matriculas, setMatriculas] = useState(Array);
+  const [codigo, setCodigo] = useState<GridRowId>(0);
+  const [selectedTurma, setSelectedTurma] = useState<GridRowId>(0);
+  
+  const methods = useForm({});
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
-  } = useForm({});
+  } = methods;
   const [alunasTurma, setAlunasTurma] = useState(Array<Object>);
   const { role } = useContext(AuthContext);
 
+  const selectedCursos = watch("fk_curso", ""); // Make sure "fk_curso" matches the correct input name
+  const selectedProfessor = watch("fk_professor", "");
+
+  function transformDate(date: any) {
+    const parts = date.split("/");
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    return transformedDate;
+  }
+
   const registerTurmas = async (data: any) => {
     const turma = {
+      codigo: data.codigo,
+      fk_curso: data.fk_curso,
+      fk_professor: data.fk_professor,
+      nome_turma: data.nome_turma,
+      capacidade_turma: data.capacidade_turma,
+      inicio_aula: data.inicio_aula,
+      fim_aula: data.fim_aula,
+      data_inicio: data.data_inicio,
+      data_fim: data.data_fim,
       descricao: data.descricao,
-      turno: data.turno,
-      capacidade: data.capacidade,
-      horarioInicio: data.horarioInicio,
-      horarioFim: data.horarioFim,
-      dataInicio: data.dataInicio,
-      dataFim: data.dataFim,
     } as TurmasCadastrarDTO;
+
+    // if (turma.nome_turma.length > 70) {
+    //   toast.error("Nome da turma inválido, use menos de 70 caracteres.");
+    //   return;
+    // }    
+
+
+    if (!validateHorarios(turma.inicio_aula, turma.fim_aula)) {
+      // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
+      toast.error(
+        "O horário de início deve ser anterior ao horário de término e deve estar entre 00:00h e 23:59h"
+      );
+      return;
+    }
+
+    if (turma.capacidade_turma <= 0) {
+      toast.error("A capacidade_turma deve ser um número maior que 0.");
+      return;
+    }
+
+    turma.data_inicio = transformDate(turma.data_inicio);
+    turma.data_fim = transformDate(turma.data_fim);
+
+    console.log(turma)
 
     const response = await cadastrarTurmas(turma);
     if (response.status === 201) {
@@ -161,96 +240,125 @@ export function Turmas(this: any) {
     }
   };
 
+
+  // faz uma requisição assincrona a função listar turmas
   useQuery("listar_turmas", async () => {
     const response = await listarTurmas();
     const temp: TurmasListarDTO[] = [];
-    response.data.forEach((value: TurmasListarDTO) => {
-      if (value.turno === "1") {
+    if (response.data && Array.isArray(response.data)) {
+        response.data.forEach((value: TurmasListarDTO, index: number) => {
+        const [y, m, d] = value.data_inicio.split("-");
+        const dataInicio = `${d}/${m}/${y}`;
+
+        const [year, month, day] = value.data_fim.split("-");
+        const dataFim = `${day}/${month}/${year}`;
+        
         temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
-          turno: "Matutino",
+          id:index,
+          nome_turma:value.nome_turma,
+          codigo: value.codigo,
+          capacidade_turma: value.capacidade_turma,
+          inicio_aula: value.inicio_aula,
+          fim_aula: value.fim_aula,
+          data_inicio: dataInicio,
+          data_fim: dataFim,
+          fk_curso: value.fk_curso,
+          fk_professor: value.fk_professor,
+          descricao: value.descricao
         });
-      }
-      if (value.turno === "2") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
-          turno: "Vespertino",
-        });
-      }
-      if (value.turno === "3") {
-        temp.push({
-          id: value.id,
-          descricao: value.descricao,
-          capacidade: value.capacidade,
-          horarioInicio: value.horarioInicio,
-          horarioFim: value.horarioFim,
-          dataInicio: value.dataInicio,
-          dataFim: value.dataFim,
-          turno: "Noturno",
-        });
-      }
-      // temp.push({
-      //   id: value.id,
-      //   descricao: value.descricao,
-      //   turno: value.turno,
-      //   capacidade: value.capacidade,
-      //   horarioInicio: value.horarioInicio,
-      //   horarioFim: value.horarioFim,
-      //   dataInicio: value.dataInicio,
-      //   dataFim: value.dataFim,
-      // });
     });
+    }
+    //console.log("O temp:"+temp[0].capacidade_turma);
+
     setDataTable(temp);
   });
 
   const deleteTurmas = async () => {
-    const checkVagas = await confereTurmaMatricula(id.toString());
-    if (!checkVagas) {
-      const response = await apagarTurmas(id.toString());
-      if (response.status === 204) {
-        toast.success("Turma excluída com sucesso!");
-      } else {
-        toast.error("Erro ao excluir a turma.");
-      }
+    console.log(selectedTurma.toString())
+    const response = await apagarTurmas(selectedTurma.toString());
+
+    if (response.status === 204) {
+      toast.success("Turma excluída com sucesso!");
     } else {
-      toast.error(
-        "Não foi possível excluir a turma, pois existem alunas cadastradas."
-      );
+      toast.error("Erro ao excluir a turma.");
     }
+    
     handleCloseConfirmation();
     queryClient.invalidateQueries("listar_turmas");
+  
   };
 
-  const editTurmas = async (data: any) => {
+  const carregarTurmas = async (id: any) => {
+    const response = dataTable.find((element: any) => {
+      if (element.id === id) {
+        return element;
+      }
+    });
+
+    const turma = response as TurmasListarDTO;
+
+    setTurma(turma);
+    setValue("nomeTurmaEdit", turma.nome_turma);
+    setValue("codigoTurmaEdit", turma.codigo);
+    setValue("capacidadeTurmaEdit",turma.capacidade_turma);
+    setValue("inicioAulaTurmaEdit", turma.inicio_aula);
+    setValue("fimAulaTurmaEdit", turma.fim_aula);
+    setValue("dataInicioTurmaEdit",turma.data_inicio);
+    setValue("dataFimTurmaEdit",turma.data_fim);
+    setValue("descricaoEdit",turma.descricao);
+
+    setOpenEdit(true);
+  };
+
+  const editTurmas = async (data: any) => {    
+
+    if (compareDates(data.inicioAulaTurmaEdit, turma.fimAulaTurmaEdit) > 0 ) {
+      // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
+      toast.error("A data de início deve ser anterior à data de fim.");
+      return;
+    }
+    
+
+    if (!validateHorarios(data.inicioAulaTurmaEdit, data.fimAulaTurmaEdit)) {
+      // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
+      toast.error(
+        "O horário de início deve ser anterior ao horário de término e deve estar entre 00:00h e 23:59h"
+      );
+      return;
+    }
+
+    if (data.capacidadeTurmaEdit <= 0) {
+      toast.error("A capacidade_turma deve ser um número maior que 0.");
+      return;
+    }
+
+    data.dataInicioTurmaEdit = transformDate(data.dataInicioTurmaEdit);
+    data.dataFimTurmaEdit = transformDate(data.dataFimTurmaEdit);
+
+
     const turmaEdit = {
-      descricao: data.descricao,
-      turno: data.turno,
-      capacidade: data.capacidade,
-      horarioInicio: data.horarioInicio,
-      horarioFim: data.horarioFim,
-      dataInicio: data.dataInicio,
-      dataFim: data.dataFim,
+      codigo: data.codigoTurmaEdit,
+      fk_curso: turma.fk_curso,
+      fk_professor: turma.fk_professor,
+      nome_turma: data.nomeTurmaEdit,
+      capacidade_turma: data.capacidadeTurmaEdit,
+      inicio_aula: data.inicioAulaTurmaEdit,
+      fim_aula: data.fimAulaTurmaEdit,
+      data_inicio: data.dataInicioTurmaEdit,
+      data_fim: data.dataFimTurmaEdit,
+      descricao: data.descricaoEdit
     } as TurmasCadastrarDTO;
 
+
     const response = await editarTurmas(id.toString(), turmaEdit);
-    if (response.status === 200 || response.status === 204) {
+    if (response.status === 200 || response.status === 201) {
       toast.success("Turma atualizada com sucesso!");
     } else {
       toast.error("Erro na atualização da turma.");
     }
     setOpenEdit(false);
+
+    await queryClient.invalidateQueries("listar_turmas");
   };
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
@@ -281,7 +389,7 @@ export function Turmas(this: any) {
     }
     handleDesmatCloseConfirmation();
     useQuery("consultaAlunasNaTurma", async () => {
-      await consultaAlunasNaTurma(idTurma);
+      //await consultaAlunasNaTurma(idTurma);
     });
   };
 
@@ -325,21 +433,22 @@ export function Turmas(this: any) {
   };
 
   useQuery("listar_alunas", async () => {
-    const response = await listarAlunas();
+    /*const response = await listarAlunas();
     const temp: AlunasListarDTO[] = [];
     if (response.status === 200) {
-      response.data.forEach((value: AlunasListarDTO) => {
+      response.data.forEach((value: AlunasListarDTO, index: number) => {
         temp.push({
-          id: value.id,
+          id: index,
+          login: value.login,
           nome: value.nome,
           cpf: value.cpf,
-          dNascimento: value.dNascimento,
+          data_nascimento: value.data_nascimento,
         });
       });
       setDataTableAlunas(temp);
     } else {
       setDataTableAlunas(temp);
-    }
+    }*/
   });
 
   const listarIDTurma = async (idDaTurma: number) => {
@@ -358,65 +467,47 @@ export function Turmas(this: any) {
   };
 
   const columnsTable = [
-    { field: "descricao", headerName: "Turma", width: 250 },
-    { field: "turno", headerName: "Turno", width: 125 },
-    { field: "capacidade", headerName: "Número de vagas", width: 180 },
-    { field: "horarioInicio", headerName: "Horário de Início", width: 180 },
-    { field: "horarioFim", headerName: "Horário de Término", width: 180 },
-    { field: "dataInicio", headerName: "Data de Início", width: 165 },
-    { field: "dataFim", headerName: "Data de Término", width: 165 },
     {
       field: "actions",
       headerName: "Ações",
       type: "actions",
-      width: 150,
-      getActions: (params: { id: GridRowId }) => [
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          icon={<BsFillPersonPlusFill size={20} />}
-          label="MatricularAlunas"
+      flex: 1,
+      width: 50,
+      getActions: (params:any) => [
+        <IconButton
+          id="meu-grid-actions-cell-item"
+          data-testid="teste-editar"
           onClick={async () => {
-            await listarIDTurma(Number(params.id));
-            const idTurma = params.id;
-            await listarVagas(Number(idTurma));
-            await queryClient.invalidateQueries("listar_alunas");
-            setOpenMatricula(true);
+            carregarTurmas(params.id);
+            setCodigo(params.id);
           }}
-        />,
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          icon={<FaList size={20} />}
-          label="ListarAlunas"
-          onClick={async () => {
-            setAlunasTurma([]);
-            setOpenList(true);
-            await consultaAlunasNaTurma(Number(params.id));
-            await listarIDTurma(Number(params.id));
-            setId(params.id);
-            const idTurma = params.id;
-            await listarVagas(Number(idTurma));
-          }}
-        />,
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          icon={<AiFillEdit size={20} />}
-          label="Editar"
-          onClick={async () => {
-            setId(params.id);
-            setOpenEdit(true);
-          }}
-        />,
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
+        >
+          <AiFillEdit size={20} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+
+        <IconButton
+          data-testid="teste-excluir"
           onClick={() => {
             setId(params.id);
-            handleOpenConfirmation();
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            if (selectedRow) {
+              setSelectedTurma((selectedRow as any).codigo);
+              handleOpenConfirmation();
+            }
           }}
-        />,
+        >
+          <BsFillTrashFill size={18} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
       ],
     },
+    { field: "nome_turma", headerName: "Turma", width: 150 },
+    { field: "capacidade_turma", headerName: "Número de vagas", width: 135 },
+    { field: "inicio_aula", headerName: "Horário de Início", width: 120 },
+    { field: "fim_aula", headerName: "Horário de Término", width: 140 },
+    { field: "data_inicio", headerName: "Data de Início", width: 120 },
+    { field: "data_fim", headerName: "Data de Término", width: 120 },
   ];
 
   return (
@@ -473,136 +564,127 @@ export function Turmas(this: any) {
       </Content>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <FormText
-            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
-          >
-            Cadastrar uma nova turma
-          </FormText>
-          <Form onSubmit={handleSubmit(registerTurmas)}>
-            <TextField
-              id="outlined-descricao"
-              label="Turma"
-              required={true}
-              {...register("descricao")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Turno</InputLabel>
-              <Select
-                id="simple-select-label-turno"
-                labelId="simple-select-turno"
-                label="Informe o turno"
-                defaultValue=""
-                {...register("turno")}
+          <FormProvider {...methods}>
+            <FormText id="cabecalho">
+              Preencha corretamente os dados cadastrais.
+            </FormText>
+            <Form onSubmit={handleSubmit(registerTurmas)}>
+              <TextField
+                id="outlined-codigo"
+                required={true}
+                label="Código"
+                {...register("codigo")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={1 as any}>Matutino</MenuItem>
-                <MenuItem value={2 as any}>Vespertino</MenuItem>
-                <MenuItem value={3 as any}>Noturno</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              id="outlined-capacidade"
-              label="Número de vagas"
-              required={true}
-              {...register("capacidade")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dataInicio"
-              label="Data de Início"
-              required={true}
-              {...register("dataInicio")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-dataFim"
-              label="Data de Término"
-              required={true}
-              {...register("dataFim")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-horarioInicio"
-              label="Horário de Inicio"
-              required={true}
-              {...register("horarioInicio")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <TextField
-              id="outlined-horarioFim"
-              label="Horário de Término"
-              required={true}
-              {...register("horarioFim")}
-              sx={{ width: "100%", background: "#F5F4FF" }}
-            />
-            <PrimaryButton text={"Cadastrar"} />
-          </Form>
+              />
+              <TextField
+                id="outlined-curso"
+                required={true}
+                label="Curso"
+                {...register("fk_curso")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-turma"
+                label="Nome da Turma"
+                required={true}
+                {...register("nome_turma")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-capacidade_turma"
+                label="Número de vagas"
+                required={true}
+                inputProps={{ type: "number", maxLength: 3 }}
+                {...register("capacidade_turma")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+
+              <ValueMask label="data_inicio" />
+              <ValueMask label="data_fim" />
+              <ValueMask label="inicio_aula" />
+              <ValueMask label="fim_aula" />
+
+              <TextField
+                id="outlined-professor"
+                required={true}
+                label="Professor"
+                {...register("fk_professor")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-descricao"
+                label="Descrição"
+                {...register("descricao")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              
+            
+              <PrimaryButton text={"Cadastrar"} />
+            </Form>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
         <Box sx={style}>
-          <FormText
-            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
-          >
-            Editar dados cadastrais da turma
-          </FormText>
+        <FormText>Altere os dados da turma.</FormText>
+                  
+
           <Form onSubmit={handleSubmit(editTurmas)}>
             <TextField
-              id="outlined-descricao"
-              label="Turma"
+              id="outlined-turma"
+              label="Nome da Turma"
+              defaultValue={turma.nome_turma}
               required={true}
-              {...register("descricao")}
+              {...register("nomeTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+            {/* <TextField
+              id="outlined-descricao"
+              label="Descrição"
+              required={true}
+              {...register("descricaoTurmaEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            /> */}
             <TextField
-              id="outlined-capacidade"
+              id="outlined-capacidade_turma"
               label="Número de vagas"
               required={true}
-              {...register("capacidade")}
+              {...register("capacidadeTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Turno</InputLabel>
-              <Select
-                id="simple-select-label-turno"
-                labelId="simple-select-turno"
-                label="Informe o turno"
-                defaultValue=""
-                {...register("turno")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              >
-                <MenuItem value={1 as any}>Matutino</MenuItem>
-                <MenuItem value={2 as any}>Vespertino</MenuItem>
-                <MenuItem value={3 as any}>Noturno</MenuItem>
-              </Select>
-            </FormControl>
             <TextField
-              id="outlined-dataInicio"
+              id="outlined-data_inicio"
               label="Data de Início"
               required={true}
-              {...register("dataInicio")}
+              {...register("dataInicioTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-dataFim"
+              id="outlined-data_fim"
               label="Data de Término"
               required={true}
-              {...register("dataFim")}
+              {...register("dataFimTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-horarioInicio"
+              id="outlined-inicio_aula"
               label="Horário de Inicio"
               required={true}
-              {...register("horarioInicio")}
+              {...register("inicioAulaTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <TextField
-              id="outlined-horarioFim"
+              id="outlined-fim_aula"
               label="Horário de Término"
               required={true}
-              {...register("horarioFim")}
+              {...register("fimAulaTurmaEdit")}
+              sx={{ width: "100%", background: "#F5F4FF" }}
+            />
+            <TextField
+              id="outlined-descricao"
+              label="Descrição"
+              required={true}
+              {...register("descricaoEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
             <PrimaryButton text={"Editar"} />
@@ -611,60 +693,62 @@ export function Turmas(this: any) {
       </Modal>
       <Modal open={openList} onClose={() => setOpenList(false)}>
         <Box sx={style} style={{ width: 900 }}>
-          <FormText
-            style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
-          >
-            Alunas matriculadas na turma
-          </FormText>
-          <div
-            style={{
-              justifyContent: "center",
-              display: "flex",
-              marginBottom: 50,
-            }}
-          >
-            <TableContainer
-              component={Paper}
-              style={{ width: 280, justifyContent: "center" }}
+          <FormProvider {...methods}>
+            <FormText
+              style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
             >
-              <Table
-                sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
-                aria-label="simple table"
+              Alunas matriculadas na turma
+            </FormText>
+            <div
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                marginBottom: 50,
+              }}
+            >
+              <TableContainer
+                component={Paper}
+                style={{ width: 280, justifyContent: "center" }}
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Vagas Totais</TableCell>
-                    <TableCell align="right">Vagas Disponíveis</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <TableCell align="left" style={{ textAlign: "center" }}>
-                      {vagas?.vagasTotais}
-                    </TableCell>
-                    <TableCell align="right" style={{ textAlign: "center" }}>
-                      {vagas?.vagasDisponiveis}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-          {/* TABELA DE ALUNAS NA TURMA */}
-          <DataGrid
-            rows={alunasTurma}
-            columns={columnsTableAlunas}
-            pageSize={10}
-            rowsPerPageOptions={[10]}
-          />
-          <div
-            style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
-          >
-            <PrimaryButton
-              text={"Fechar"}
-              handleClick={() => setOpenList(false)}
-            />
-          </div>
+                <Table
+                  sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
+                  aria-label="simple table"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Vagas Totais</TableCell>
+                      <TableCell align="right">Vagas Disponíveis</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell align="left" style={{ textAlign: "center" }}>
+                        {vagas?.vagasTotais}
+                      </TableCell>
+                      <TableCell align="right" style={{ textAlign: "center" }}>
+                        {vagas?.vagasDisponiveis}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+            {/* TABELA DE ALUNAS NA TURMA */}
+            {/* <DataGrid
+              rows={alunasTurma}
+              columns={columnsTableAlunas}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+            /> */}
+            <div
+              style={{ justifyContent: "center", display: "flex", marginTop: 20 }}
+            >
+              <PrimaryButton
+                text={"Fechar"}
+                handleClick={() => setOpenList(false)}
+              />
+            </div>
+          </FormProvider>
         </Box>
       </Modal>
       <Modal open={openMatricula} onClose={() => setOpenMatricula(false)}>
@@ -708,7 +792,7 @@ export function Turmas(this: any) {
               </Table>
             </TableContainer>
           </div>
-          <DataGrid
+          {/* <DataGrid
             rows={dataTableAlunas}
             columns={columnsTableAlunasMatricular}
             pageSize={8}
@@ -726,7 +810,7 @@ export function Turmas(this: any) {
                 })
               );
             }}
-          />
+          /> */}
 
           <div
             style={{ justifyContent: "center", display: "flex", marginTop: 20 }}

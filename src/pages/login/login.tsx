@@ -84,12 +84,12 @@ export function Login() {
     console.log(data);
     setLoading(true);
     const { login, senha, loginType } = data;
-
+    console.log(data);
     try {
       const request = await auth.authenticate(login, senha, loginType);
       if (request.token) {
         setLoading(false);
-        navigate("/alunas");
+        navigate("/curso");
       } else {
         toast.error("Não foi possível entrar, verifique as credenciais!");
         setLoading(false);

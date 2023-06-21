@@ -135,7 +135,7 @@ describe("Testes do serviço de aluna", () => {
       descricao_endereco:'Descricao...',
     };
 
-    // Configurar o comportamento simulado da chamada POST com um status de erro 500
+
     mock.onPost("/student/", payload).reply(422, {
       error: "Erro ao cadastrar a aluna",
     });
