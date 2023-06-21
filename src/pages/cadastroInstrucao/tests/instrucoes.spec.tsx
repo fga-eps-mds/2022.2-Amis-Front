@@ -46,7 +46,7 @@ describe("Instrucao", () => {
 
     fireEvent.click(cadastrarButton);
     const modalTitle = screen.getByText(
-      "Preencha corretamente os dados cadastrais."
+      "Preencha corretamente os dados cadastrais da instrução"
     );
     expect(modalTitle).toBeInTheDocument();
   });
@@ -59,9 +59,9 @@ describe("Instrucao", () => {
     const cadastrarButton = screen.getByText("Cadastrar");
     fireEvent.click(cadastrarButton);
 
-    const tituloInput = screen.getByLabelText("nomeReceita*");
-    const inputCurso = screen.getByLabelText("curso*");
-    const inputInstrucao = screen.getByLabelText("instrucao*");
+    const tituloInput = screen.getByLabelText("Título *");
+    const inputCurso = screen.getByLabelText("Curso *");
+    const inputInstrucao = screen.getByLabelText("Instrução *");
 
     fireEvent.change(tituloInput, { target: { value: "BoloBolo" } });
     fireEvent.change(inputCurso, { target: { value: 20 } });
