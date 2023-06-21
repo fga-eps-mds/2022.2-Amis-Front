@@ -8,6 +8,8 @@ interface Props {
 
 interface Value {
   cpf: string;
+  data_agendada : string;
+  data_agendadaEdit: string;
   data_nascimento: string;
   telefone: string;
   cep: string;
@@ -24,6 +26,8 @@ interface Value {
 const ValueMask: React.FC<Props> = ({ label }) => {
   const value: Value = {
     cpf: "CPF",
+    data_agendada : "Data de Alocação",
+    data_agendadaEdit : "Data de Alocação",
     data_nascimento: "Data de Nascimento",
     telefone: "Telefone",
     cep: "CEP",
@@ -73,10 +77,12 @@ const ValueMask: React.FC<Props> = ({ label }) => {
 
     // eslint-disable-next-line no-constant-condition
     if (
+      label === "data_agendada" ||
       label === "data_nascimento" ||
       label === "data_inicio" ||
       label === "data_fim" ||
-      label === "data_nascimentoEdit"
+      label === "data_nascimentoEdit" ||
+      label === "data_agendadaEdit"
     ) {
       // Aplica a máscara de data de nascimento
       const dataNascimentoRegex = /^(\d{0,2})(\d{0,2})(\d{0,4})$/;
