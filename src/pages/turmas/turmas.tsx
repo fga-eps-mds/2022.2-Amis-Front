@@ -45,7 +45,7 @@ import { FaList } from "react-icons/fa";
 import ValueMask from "../../shared/components/Masks/ValueMask";
 import { queryClient } from "../../services/queryClient";
 import { AlunasListarDTO } from "../alunas/dtos/AlunasListar.dto";
-import {listaAlunaAtual} from "../../services/alunas"
+import { listaAlunaAtual } from "../../services/alunas";
 import {
   cadastrarTurmas,
   listarTurmas,
@@ -154,7 +154,8 @@ export function Turmas(this: any) {
   const [alunaSelecionada, setAlunaSelecionada] = useState(Object);
   const [id, setId] = useState<GridRowId>(0);
   const [codigoTurma, setcodigoTurma] = useState<GridRowId>(0);
-  const [idAluna, setIdAluna] = useState<GridRowId>(0);
+  const [codigoRegister, setCodigoRegister] = useState<GridRowId>(0);
+  const [idAluna, setIdAluna] = useState<string>("");
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openMatricula, setOpenMatricula] = useState(false);
@@ -232,7 +233,7 @@ export function Turmas(this: any) {
     turma.data_inicio = transformDate(turma.data_inicio);
     turma.data_fim = transformDate(turma.data_fim);
 
-    //console.log(turma);
+    // console.log(turma);
 
     const response = await cadastrarTurmas(turma);
     if (response.status === 201) {
@@ -276,17 +277,17 @@ export function Turmas(this: any) {
   });
 
   const carregarAddAlunaTurma = async (id: any) => {
-    //console.log("O id da turma:"+id);
+    // console.log("O id da turma:"+id);
     const response = dataTable.find((element: any) => {
       if (element.id === id) {
         return element;
       }
     });
     const turma = response as TurmasListarDTO;
-  //console.log("A turma:"+turma.nome_turma);
+    // console.log("A turma:"+turma.nome_turma);
     setTurma(turma);
     setcodigoTurma(turma.codigo);
-    await consultaAlunasNaTurma(turma.codigo,"false");
+    await consultaAlunasNaTurma(turma.codigo, "false");
 
     await listarVagas(turma.codigo);
   };
@@ -305,7 +306,7 @@ export function Turmas(this: any) {
   // };
 
   const deleteTurmas = async () => {
-    //console.log(selectedTurma.toString());
+    // console.log(selectedTurma.toString());
     const response = await apagarTurmas(selectedTurma.toString());
 
     if (response.status === 204) {
@@ -385,14 +386,14 @@ export function Turmas(this: any) {
     setOpenEdit(false);
 
     await queryClient.invalidateQueries("listar_turmas");
-    };
+  };
 
   const matriculaAluna = async (idDaTurma: number, idDaAluna: String) => {
     const turmaMatricula = {
       codigoTurma: idDaTurma,
       idAluna: String(idDaAluna),
     } as unknown as TurmasMatricularDTO;
-    //console.log(turmaMatricula);
+    // console.log(turmaMatricula);
 
     if (matriculas.length > vagas?.vagasDisponiveis!) {
       toast.error("Quantidade de vagas excedida.");
@@ -406,7 +407,7 @@ export function Turmas(this: any) {
     }
   };
 
-  const desmatAluna = async (codigoTurma: number, idAluna: number) => {
+  const desmatAluna = async (codigoTurma: number, idAluna: string) => {
     const response = await desmatricularAluna(codigoTurma, idAluna);
     if (response.status === 204) {
       toast.success("Aluna(s) removida(s) da turma com sucesso!");
@@ -435,8 +436,8 @@ export function Turmas(this: any) {
           icon={<BsFillPersonDashFill size={18} />}
           label="Desmatricular aluna da turma"
           onClick={async () => {
-            await listarIDAluna(Number(params.id));
-            setId(params.id);
+            await listarIDAluna(dataTableAlunas[params.id as number].login);
+            setId(dataTableAlunas[params.id as number].login);
             handleDesmatOpenConfirmation();
           }}
         />,
@@ -450,57 +451,56 @@ export function Turmas(this: any) {
     { field: "data_nascimento", headerName: "Data de Nascimento", flex: 2 },
   ];
 
-  const consultaAlunasNaTurma = async (codigoTurma: number,status:string): Promise<number> => {
+  const consultaAlunasNaTurma = async (
+    codigoTurma: number,
+    status: string
+  ): Promise<number> => {
     const response = await listarAlunasNaTurma(codigoTurma);
-    //console.log("Fui chamado:"+response.status);
-    if (status=="false"){
+    // console.log("Fui chamado:"+response.status);
+    if (status == "false") {
       if (response.status === 200) {
-        //console.log("Foi aqui")
+        // console.log("Foi aqui")
         const temp: any[] = [];
         if (response.data && Array.isArray(response.data)) {
           for (let index = 0; index < response.data.length; index++) {
             const value = response.data[index];
             const response2 = await listaAlunaAtual(value.idAluna);
-            console.log(response2.data.nome);
-            const nomeDaAluna=response2.data.nome;
-            const cpfDaAluna=response2.data.cpf;
-            //const [year, month, day] = response2.data.data_nascimento.split("-");
-            //const dataFormatada = `${day}/${month}/${year}`;
+            // console.log(response2.data.nome);
+            const nomeDaAluna = response2.data.nome;
+            const cpfDaAluna = response2.data.cpf;
+            // const [year, month, day] = response2.data.data_nascimento.split("-");
+            // const dataFormatada = `${day}/${month}/${year}`;
             temp.push({
               id: index, // Adiciona um id único com base no índice
               idAluna: value.idAluna,
               nome: nomeDaAluna,
-              cpf:cpfDaAluna,
-              data_nascimento:value.data_nascimento,
+              cpf: cpfDaAluna,
+              data_nascimento: value.data_nascimento,
             });
           }
           setAlunasTurma(temp);
-          console.log("Isso que busquei:" + temp[0].idAluna);
+          // console.log("Isso que busquei:" + temp[0].idAluna);
           return 0;
         } else {
-          console.log("nenhuma aluna");
+          // console.log("nenhuma aluna");
           setAlunasTurma(temp);
           return 0;
         }
-      }
-      else {
+      } else {
         console.log("Deu erro");
-        toast.error(
-          "A turma não tem alunas matriculas!"
-        );
+        toast.error("A turma não tem alunas matriculas!");
         setAlunasTurma([]);
         return 0;
       }
-    }
-    else{
-      //console.log("codigo da turma no consultarAlunasTurma: "+codigoTurma);
+    } else {
+      // console.log("codigo da turma no consultarAlunasTurma: "+codigoTurma);
 
       const response2 = await listarAlunasNaTurma(codigoTurma);
 
       setVagasAtual(response2.data.length);
-      //console.log("Vagas atual:"+response2.data.length);
+      // console.log("Vagas atual:"+response2.data.length);
       return response2.data.length;
-      //console.log("Entrou vagas atual");
+      // console.log("Entrou vagas atual");
     }
   };
 
@@ -529,7 +529,7 @@ export function Turmas(this: any) {
             senha: value.senha,
           });
         });
-        //console.log(temp);
+        // console.log(temp);
         setDataTableAlunas(temp);
       } else {
         setDataTableAlunas([]);
@@ -537,16 +537,17 @@ export function Turmas(this: any) {
     }
   });
 
-  const listarIDAluna = (idDaAluna: number) => {
+  const listarIDAluna = (idDaAluna: string) => {
     setIdAluna(idDaAluna);
   };
 
   const listarVagas = async (codigoTurmaVagas: number) => {
     const response = await listarTurma(codigoTurmaVagas);
-    const response2 = await consultaAlunasNaTurma(codigoTurmaVagas,"true");
-    //console.log("codigo da turma no listarvagas"+codigoTurmaVagas);
+    const response2 = await consultaAlunasNaTurma(codigoTurmaVagas, "true");
+    // console.log("codigo da turma no listarvagas"+codigoTurmaVagas);
     if (response.status === 200) {
-      response.data.vagasDisponiveis = response.data.capacidade_turma-response2;
+      response.data.vagasDisponiveis =
+        response.data.capacidade_turma - response2;
       setVagas(response.data as VagasListarDTO);
     }
   };
@@ -563,7 +564,7 @@ export function Turmas(this: any) {
           icon={<BsFillPersonPlusFill size={20} />}
           label="MatricularAlunas"
           onClick={async () => {
-            //await listarcodigoTurma(Number(params.id));
+            // await listarcodigoTurma(Number(params.id));
             carregarAddAlunaTurma(params.id);
             await queryClient.invalidateQueries("listar_alunas");
             setOpenMatricula(true);
@@ -576,10 +577,10 @@ export function Turmas(this: any) {
           onClick={async () => {
             setAlunasTurma([]);
             carregarAddAlunaTurma(params.id);
-            //await listarcodigoTurma(Number(params.id));
-            //setId(params.id);
-            //const codigoTurma = params.id;
-            //await listarVagas(Number(codigoTurma));
+            // await listarcodigoTurma(Number(params.id));
+            // setId(params.id);
+            // const codigoTurma = params.id;
+            // await listarVagas(Number(codigoTurma));
             setOpenList(true);
           }}
         />,
@@ -655,7 +656,7 @@ export function Turmas(this: any) {
             <Button onClick={handleDesmatCloseConfirmation}>Não</Button>
             <Button
               onClick={async () => {
-                await desmatAluna(Number(codigoTurma), Number(idAluna));
+                await desmatAluna(Number(codigoTurma), idAluna);
               }}
               autoFocus
             >
@@ -910,20 +911,19 @@ export function Turmas(this: any) {
               disableSelectionOnClick={true}
               checkboxSelection={true}
               onSelectionModelChange={(selectionModel) => {
-                
                 setAlunasSelecionadas(selectionModel as string[]);
 
                 const selectedRowData = selectionModel.map((id) => {
-                  //console.log("To procurando pelo id:"+id)
+                  // console.log("To procurando pelo id:"+id)
                   const response = dataTableAlunas.find((element: any) => {
                     if (element.id === id) {
                       return element;
                     }
                   });
-              
-                  const aluna = response as AlunasListarDTO;       
+
+                  const aluna = response as AlunasListarDTO;
                   const alunaLogin = aluna.login;
-                  //console.log("O login selecionado:"+aluna.login);
+                  // console.log("O login selecionado:"+aluna.login);
                   setAlunaSelecionada(aluna);
                   return alunaLogin;
                 });

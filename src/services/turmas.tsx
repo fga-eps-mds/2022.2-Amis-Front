@@ -101,9 +101,9 @@ export const cadastrarAluna = async (payload: TurmasMatricularDTO) => {
     .then((response: any) => response);
 };
 
-export const desmatricularAluna = async (idTurma: number, idAluna: number) => {
+export const desmatricularAluna = async (idTurma: number, idAluna: string) => {
   return await apiClassroom
-    .delete("/matricula/" + idTurma + "/" + idAluna)
+    .delete(`/register/78?codigoTurma=${idTurma}&idAluna=${idAluna}`)
     .then((response: any) => response);
 };
 
