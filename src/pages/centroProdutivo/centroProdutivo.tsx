@@ -26,6 +26,7 @@ import styled from "styled-components";
 import {
   cadastrarCentro,
   editarCentro,
+  inscreveAlunaCentro,
   excluirCentro,
   listarCentro,
 } from "../../services/centroProdutivo";
@@ -116,7 +117,7 @@ export function CentroProdutivo() {
   const [openEdit, setOpenEdit] = useState(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
   // const para alterar vagas disponiveis
-  const [vagas, setVagas] = useState<VagasCentroProdutivoDTO>();
+  const [inscrito, setInscrito] = useState(false);
   const [codigoCentro, setcodigoCentro] = useState<GridRowId>(0);
 
   const {
@@ -175,15 +176,23 @@ export function CentroProdutivo() {
     });
     setDataTable(temp);
   });
-/* 
-  const fazInscricao = () => {
+
+  const fazInscricao = async (centroProd: CentrosListarDTO) => {
     // Verifique se ainda há vagas disponíveis
-    if (vagasDisponiveis > 0) {
-      // Diminua o número de vagas disponíveis em 1
-      setVagasDisponiveis(vagasDisponiveis - 1);
+    if (centroProd.vagas > 0) {
+      const response = await inscreveAlunaCentro(
+        centroProd.id.toString(),
+        "mario"
+      );
+      if (response.status === 201) {
+        toast.success("Você foi cadastrada com sucesso!");
+        await queryClient.invalidateQueries("listar_centro");
+      } else {
+        toast.error("Erro ao cadastrar");
+      }
     }
   };
- */
+
   const deletarCentro = async () => {
     const response = await excluirCentro(id.toString());
 
@@ -274,16 +283,21 @@ export function CentroProdutivo() {
     { field: "status", headerName: "Status", flex: 2 },
     { field: "turno", headerName: "Turno", flex: 2 },
     { field: "vagas", headerName: "Vagas", flex: 2 },
-    { field: "inscricao",
+    {
+      field: "inscricao",
       headerName: "Inscrições",
       type: "actions",
       flex: 2,
       getActions: (params: { id: GridRowId }) => [
         <Button
-          // onClick={() => handleOpen()}
+          onClick={() => {
+            const centro = dataTable.find((v) => v.id === id);
+            fazInscricao(centro);
+          }}
+          // disabled={!vagasDisponiveis || vagasDisponiveis.vagas <= 0}
         >
           Inscrever-me
-        </Button>
+        </Button>,
       ],
     },
   ];
@@ -380,7 +394,6 @@ export function CentroProdutivo() {
               <ValueMask label="data_agendada" />
 
               <PrimaryButton text={"Confirmar"} />
-              
             </Form>
           </FormProvider>
         </Box>
