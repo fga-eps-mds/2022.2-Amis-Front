@@ -50,6 +50,19 @@ const Form = getFormStyles();
 const FormText = getFormTextStyles();
 const style = getInlineStyles();
 
+interface AxiosBadRequestError extends AxiosError {
+  response: AxiosError["response"] & {
+    data: {
+      detail: {
+        [key: string]: {
+          detail: string;
+          status: boolean;
+        };
+      };
+    };
+  };
+}
+
 export function Supervisor() {
   const methods = useForm<SupervisorDTO>();
   const { register, handleSubmit } = methods;
@@ -71,12 +84,10 @@ export function Supervisor() {
 
   function handleOpenRegister() {
     setIsRegisterModalOpen(true);
-    console.log("Register", isRegisterModalOpen);
   }
 
   function handleCloseRegisterModal() {
     setIsRegisterModalOpen(false);
-    console.log("Fechou Modal");
   }
 
   function handleCloseEditModal() {
@@ -174,8 +185,30 @@ export function Supervisor() {
       .reverse()
       .join("-");
 
-    await cadastrarSupervisor(payload);
-    toast.success("Supervisionador Cadastrado Com Sucesso");
+    const possibleErr = await cadastrarSupervisor(payload);
+    if (possibleErr instanceof AxiosError) {
+      if (possibleErr.status === 400) {
+        const error = possibleErr as AxiosBadRequestError;
+        const errors = error.response?.data.detail;
+        Object.values(errors).forEach((value) => {
+          if (!value.status) {
+            toast.error(value.detail, {
+              position: "bottom-right",
+            });
+          }
+        });
+      } else {
+        toast.error("Aconteceu um erro inesperado no servidor", {
+          position: "bottom-right",
+        });
+      }
+
+      return;
+    }
+
+    toast.success("Supervisor Cadastrado Com Sucesso");
+    await queryClient.invalidateQueries("listar_supervisor");
+    setIsRegisterModalOpen(false);
   }
 
   const columnsTable: TableProps["columns"] = [
@@ -209,10 +242,10 @@ export function Supervisor() {
         </IconButton>,
       ],
     },
-    { field: "login", headerName: "SUPERVISOR ID", flex: 1 },
-    { field: "nome", headerName: "NOME COMPLETO", flex: 1 },
-    { field: "cpf", headerName: "CPF", flex: 1 },
-    { field: "data_nascimento", headerName: "DATA NASCIMENTO", flex: 1 },
+    { field: "login", headerName: "Login", flex: 2 },
+    { field: "nome", headerName: "Nome", flex: 2 },
+    { field: "cpf", headerName: "CPF", flex: 2 },
+    { field: "data_nascimento", headerName: "Data Nascimento", flex: 2 },
   ];
 
   return (
@@ -300,7 +333,7 @@ export function Supervisor() {
               />
               <ValueMask label="data_nascimento" />
               <ValueMask label="telefone" />
-              <PrimaryButton text={"Confirmar"} />
+              <PrimaryButton data-testid="teste-cadastrar" text={"Confirmar"} />
             </Form>
           </FormProvider>
         </Box>

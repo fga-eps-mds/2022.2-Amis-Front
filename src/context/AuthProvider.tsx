@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { createContext, ReactNode, useState } from "react";
 import {
   getUserLocalStorage,
   LoginRequest,
@@ -11,31 +10,32 @@ interface Props {
   children?: ReactNode;
 }
 
+export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IUser {
   token?: string;
+  role?: Roles;
+  email?: string;
 }
 
-export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IAuthContext extends IUser {
   user: IUser | null;
-  authenticate: (
-    email: string,
-    senha: string,
-    role: Roles
-  ) => Promise<IUser>;
+  authenticate: (email: string, senha: string, role: Roles) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
-  role?: Roles;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 
 // eslint-disable-next-line react/prop-types
 const AuthProvider: React.FC<Props> = ({ children }) => {
-  const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<Roles | undefined>(undefined);
+
+  const [user, setUser] = useState<IUser | null>(() => {
+    const userLocalStorage = getUserLocalStorage();
+    setLoading(false);
+    return userLocalStorage || null;
+  });
 
   async function authenticate(email: string, senha: string, rolee: Roles) {
     const response = await LoginRequest(email, senha, rolee);
@@ -46,27 +46,10 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       email: response?.email,
     };
 
-    setRole(rolee);
     setUser(payload);
     setUserLocalStorage(payload);
-    return response;
+    return payload;
   }
-
-  useEffect(() => {
-    async function loadUser() {
-      const userLocalStorage = await getUserLocalStorage();
-      setRole(userLocalStorage.role)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      if (userLocalStorage) {
-        setUser(userLocalStorage);
-      }
-      setLoading(false);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadUser();
-  }, []);
 
   function logout() {
     setUser(null);
@@ -82,7 +65,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         authenticate,
         logout,
         loading,
-        role,
+        role: user?.role,
       }}
     >
       {children}

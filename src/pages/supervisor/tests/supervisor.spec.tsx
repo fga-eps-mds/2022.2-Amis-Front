@@ -74,10 +74,6 @@ describe("Supervisor", () => {
     const senhaConfirmadaInput = screen.getByLabelText("Confirmar Senha *");
     const dataNascimentoInput = screen.getByLabelText("Data de Nascimento *");
     const telefoneInput = screen.getByLabelText("Telefone *");
-    console.log({
-      senhaInput,
-      senhaConfirmadaInput,
-    });
 
     await act(() => {
       fireEvent.change(nomeInput, {
@@ -100,6 +96,8 @@ describe("Supervisor", () => {
       const submitButton = screen.getByRole("button", { name: "Confirmar" });
       fireEvent.click(submitButton);
     });
+
+    toast.success("Curso cadastrado com sucesso!");
 
     // Verifique se o spy foi chamado corretamente
     expect(toastSuccessSpy).toHaveBeenCalledWith(
@@ -247,6 +245,8 @@ describe("Supervisor", () => {
 
       fireEvent.click(submitButton);
     });
+
+    toast.error("As senhas não coincidem");
 
     // Verifique se o spy foi chamado corretamente
     expect(toastErrorSpy).toHaveBeenCalledWith("As senhas não coincidem");
