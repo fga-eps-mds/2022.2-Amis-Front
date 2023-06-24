@@ -34,6 +34,7 @@ import {
   import { queryClient } from "../../services/queryClient";
   import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
   import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+  import ButtonAgendar from "../../shared/components/ButtonAgendar/ButtonAgendar";
   import Sidebar from "../../shared/components/Sidebar/sidebar";
   import DataTable from "../../shared/components/TablePagination/tablePagination";
   import { CentrosCadastrarDTO } from "./dtos/CentrosCadastrar.dto";
@@ -68,8 +69,26 @@ import {
     gap: 20px;
     margin: 0 auto;
     padding-top: 30px;
+
   `;
+
+ /*  const ButtonAgendar = styled.button`
+    width: 200px;
+    height: 50px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: ${(props) => "white"};
+    background: ${(props) => "#da4d3d"};
+    font-weight: 500;
+    font-size: 14px;
+    &:hover {
+    background-color: #d2301e;
+  }
+  `; */
+    
   
+
   const Form = styled.form`
     width: 100%;
     display: flex;
@@ -256,11 +275,12 @@ import {
           <Navbarlog text={"Centros Produtivos"} />
           <DivButtons>
           {role !== "student" ? (
-              <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-          ) : (
+            <ButtonAgendar text = {"Agendar nova Produção"} handleClick={handleOpen}  />
+            ) : (
               <></>
-          )}
+              )}
           </DivButtons>
+
           <DataTable data={dataTable} columns={columnsTableCentros} />
           <Dialog
             open={openConfirmation}
