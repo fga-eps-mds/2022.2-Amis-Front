@@ -148,9 +148,19 @@ export function CentroProdutivo() {
   };
 
   useQuery("listar_centro", async () => {
-    const response = await listarCentro();
+    // const response = await listarCentro();
+    const response = { data: [] };
 
-    const temp: CentrosListarDTO[] = [];
+    const temp: CentrosListarDTO[] = [
+      {
+        id: 21,
+        data_agendada: "13/08/2004",
+        descricao: "mario me comeu no armario",
+        status: true,
+        turno: 1,
+        vagas: 12,
+      },
+    ];
     response.data.forEach((value: CentrosListarDTO, index: number) => {
       console.log(value);
       temp.push({
@@ -159,10 +169,19 @@ export function CentroProdutivo() {
         descricao: value.descricao,
         status: value.status,
         turno: value.turno,
+        vagas: value.vagas,
       });
     });
     setDataTable(temp);
   });
+
+  const fazInscricao = () => {
+    // Verifique se ainda há vagas disponíveis
+    if (vagasDisponiveis > 0) {
+      // Diminua o número de vagas disponíveis em 1
+      setVagasDisponiveis(vagasDisponiveis - 1);
+    }
+  };
 
   const deletarCentro = async () => {
     const response = await excluirCentro(id.toString());
@@ -199,6 +218,7 @@ export function CentroProdutivo() {
       descricao: data.descricaoEdit,
       status: data.statusEdit,
       turno: data.turnoEdit,
+      vagas: data.vagas.Edit,
     };
 
     const response = await editarCentro(
@@ -246,28 +266,22 @@ export function CentroProdutivo() {
         </IconButton>,
       ],
     },
-    { field: "id", headerName: "Código", flex: 2 },
+    { field: "id", headerName: "Centro Produtivo", flex: 2 },
     { field: "descricao", headerName: "Descrição", flex: 2 },
     { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
     { field: "status", headerName: "Status", flex: 2 },
     { field: "turno", headerName: "Turno", flex: 2 },
     { field: "vagas", headerName: "Vagas", flex: 2 },
-    {
-      field: "inscricao",
+    { field: "inscricao",
       headerName: "Inscrições",
       type: "actions",
-      flex: 1,
+      flex: 2,
       getActions: (params: { id: GridRowId }) => [
         <Button
-          id="meu-grid-actions-cell-item"
-          data-testid="teste-editar"
-          onClick={async () => {
-            carregarCentro(params.id);
-          }}
+          // onClick={() => handleOpen()}
         >
-          <AiFillEdit size={20} />
-          <Typography variant="body2"></Typography>
-        </Button>,
+          Inscrever-me
+        </Button>
       ],
     },
   ];

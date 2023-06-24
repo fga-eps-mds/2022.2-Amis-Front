@@ -3,5 +3,6 @@ export interface CentrosListarDTO {
     data_agendada: string;
     descricao: string;
     status: boolean;
+    vagas: number;
     turno : number;
   }
