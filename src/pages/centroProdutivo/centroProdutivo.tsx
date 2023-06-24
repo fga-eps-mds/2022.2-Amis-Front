@@ -134,6 +134,7 @@ export function CentroProdutivo() {
       descricao: data.descricao,
       status: data.status,
       turno: data.turno,
+      vagas: data.vagas,
     } as CentrosCadastrarDTO;
     console.log(data);
     const response = await cadastrarCentro(centro);
@@ -174,7 +175,7 @@ export function CentroProdutivo() {
     });
     setDataTable(temp);
   });
-
+/* 
   const fazInscricao = () => {
     // Verifique se ainda há vagas disponíveis
     if (vagasDisponiveis > 0) {
@@ -182,7 +183,7 @@ export function CentroProdutivo() {
       setVagasDisponiveis(vagasDisponiveis - 1);
     }
   };
-
+ */
   const deletarCentro = async () => {
     const response = await excluirCentro(id.toString());
 
@@ -208,6 +209,7 @@ export function CentroProdutivo() {
     setValue("descricaoEdit", centro.descricao);
     setValue("statusEdit", centro.status);
     setValue("turnoEdit", centro.turno);
+    setValue("vagasEdit", centro.vagas);
     setOpenEdit(true);
   };
 
@@ -333,6 +335,14 @@ export function CentroProdutivo() {
                 {...register("descricao")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
+              <TextField
+                id="outlined-vagas"
+                label="Vagas"
+                required={true}
+                inputProps={{ maxLength: 500 }}
+                {...register("vagas")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label" required={true}>
                   Status
@@ -370,6 +380,7 @@ export function CentroProdutivo() {
               <ValueMask label="data_agendada" />
 
               <PrimaryButton text={"Confirmar"} />
+              
             </Form>
           </FormProvider>
         </Box>
@@ -393,6 +404,14 @@ export function CentroProdutivo() {
                 required={true}
                 inputProps={{ maxLength: 170 }}
                 {...register("descricaoEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-vagas"
+                label="Vagas"
+                required={true}
+                inputProps={{ maxLength: 170 }}
+                {...register("vagasEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
               <FormControl fullWidth>
