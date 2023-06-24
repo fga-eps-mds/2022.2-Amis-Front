@@ -39,6 +39,7 @@ import { CentrosCadastrarDTO } from "./dtos/CentrosCadastrar.dto";
 import { CentrosListarDTO } from "./dtos/CentrosListar.dto";
 import { AuthContext } from "../../context/AuthProvider";
 import ValueMask from "../../shared/components/Masks/ValueMask";
+import { VagasCentroProdutivoDTO } from "./dtos/VagasCentroProdutivo";
 
 function transformDate(date: any) {
   const parts = date.split("/");
@@ -68,21 +69,6 @@ const DivButtons = styled.div`
   margin: 0 auto;
   padding-top: 30px;
 `;
-
-/*  const ButtonAgendar = styled.button`
-    width: 200px;
-    height: 50px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    color: ${(props) => "white"};
-    background: ${(props) => "#da4d3d"};
-    font-weight: 500;
-    font-size: 14px;
-    &:hover {
-    background-color: #d2301e;
-  }
-  `; */
 
 const Form = styled.form`
   width: 100%;
@@ -129,6 +115,10 @@ export function CentroProdutivo() {
   const [id, setId] = useState<GridRowId>(0);
   const [openEdit, setOpenEdit] = useState(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  // const para alterar vagas disponiveis
+  const [vagas, setVagas] = useState<VagasCentroProdutivoDTO>();
+  const [codigoCentro, setcodigoCentro] = useState<GridRowId>(0);
+
   const {
     register,
     handleSubmit,
@@ -261,6 +251,25 @@ export function CentroProdutivo() {
     { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
     { field: "status", headerName: "Status", flex: 2 },
     { field: "turno", headerName: "Turno", flex: 2 },
+    { field: "vagas", headerName: "Vagas", flex: 2 },
+    {
+      field: "inscricao",
+      headerName: "Inscrições",
+      type: "actions",
+      flex: 1,
+      getActions: (params: { id: GridRowId }) => [
+        <Button
+          id="meu-grid-actions-cell-item"
+          data-testid="teste-editar"
+          onClick={async () => {
+            carregarCentro(params.id);
+          }}
+        >
+          <AiFillEdit size={20} />
+          <Typography variant="body2"></Typography>
+        </Button>,
+      ],
+    },
   ];
 
   return (
@@ -279,7 +288,6 @@ export function CentroProdutivo() {
             <></>
           )}
         </DivButtons>
-
         <DataTable data={dataTable} columns={columnsTableCentros} />
         <Dialog
           open={openConfirmation}
