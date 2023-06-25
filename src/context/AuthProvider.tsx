@@ -18,11 +18,7 @@ interface IUser {
 export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IAuthContext extends IUser {
   user: IUser | null;
-  authenticate: (
-    email: string,
-    senha: string,
-    role: Roles
-  ) => Promise<IUser>;
+  authenticate: (email: string, senha: string, role: Roles) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
