@@ -62,6 +62,7 @@ export default function AppRoutes() {
           path="/supervisor"
           element={<PrivateRoute component={Supervisor} />}
         />
+        <Route
           path="/instrucoes"
           element={<PrivateRoute component={Instrucao} />}
         />

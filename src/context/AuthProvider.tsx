@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   getUserLocalStorage,
   LoginRequest,
@@ -10,32 +11,31 @@ interface Props {
   children?: ReactNode;
 }
 
-export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IUser {
   token?: string;
-  role?: Roles;
-  email?: string;
 }
 
+export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IAuthContext extends IUser {
   user: IUser | null;
-  authenticate: (email: string, senha: string, role: Roles) => Promise<IUser>;
+  authenticate: (
+    email: string,
+    senha: string,
+    role: Roles
+  ) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
+  role?: Roles;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 
 // eslint-disable-next-line react/prop-types
 const AuthProvider: React.FC<Props> = ({ children }) => {
+  const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const [user, setUser] = useState<IUser | null>(() => {
-    const userLocalStorage = getUserLocalStorage();
-    setLoading(false);
-    return userLocalStorage || null;
-  });
+  const [role, setRole] = useState<Roles | undefined>(undefined);
 
   async function authenticate(email: string, senha: string, role2: Roles) {
     const response = await LoginRequest(email, senha, role2);
@@ -49,9 +49,8 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     setRole(role2);
     setUser(payload);
     setUserLocalStorage(payload);
-    return payload;
+    return response;
   }
-
 
   useEffect(() => {
     async function loadUser() {
@@ -85,7 +84,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         authenticate,
         logout,
         loading,
-        role: user?.role,
+        role,
       }}
     >
       {children}
