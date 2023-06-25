@@ -588,6 +588,7 @@ export function Turmas(this: any) {
         <GridActionsCellItem
           icon={<AiFillEdit size={20} />}
           label="Editar"
+          data-testid="teste-editar"
           onClick={async () => {
             carregarTurmas(params.id);
             setId(params.id);
@@ -596,6 +597,7 @@ export function Turmas(this: any) {
         />,
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem
+          data-testid="teste-excluir"
           icon={<BsFillTrashFill size={18} />}
           label="Deletar"
           onClick={() => {
