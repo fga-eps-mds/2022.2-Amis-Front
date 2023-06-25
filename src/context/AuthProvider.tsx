@@ -37,19 +37,39 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     return userLocalStorage || null;
   });
 
-  async function authenticate(email: string, senha: string, rolee: Roles) {
-    const response = await LoginRequest(email, senha, rolee);
+  async function authenticate(email: string, senha: string, role2: Roles) {
+    const response = await LoginRequest(email, senha, role2);
 
     const payload = {
+      role: role2,
       token: response?.token,
-      role: rolee,
       email: response?.email,
     };
 
+    setRole(role2);
     setUser(payload);
     setUserLocalStorage(payload);
     return payload;
   }
+
+
+  useEffect(() => {
+    async function loadUser() {
+      const userLocalStorage = await getUserLocalStorage();
+
+      setRole(userLocalStorage.role);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      if (userLocalStorage) {
+        setUser(userLocalStorage);
+      }
+      setLoading(false);
+    }
+    
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadUser();
+  }, []);
 
   function logout() {
     setUser(null);

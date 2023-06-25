@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Alunas } from "./pages/alunas/alunas";
+import { Instrucao } from "./pages/cadastroInstrucao/instrucao";
 import { Home } from "./pages/home/home";
 import { Login } from "./pages/login/login";
 import { Receitas } from "./pages/receitas/receitas";
@@ -17,6 +18,7 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
 import { Curso } from "./pages/curso/cursos";
 import { Supervisor } from "./pages/supervisor/supervisor";
+import { CentroProdutivo } from "./pages/centroProdutivo/centroProdutivo";
 
 interface Props {
   component: React.ComponentType;
@@ -35,7 +37,7 @@ export const PrivateRoute: React.FC<Props> = ({
       </Backdrop>
     );
   }
-
+  
   return auth.isAuthenticated ? <RouteComponent /> : <Navigate to="/" />;
 };
 
@@ -60,6 +62,11 @@ export default function AppRoutes() {
           path="/supervisor"
           element={<PrivateRoute component={Supervisor} />}
         />
+          path="/instrucoes"
+          element={<PrivateRoute component={Instrucao} />}
+        />
+        <Route path="/curso" element={<PrivateRoute component={Curso} />} />
+        <Route path="/centroProdutivo" element={<PrivateRoute component={CentroProdutivo} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />

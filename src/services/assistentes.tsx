@@ -1,6 +1,6 @@
 import { AssistentesCadastrarDTO } from "../pages/assistentes/dtos/AssistentesCadastrar.dto";
-import {apiUser} from "./api";
-
+import { apiUser } from "./api";
+        
 export const cadastrarAssistente = async (payload: AssistentesCadastrarDTO) => {
 
   try {
@@ -32,7 +32,6 @@ export const editarAssistente = async (
 
 
 export const excluirAssistente = async (assistenteId: string) => {
-
   return await apiUser
     .delete("/socialWorker/" + assistenteId)
     .then((response) => response)

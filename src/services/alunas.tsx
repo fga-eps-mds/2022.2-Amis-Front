@@ -1,5 +1,5 @@
 import { AlunasCadastrarDTO } from "../pages/alunas/dtos/AlunasCadastrar.dto";
-import {apiUser} from "./api";
+import { apiUser } from "./api";
 
 export const cadastraAluna = async (payload: AlunasCadastrarDTO) => {
   try {
