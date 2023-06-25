@@ -5,8 +5,8 @@ import { AiFillEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
 import { excluirInstrucao } from "../../services/instrucoes";
 import { toast } from "react-toastify";
+import { listarCursoPorId } from '../../services/cursos';
 import { queryClient } from "../../services/queryClient";
-
 
 interface Styles {
     flexContainer: React.CSSProperties;
@@ -80,6 +80,7 @@ const styles: Styles = {
 
 export function Item(props: any) {
     const [expanded, setExpanded] = useState(false);
+    const [curso, setCurso] = useState(Object);
     const handleCloseConfirmation = () => setOpenConfirmation(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const handleOpenConfirmation = () => setOpenConfirmation(true);
@@ -106,12 +107,22 @@ export function Item(props: any) {
         await queryClient.invalidateQueries("listar_instrucoes");
       }
     };
+
+    // const getCurso = async (): Promise<void> =>  {
+    //   const response = await listarCursoPorId(props.subtitulo);
+    //   console.log(response)
+    //   setCurso(response.data);
+    // }
+
+    // getCurso()
+    // console.log(curso)
+
     return (
       <div style={styles.item}>
         <div onClick={handleClick}>
           <div style={{ fontWeight: 'bold', justifyContent: 'space-between', display: 'flex', paddingBottom: '20px' }}>
             <h3>{props.titulo}</h3>
-            <h3 style={{ color: 'red' }}>Curso {props.subtitulo}</h3>
+            <h3 style={{ color: 'red' }}>{props.subtitulo}</h3>
           </div>
           <p style={styles.p}>{props.descricao}</p>
         </div>
@@ -169,5 +180,5 @@ export function Item(props: any) {
         </div>
       )}
         </div>
-    );
-  };
+    );
+  };
