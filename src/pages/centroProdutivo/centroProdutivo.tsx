@@ -127,10 +127,13 @@ export function CentroProdutivo() {
   const handleCloseExportar = () => {
     console.log('Fechar tela de exportação')
   }
+  const [openAgendar, setOpenAgendar] = useState(false)
   const handleOpenAgendar = () => {
+    setOpenAgendar(true)
     console.log('Abrir tela de agendamento')
   }
   const handleCloseAgendar = () => {
+    setOpenAgendar(false)
     console.log('Fechar tela de agendamento')
   }
   const registerCentro = async (data: any) => {
@@ -408,6 +411,26 @@ export function CentroProdutivo() {
               <ValueMask label='data_agendadaEdit' />
 
               <PrimaryButton text={'Editar'} />
+            </Form>
+          </FormProvider>
+        </Box>
+      </Modal>
+      <Modal open={openAgendar} onClose={() => setOpenAgendar(false)}>
+        <Box sx={style}>
+          <FormProvider {...methods}>
+            <FormText>Preencha corretamente os dados cadastrais</FormText>
+            <Form onSubmit={handleSubmit(editCentro)}>
+              <TextField
+                id='outlined-descricao'
+                label='Descrição'
+                required={true}
+                inputProps={{ maxLength: 170 }}
+                {...register('descricaoEdit')}
+                sx={{ width: '100%', background: '#F5F4FF' }}
+              />
+              <ValueMask label='data_agendadaEdit' />
+
+              <PrimaryButton text={'Agendar'} />
             </Form>
           </FormProvider>
         </Box>
