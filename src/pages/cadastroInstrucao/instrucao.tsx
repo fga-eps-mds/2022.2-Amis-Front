@@ -223,7 +223,7 @@ export function Instrucao() {
             <Form onSubmit={handleSubmit(editInstrucoes)}>
               <TextField
                 id="outlined-nome"
-                label="Nome da Receita"
+                label="Título"
                 required={true}
                 {...register("nomeEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
