@@ -14,8 +14,9 @@ import {
   BiUser,
   BiBuilding,
 } from "react-icons/bi";
+import { MdSchool } from 'react-icons/md';
 import { FiSettings } from "react-icons/fi";
-import { FaChalkboardTeacher } from "react-icons/fa";
+import { FaChalkboardTeacher, FaUserShield, FaIndustry } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
@@ -96,24 +97,12 @@ export function Sidebar() {
       name: "Alunas",
       path: "/alunas",
       icon: (
-        <BiUser
+        <MdSchool
           color={pathname === "/alunas" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
       allowedRoles: ["teacher", "socialWorker"],
-    },
-    {
-      id: 3,
-      name: "Assistentes",
-      path: "/assistentes",
-      icon: (
-        <BiUser
-          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
-      allowedRoles: ["socialWorker"],
     },
     {
       id: 4,
@@ -122,6 +111,30 @@ export function Sidebar() {
       icon: (
         <FaChalkboardTeacher
           color={pathname === "/professores" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker"],
+    },
+    {
+      id: 9,
+      name: "Supervisores",
+      path: "/supervisor",
+      icon: (
+        <BiUser
+          color={pathname === "/supervisor" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker", "supervisor"],
+    },
+    {
+      id: 3,
+      name: "Assistentes",
+      path: "/assistentes",
+      icon: (
+        <FaUserShield
+          color={pathname === "/assistentes" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
@@ -175,41 +188,16 @@ export function Sidebar() {
     },
 
     {
-      id: 9,
-      name: "Supervisor",
-      path: "/supervisor",
-      icon: (
-        <BiBookHeart
-          color={pathname === "/supervisor" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
-      allowedRoles: ["socialWorker", "supervisor"],
-    },
-    {
       id: 10,
       name: "Centros Produtivos",
       path: "/centroProdutivo",
       icon: (
-        <BiBuilding
+        <FaIndustry
           color={pathname === "/centroProdutivo" ? "#da4d3d" : "#525252"}
           size={22}
         />
       ),
       allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
-    },
-
-    {
-      id: 8,
-      name: "Área Aluna",
-      path: "/instrucoes",
-      icon: (
-        <BiUser
-          color={pathname === "/instrucoes" ? "#da4d3d" : "#525252"}
-          size={22}
-        />
-      ),
-      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     {
       id: 9,
