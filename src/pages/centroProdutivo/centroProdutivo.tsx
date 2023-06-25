@@ -15,8 +15,10 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+//import { AuthContext, Roles } from "../../../context/AuthProvider";
+import { Roles } from "../../context/AuthProvider";
 import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { AiFillEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
@@ -40,8 +42,10 @@ import { CentrosCadastrarDTO } from "./dtos/CentrosCadastrar.dto";
 import { CentrosListarDTO } from "./dtos/CentrosListar.dto";
 import { AuthContext } from "../../context/AuthProvider";
 import ValueMask from "../../shared/components/Masks/ValueMask";
-import { VagasCentroProdutivoDTO } from "./dtos/VagasCentroProdutivo";
-
+//import { VagasCentroProdutivoDTO } from "./dtos/VagasCentroProdutivo";
+import { VagasListarCentroDTO } from "./dtos/VagasListarCentro.dto";
+// Estado inicial vazio
+  
 function transformDate(date: any) {
   const parts = date.split("/");
   const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -116,6 +120,7 @@ export function CentroProdutivo() {
   const [id, setId] = useState<GridRowId>(0);
   const [openEdit, setOpenEdit] = useState(false);
   const [dataTable, setDataTable] = useState(Array<Object>);
+  const [vaga, setVagas] = useState<VagasListarCentroDTO[]>([]);
   // const para alterar vagas disponiveis
   const [inscrito, setInscrito] = useState(false);
   const [codigoCentro, setcodigoCentro] = useState<GridRowId>(0);
@@ -135,7 +140,7 @@ export function CentroProdutivo() {
       descricao: data.descricao,
       status: data.status,
       turno: data.turno,
-      vagas: data.vagas,
+      vagasRestantes: data.vagasRestantes,
     } as CentrosCadastrarDTO;
     console.log(data);
     const response = await cadastrarCentro(centro);
@@ -150,19 +155,12 @@ export function CentroProdutivo() {
   };
 
   useQuery("listar_centro", async () => {
-    // const response = await listarCentro();
-    const response = { data: [] };
-
-    const temp: CentrosListarDTO[] = [
-      {
-        id: 21,
-        data_agendada: "13/08/2004",
-        descricao: "mario me comeu no armario",
-        status: true,
-        turno: 1,
-        vagas: 12,
-      },
-    ];
+    console.log("A role:"+role);
+    const response = await listarCentro();
+    
+    
+    
+    const temp: CentrosListarDTO[] = [];
     response.data.forEach((value: CentrosListarDTO, index: number) => {
       console.log(value);
       temp.push({
@@ -171,15 +169,33 @@ export function CentroProdutivo() {
         descricao: value.descricao,
         status: value.status,
         turno: value.turno,
-        vagas: value.vagas,
+        vagasRestantes: value.vagasRestantes,
       });
+      const vagasAtuais: VagasListarCentroDTO []= [
+        {
+          vagasTotais: value.vagasRestantes,
+          vagasDisponiveis: value.vagasRestantes,
+        },
+      ];
+      setVagas(vagasAtuais);
     });
+    //console.log(temp);
+    //console.log("As vagas = "+temp.vagasRestantes)
+    //console.log("Vagas "+vaga[1].vagasDisponiveis);
     setDataTable(temp);
   });
 
+  // const listarVagas = async (idCentroVagas: number) => {
+  //   //const response = await listarVagasTurma(idTurmaVagas);
+
+  //   if (response.status === 200) {
+  //     setVagas(response.data as VagasListarCentroDTO);
+  //   }
+  // };
+
   const fazInscricao = async (centroProd: CentrosListarDTO) => {
     // Verifique se ainda há vagas disponíveis
-    if (centroProd.vagas > 0) {
+    if (centroProd.vagasRestantes > 0) {
       const response = await inscreveAlunaCentro(
         centroProd.id.toString(),
         "mario"
@@ -205,6 +221,7 @@ export function CentroProdutivo() {
     handleCloseConfirmation();
     await queryClient.invalidateQueries("listar_centro");
   };
+
   const carregarCentro = async (id: any) => {
     const response = dataTable.find((element: any) => {
       if (element.id === id) {
@@ -212,14 +229,26 @@ export function CentroProdutivo() {
       }
     });
     const centro = response as CentrosListarDTO;
-    setCentro(centro);
+
+/* 
+    const vagasAtuais: VagasListarCentroDTO []= [
+       {
+         vagasTotais: centro.vagasRestantes,
+         vagasDisponiveis: centro.vagasRestantes,
+       },
+     ];
+    
+    setVagas(vagasAtuais);
+ */
     setValue("idEdit", centro.id);
     setValue("data_agendadaEdit", centro.data_agendada);
     setValue("descricaoEdit", centro.descricao);
     setValue("statusEdit", centro.status);
     setValue("turnoEdit", centro.turno);
-    setValue("vagasEdit", centro.vagas);
+    setValue("vagasEdit", centro.vagasRestantes);
+
     setOpenEdit(true);
+    setCentro(centro);
   };
 
   const editCentro = async (data: any) => {
@@ -229,7 +258,7 @@ export function CentroProdutivo() {
       descricao: data.descricaoEdit,
       status: data.statusEdit,
       turno: data.turnoEdit,
-      vagas: data.vagas.Edit,
+      vagasRestantes: data.vagasEdit,
     };
 
     const response = await editarCentro(
@@ -282,25 +311,51 @@ export function CentroProdutivo() {
     { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
     { field: "status", headerName: "Status", flex: 2 },
     { field: "turno", headerName: "Turno", flex: 2 },
-    { field: "vagas", headerName: "Vagas", flex: 2 },
-    {
+    { field: "vagasRestantes", headerName: "Vagas", flex: 2 },
+    role ==="student" &&{
       field: "inscricao",
       headerName: "Inscrições",
       type: "actions",
       flex: 2,
       getActions: (params: { id: GridRowId }) => [
-        <Button
-          onClick={() => {
-            const centro = dataTable.find((v) => v.id === id);
-            fazInscricao(centro);
-          }}
-          // disabled={!vagasDisponiveis || vagasDisponiveis.vagas <= 0}
-        >
-          Inscrever-me
-        </Button>,
+        //console.log("Vagas"+vaga[0]?.vagasDisponiveis);
+        <div>
+          {vaga[0]?.vagasDisponiveis && vaga[0].vagasDisponiveis >= 1 && role==="student" && (
+            <PrimaryButton
+              
+              text="Inscrever-me"
+              handleClick={() => {
+                const centro = dataTable.find((v) => v.id === id);
+                fazInscricao(centro);
+              }}
+              // disabled={!vagas[0]?.vagasDisponiveis || vagas[0].vagasDisponiveis <= 0}
+            />
+           )}
+        </div>
       ],
-    },
-  ];
+    }, 
+    role ==="supervisor" &&{
+      field: "Agendar",
+      headerName: "Agendar",
+      type: "actions",
+      flex: 2,
+      getActions: (params: { id: GridRowId }) => [
+        <div>
+          {vaga[0]?.vagasDisponiveis && vaga[0].vagasDisponiveis >= 1 && (
+            <PrimaryButton
+              
+              text="Agendar"
+              handleClick={() => {
+                const centro = dataTable.find((v) => v.id === id);
+                fazInscricao(centro);
+              }}
+              // disabled={!vagas[0]?.vagasDisponiveis || vagas[0].vagasDisponiveis <= 0}
+            />
+           )}
+        </div>
+      ],
+    }
+  ].filter(Boolean);
 
   return (
     <Container>
@@ -354,7 +409,7 @@ export function CentroProdutivo() {
                 label="Vagas"
                 required={true}
                 inputProps={{ maxLength: 500 }}
-                {...register("vagas")}
+                {...register("vagasRestantes")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
               <FormControl fullWidth>
@@ -434,6 +489,7 @@ export function CentroProdutivo() {
                 <Select
                   id="simple-select-label-status"
                   labelId="simple-select-status"
+                  defaultValue={Centro.status}
                   label="Status"
                   {...register("statusEdit")}
                   sx={{ width: "100%", background: "#F5F4FF" }}
@@ -451,6 +507,7 @@ export function CentroProdutivo() {
                   id="simple-select-label-turno"
                   labelId="simple-select-turno"
                   label="Turno"
+                  defaultValue={Centro.turno}
                   {...register("turnoEdit")}
                   sx={{ width: "100%", background: "#F5F4FF" }}
                 >
