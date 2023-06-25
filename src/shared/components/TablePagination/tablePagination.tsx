@@ -1,9 +1,10 @@
 import * as React from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridActionsColDef, GridColDef } from "@mui/x-data-grid";
 
-interface TableProps {
+export interface TableProps {
   data: Object[];
-  columns: GridColDef[];
+  columns: Array<GridColDef | GridActionsColDef>;
+  getRowId?: (row: any) => string;
 }
 
 export default function TablePagination(props: TableProps) {
@@ -19,6 +20,7 @@ export default function TablePagination(props: TableProps) {
       }}
     >
       <DataGrid
+        getRowId={props.getRowId}
         rows={props.data}
         columns={props.columns}
         disableSelectionOnClick={true}
