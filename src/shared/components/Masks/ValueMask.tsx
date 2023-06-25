@@ -4,10 +4,13 @@ import { useFormContext } from "react-hook-form";
 
 interface Props {
   label: keyof Value;
+  registeredName?: string;
 }
 
 interface Value {
   cpf: string;
+  data_agendada : string;
+  data_agendadaEdit: string;
   data_nascimento: string;
   telefone: string;
   cep: string;
@@ -21,9 +24,11 @@ interface Value {
   cepEdit: string;
 }
 
-const ValueMask: React.FC<Props> = ({ label }) => {
+const ValueMask: React.FC<Props> = ({ label, registeredName }) => {
   const value: Value = {
     cpf: "CPF",
+    data_agendada : "Data de Alocação",
+    data_agendadaEdit : "Data de Alocação",
     data_nascimento: "Data de Nascimento",
     telefone: "Telefone",
     cep: "CEP",
@@ -31,10 +36,10 @@ const ValueMask: React.FC<Props> = ({ label }) => {
     data_fim: "Data de Término",
     inicio_aula: "Horário de Início",
     fim_aula: "Horário de Término",
-    cpfEdit: 'CPF',
-    data_nascimentoEdit: 'Data de Nascimento',
-    telefoneEdit: 'Telefone',
-    cepEdit: 'CEP'
+    cpfEdit: "CPF",
+    data_nascimentoEdit: "Data de Nascimento",
+    telefoneEdit: "Telefone",
+    cepEdit: "CEP",
   };
   const { register, setValue } = useFormContext();
 
@@ -46,8 +51,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
     let formattedValue = "";
     const numericValue = value.replace(/\D/g, "");
 
-
-    if(label === 'cpf' || label === 'cpfEdit'){
+    if (label === "cpf" || label === "cpfEdit") {
       // Aplica a máscara de CPF
       const cpfRegex = /^(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})$/;
       const parts = numericValue.match(cpfRegex);
@@ -73,10 +77,12 @@ const ValueMask: React.FC<Props> = ({ label }) => {
 
     // eslint-disable-next-line no-constant-condition
     if (
+      label === "data_agendada" ||
       label === "data_nascimento" ||
       label === "data_inicio" ||
       label === "data_fim" ||
-      label === "data_nascimentoEdit"
+      label === "data_nascimentoEdit" ||
+      label === "data_agendadaEdit"
     ) {
       // Aplica a máscara de data de nascimento
       const dataNascimentoRegex = /^(\d{0,2})(\d{0,2})(\d{0,4})$/;
@@ -91,7 +97,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       return formattedValue;
     }
 
-    if(label === 'telefone' || label === 'telefoneEdit'){
+    if (label === "telefone" || label === "telefoneEdit") {
       // Aplica a máscara de telefone
       const telefoneRegex = /^(\d{0,2})(\d{0,5})(\d{0,4})$/;
       const parts = numericValue.match(telefoneRegex);
@@ -105,8 +111,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       return formattedValue;
     }
 
-
-    if (label === 'cep' || label === 'cepEdit') {
+    if (label === "cep" || label === "cepEdit") {
       const cepRegex = /^(\d{0,2})(\d{0,3})(\d{0,3})$/;
       const parts = numericValue.match(cepRegex);
 
@@ -134,7 +139,7 @@ const ValueMask: React.FC<Props> = ({ label }) => {
       id={`outlined-${label}`}
       label={value[label]}
       required={true}
-      {...register(label)} // Registra o campo com o rótulo correspondente no formulário
+      {...register(registeredName ?? label)} // Registra o campo com o rótulo correspondente no formulário
       inputProps={{ maxLength: 15 }}
       onChange={handleInputChange}
       sx={{ width: "100%", background: "#F5F4FF" }}

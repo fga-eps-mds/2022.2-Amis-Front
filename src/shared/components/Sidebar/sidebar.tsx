@@ -12,6 +12,7 @@ import {
   BiBookmarkAltPlus,
   BiLogOut,
   BiUser,
+  BiBuilding,
 } from "react-icons/bi";
 import { FiSettings } from "react-icons/fi";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -24,9 +25,9 @@ import { getUserLocalStorage } from "../../../services/auth";
 
 const Container = styled.div`
   width: 200px;
-  height: 100%;
   border: none;
   background: white;
+  position: sticky;
 `;
 
 const SidebarItem = styled(({ active, ...props }) => <Link {...props} />)`
@@ -115,7 +116,7 @@ export function Sidebar() {
       allowedRoles: ["socialWorker"],
     },
     {
-      id: 6,
+      id: 4,
       name: "Professores",
       path: "/professores",
       icon: (
@@ -127,7 +128,7 @@ export function Sidebar() {
       allowedRoles: ["socialWorker"],
     },
     // {
-    //   id: 4,
+    //   id: 5,
     //   name: "Relatórios",
     //   path: "/relatorios",
     //   icon: (
@@ -138,7 +139,7 @@ export function Sidebar() {
     //   ),
     // },
     {
-      id: 5,
+      id: 6,
       name: "Turmas",
       path: "/turmas",
       icon: (
@@ -150,7 +151,7 @@ export function Sidebar() {
       allowedRoles: ["teacher", "socialWorker", "student"],
     },
     // {
-    //   id: 6,
+    //   id: 7,
     //   name: "Configurações",
     //   path: "/configurações",
     //   icon: (
@@ -161,7 +162,7 @@ export function Sidebar() {
     //   ),
     // },
     {
-      id: 8,
+      id: 7,
       name: "Cursos",
       path: "/curso",
       icon: (
@@ -172,10 +173,48 @@ export function Sidebar() {
       ),
       allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
     },
+
     {
-      id: 7,
+      id: 9,
+      name: "Supervisor",
+      path: "/supervisor",
+      icon: (
+        <BiBookHeart
+          color={pathname === "/supervisor" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker", "supervisor"],
+    },
+    {
+      id: 10,
+      name: "Centros Produtivos",
+      path: "/centroProdutivo",
+      icon: (
+        <BiBuilding
+          color={pathname === "/centroProdutivo" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
+    },
+
+    {
+      id: 8,
+      name: "Área Aluna",
+      path: "/instrucoes",
+      icon: (
+        <BiUser
+          color={pathname === "/instrucoes" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["teacher", "socialWorker", "student"],
+    },
+    {
+      id: 9,
       name: "Sair",
-      path: `/login/${auth.role}/logout`,
+      path: `/login/${auth.role as string}/logout`,
       icon: (
         <BiLogOut
           color={pathname === "/login/logout" ? "#da4d3d" : "#525252"}

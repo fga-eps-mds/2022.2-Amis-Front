@@ -33,16 +33,16 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<Roles | undefined>(undefined);
 
-  async function authenticate(email: string, senha: string, rolee: Roles) {
-    const response = await LoginRequest(email, senha, rolee);
+  async function authenticate(email: string, senha: string, role2: Roles) {
+    const response = await LoginRequest(email, senha, role2);
 
     const payload = {
+      role: role2,
       token: response?.token,
-      role: rolee,
       email: response?.email,
     };
 
-    setRole(rolee);
+    setRole(role2);
     setUser(payload);
     setUserLocalStorage(payload);
     return response;
@@ -51,6 +51,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     async function loadUser() {
       const userLocalStorage = await getUserLocalStorage();
+
       setRole(userLocalStorage.role);
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -59,6 +60,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       }
       setLoading(false);
     }
+    
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadUser();

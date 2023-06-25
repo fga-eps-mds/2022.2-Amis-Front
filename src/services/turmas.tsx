@@ -53,6 +53,7 @@ export const listarTurma = async (turmaId: Number) => {
 
 export const apagarTurmas = async (turmaId: string) => {
   return await apiClassroom
+
     .delete("/classRoom/" + turmaId)
     .then((response: any) => response);
 };
@@ -108,7 +109,6 @@ export const desmatricularAluna = async (idTurma: number, idAluna: string) => {
 };
 
 export const listarAlunasNaTurma = async (idTurma: number) => {
-  console.log("Id da turma q esta chamando:"+idTurma);
   return await apiClassroom
     .get("/register/" + idTurma)
     .then((response: any) => response);
