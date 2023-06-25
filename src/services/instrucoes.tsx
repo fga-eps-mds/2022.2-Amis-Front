@@ -20,7 +20,7 @@ export const listarInstrucoes = async () => {
 
 export const listarInstrucoesPorCurso = async (idCurso: string) => {
   return await apiClassroom
-    .get("/instrucaoCapacitacao/" + idCurso)
+    .get("/instrucaoCapacitacao/curso/" + idCurso)
     .then((response) => response)
     .catch((error) => error);
 };

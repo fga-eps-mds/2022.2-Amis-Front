@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTransition, animated } from 'react-spring';
 import PrimaryButton from '../../shared/components/PrimaryButton/PrimaryButton';
 import { IconButton, Typography, Dialog, DialogActions, DialogTitle, Button } from "@mui/material";
 import { AiFillEdit } from "react-icons/ai";
@@ -56,7 +55,7 @@ const styles: Styles = {
   modalContent: {
     boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)',
     cursor: 'default',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: '10px',
     padding: '20px',
     maxWidth: '700px',
@@ -69,7 +68,7 @@ const styles: Styles = {
   button: {
     transform: 'scale(0.5)',
     marginTop: 'auto',
-    display: 'table-column', 
+    display: 'flex',
     justifyContent: 'flex-end',
   },
   p: {
@@ -85,17 +84,9 @@ export function Item(props: any) {
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const handleOpenConfirmation = () => setOpenConfirmation(true);
 
-  
     const handleClick = () => {
       setExpanded(!expanded);
     };
-
-    const modalTransition = useTransition(expanded, {
-      from: { opacity: 0 },
-      enter: { opacity: 1 },
-      leave: { opacity: 0 },
-      config: { duration: 300 },
-    });
     
     const handleClickModal = (id: any) => {
       props.openModal(id);
@@ -162,28 +153,21 @@ export function Item(props: any) {
             </Button>
           </DialogActions>
         </Dialog>
-        {modalTransition((style, item) =>
-          item && (
-            <animated.div style={{ ...styles.modal, ...style }} onClick={handleClick}>
-              <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                <div style={{justifyContent: 'space-between'}}>
-                  <div style={styles.button} onClick={(e) => e.stopPropagation()}>
-                      <PrimaryButton text={'X'} handleClick={handleClick} />
-                  </div>
-                  <div style={{ fontWeight: 'bold', justifyContent: 'space-between', display: 'flex', paddingBottom: '20px' }}>
-                    <h2>{props.titulo}</h2>
-                    <h2 style={{ color: 'red' }}>Curso {props.subtitulo}</h2>
-                  </div>
-                  <p>{props.descricao}</p>
-                </div>
-                <div style={{justifyContent: 'center'}}>
-                  <br/>
-                  <PrimaryButton text="Fechar" handleClick={handleClick} />
-                </div>
-              </div>
-            </animated.div>
-          )
-        )}
-      </div>
+        {expanded && ( 
+        <div style={styles.modal} onClick={handleClick}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontWeight: 'bold', justifyContent: 'space-between', display: 'flex', paddingBottom: '20px' }}>
+              <h2>{props.titulo}</h2>
+              <h2 style={{ color: 'red' }}>Curso {props.subtitulo}</h2>
+            </div>
+            <p>{props.descricao}</p>
+            <div style={{ justifyContent: 'center' }}>
+              <br />
+              <PrimaryButton text="Fechar" handleClick={handleClick} />
+            </div>
+          </div>
+        </div>
+      )}
+        </div>
     );
   };

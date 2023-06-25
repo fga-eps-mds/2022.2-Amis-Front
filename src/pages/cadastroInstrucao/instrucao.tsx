@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useForm } from 'react-hook-form';
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
+import { listarCurso } from "../../services/cursos";
+import { cadastrarInstrucao, editarInstrucao, listarInstrucoes, listarInstrucoesPorCurso } from "../../services/instrucoes";
+import { queryClient } from "../../services/queryClient";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
-import { useForm } from 'react-hook-form';
-import { useQuery } from "react-query";
 import { CursosListarDTO } from "../curso/dtos/CursosListar.dto";
 import { InstrucoesCadastrarDTO } from "./dtos/InstrucoesCadastrar.dto";
 import { InstrucoesListarDTO } from "./dtos/InstrucoesListar.dto";
-import { cadastrarInstrucao, listarInstrucoes, listarInstrucoesPorCurso, editarInstrucao } from "../../services/instrucoes";
-import { listarCurso } from "../../services/cursos";
-import { queryClient } from "../../services/queryClient";
-import { toast } from "react-toastify";
 
 import VisualizarInstrucao from "./visualizarInstrucao";
 
@@ -30,6 +30,7 @@ import {
 } from "@mui/material";
 
 import { FormProvider } from "react-hook-form";
+import CursoSelect from "./cursoSelect";
 
 const Container = getContainerStyles();
 const Content = getContentStyles();
@@ -52,13 +53,12 @@ export function Instrucao() {
   const [options, setOptions] = useState<CursosListarDTO[]>([]);
   const [selectedOption, setSelectedOption] = useState('');
 
-  useEffect(() => {
-    // Função para fazer a requisição GET à API
+  useQuery("listar_instrucoes", async () => {
     const fetchData = async () => {
       try {
         const response = await listarInstrucoes();
         const data = await response.data;
-        console.log(data)
+  
         setItems(data);
       } catch (error) {
         console.error('Erro ao buscar as Intruções:', error);
@@ -68,17 +68,15 @@ export function Instrucao() {
       try {
         const response = await listarCurso();
         const options = await response.data;
-        console.log(options)
         setOptions(options);
       } catch (error) {
-        console.error('Erro ao buscar os Cursos:', error);
+        console.error('Erro ao buscar as Intruções', error);
       }
     };
 
-    // Chama a função de requisição ao montar o componente
     fetchData();
     fetchOptions();
-  }, []);
+  });
 
   const methods = useForm();
 
@@ -89,18 +87,13 @@ export function Instrucao() {
     formState: { errors },
   } = methods;
 
-  // function transformDate(date: any) {
-  //   const parts = date.split('/');
-  //   const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  //   return transformedDate;
-  // }
-
   const cadastrarInstrucoes = async (data: any): Promise<void> => {
+    const currentDate = new Date().toISOString().split("T")[0];
     const instrucao = {
       nome: data.nome,
       idCurso: data.idCurso,
       descricao: data.descricao,
-      dataCadastro: data.dataCadastro,
+      dataCadastro: currentDate,
     } as InstrucoesCadastrarDTO;
 
     const response: any = await cadastrarInstrucao(instrucao);
@@ -150,9 +143,12 @@ export function Instrucao() {
   };
 
   const handleSelectChange = async (event: any) => {
-    setSelectedOption(event.target.value);
-    console.log(event.target.value)
-    const response = await listarInstrucoesPorCurso(event.target.value);
+    //setSelectedOption(event.target.value);
+    console.log(event)
+    if(event == null) 
+      await queryClient.invalidateQueries("listar_instrucoes");
+    else {
+      const response = await listarInstrucoesPorCurso(event);
       if (response.status === 200 || response.status === 204) {
         const data = await response.data;
         setItems(data);
@@ -160,6 +156,7 @@ export function Instrucao() {
       } else {
         toast.error("Erro no filtro das instruções.");
       }
+    }
   };
 
   return (
@@ -167,22 +164,19 @@ export function Instrucao() {
       <Sidebar />
       <Content>
         <Navbarlog text={"Instruções"} />
+        <CursoSelect 
+          cursos={options} 
+          onSelectCurso={handleSelectChange}
+        />
         <DivButtons>
-        <select value={selectedOption} onChange={handleSelectChange}>
-          <option value="">Selecione um curso</option>
-          {options.map((option: any) => (
-            <option value={option.id}>
-              {option.nome}
-            </option>
-          ))}
-        </select>
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
           {/* <PrimaryButton text={"Editar"} /> */}
         </DivButtons>
         
         <VisualizarInstrucao
           items={items}
-          openModal={carregarInstrucoes}/>
+          openModal={carregarInstrucoes}
+        />
 
       </Content>
       <Modal open={open} onClose={handleClose} aria-label="Modal de Cadastro">
@@ -194,7 +188,7 @@ export function Instrucao() {
             <Form onSubmit={handleSubmit(cadastrarInstrucoes)}>
               <TextField
                 id="outlined-nome"
-                label="Nome da Receita"
+                label="Título"
                 required={true}
                 {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
@@ -213,13 +207,6 @@ export function Instrucao() {
                 multiline 
                 rows={10} 
                 {...register("descricao")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
-              />
-              <TextField
-                id="outlined-dataCadastro"
-                label="Data de Cadastro"
-                required={true}
-                {...register("dataCadastro")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
               <PrimaryButton text={"Confirmar"} />
