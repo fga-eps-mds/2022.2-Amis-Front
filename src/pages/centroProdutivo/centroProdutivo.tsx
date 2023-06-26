@@ -115,6 +115,10 @@ const styleBigBox = {
   padding: '25px',
   overflow: 'hidden',
   overflowY: 'scroll',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItemms: 'center',
+  gap: '20px',
 }
 
 export function CentroProdutivo() {
@@ -457,6 +461,16 @@ export function CentroProdutivo() {
       <Modal open={openExportar} onClose={() => setOpenExportar(false)}>
         <Box sx={styleBigBox}>
           <FormText> Relatório da produção </FormText>
+
+          <form>
+            <TextField label='Nome' required />
+            <TextField label='Comentário' />
+            <TextField label='Frequência' required />
+            <TextField label='Nota' required />
+            <TextField label='Qtd Produzida' required />
+            <TextField label='Qtd Desejada' required />
+          </form>
+          <PrimaryButton text='Adicionar Aluno' />
         </Box>
       </Modal>
     </Container>
