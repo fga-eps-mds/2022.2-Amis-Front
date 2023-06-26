@@ -543,7 +543,7 @@ export function Turmas(this: any) {
   };
 
   const columnsTable = [
-    {
+    role!=="student" &&{
       field: "actions",
       headerName: "Ações",
       type: "actions",

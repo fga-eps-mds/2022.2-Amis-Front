@@ -194,7 +194,7 @@ export function Curso() {
   };
 
   const columnsTableCursos = [
-    {
+    role!=="student" &&{
       field: "actions",
       headerName: "Ações",
       type: "actions",
