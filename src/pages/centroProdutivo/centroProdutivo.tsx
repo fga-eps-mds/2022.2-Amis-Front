@@ -155,30 +155,35 @@ export function CentroProdutivo() {
   };
 
   useQuery("listar_centro", async () => {
-    console.log("A role:"+role);
+    //console.log("A role:"+role);
+    //console.log("As vagas:"+vaga[0]);
     const response = await listarCentro();
-    
-    
+    const vagasAtuais: VagasListarCentroDTO []=[
+      {
+        vagasTotais: 0,
+        vagasDisponiveis: 0,
+      },
+    ];
     
     const temp: CentrosListarDTO[] = [];
     response.data.forEach((value: CentrosListarDTO, index: number) => {
-      console.log(value);
+      //console.log(value);
       temp.push({
-        id: value.id,
+        id:index,
+        idCentro: value.id,
         data_agendada: value.data_agendada,
         descricao: value.descricao,
         status: value.status,
         turno: value.turno,
         vagasRestantes: value.vagasRestantes,
       });
-      const vagasAtuais: VagasListarCentroDTO []= [
-        {
-          vagasTotais: value.vagasRestantes,
-          vagasDisponiveis: value.vagasRestantes,
-        },
-      ];
-      setVagas(vagasAtuais);
+      vagasAtuais[index] = {
+        vagasTotais: value.vagasRestantes,
+        vagasDisponiveis: value.vagasRestantes,
+      };
     });
+    setVagas(vagasAtuais);
+    //console.log(vaga);
     //console.log(temp);
     //console.log("As vagas = "+temp.vagasRestantes)
     //console.log("Vagas "+vaga[1].vagasDisponiveis);
@@ -195,6 +200,7 @@ export function CentroProdutivo() {
 
   const fazInscricao = async (centroProd: CentrosListarDTO) => {
     // Verifique se ainda há vagas disponíveis
+    console.log("O que chegou aqui"+centroProd.idCentro);
     if (centroProd.vagasRestantes > 0) {
       const response = await inscreveAlunaCentro(
         centroProd.id.toString(),
@@ -224,6 +230,7 @@ export function CentroProdutivo() {
 
   const carregarCentro = async (id: any) => {
     const response = dataTable.find((element: any) => {
+      
       if (element.id === id) {
         return element;
       }
@@ -240,7 +247,7 @@ export function CentroProdutivo() {
     
     setVagas(vagasAtuais);
  */
-    setValue("idEdit", centro.id);
+    setValue("idEdit", centro.idCentro);
     setValue("data_agendadaEdit", centro.data_agendada);
     setValue("descricaoEdit", centro.descricao);
     setValue("statusEdit", centro.status);
@@ -253,12 +260,12 @@ export function CentroProdutivo() {
 
   const editCentro = async (data: any) => {
     const centroEditado = {
-      id: Centro.id,
+      id: Centro.idCentro,
       data_agendada: data.data_agendadaEdit,
       descricao: data.descricaoEdit,
       status: data.statusEdit,
       turno: data.turnoEdit,
-      vagasRestantes: data.vagasEdit,
+      vagas: data.vagasEdit,
     };
 
     const response = await editarCentro(
@@ -276,12 +283,14 @@ export function CentroProdutivo() {
     }
   };
 
+
   const columnsTableCentros = [
-    {
+    
+    role ==="supervisor" &&{
       field: "actions",
       headerName: "Ações",
       type: "actions",
-      flex: 1,
+      flex: 3,
       getActions: (params: { id: GridRowId }) => [
         <IconButton
           id="meu-grid-actions-cell-item"
@@ -306,7 +315,7 @@ export function CentroProdutivo() {
         </IconButton>,
       ],
     },
-    { field: "id", headerName: "Centro Produtivo", flex: 2 },
+    { field: "idCentro", headerName: "Centro Produtivo", flex: 2 },
     { field: "descricao", headerName: "Descrição", flex: 2 },
     { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
     { field: "status", headerName: "Status", flex: 2 },
@@ -317,15 +326,18 @@ export function CentroProdutivo() {
       headerName: "Inscrições",
       type: "actions",
       flex: 2,
-      getActions: (params: { id: GridRowId }) => [
+      getActions: (params: { id: GridRowId }) =>
+      [
         //console.log("Vagas"+vaga[0]?.vagasDisponiveis);
+  
         <div>
-          {vaga[0]?.vagasDisponiveis && vaga[0].vagasDisponiveis >= 1 && role==="student" && (
+          {vaga[Number(params.id)]?.vagasDisponiveis && vaga[Number(params.id)].vagasDisponiveis >= 1 && role==="student" && (
             <PrimaryButton
               
               text="Inscrever-me"
               handleClick={() => {
-                const centro = dataTable.find((v) => v.id === id);
+                const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+                const centro = dataTable.find((v) => v.idCentro === (selectedRow as any).idCentro);
                 fazInscricao(centro);
               }}
               // disabled={!vagas[0]?.vagasDisponiveis || vagas[0].vagasDisponiveis <= 0}
@@ -341,13 +353,13 @@ export function CentroProdutivo() {
       flex: 2,
       getActions: (params: { id: GridRowId }) => [
         <div>
-          {vaga[0]?.vagasDisponiveis && vaga[0].vagasDisponiveis >= 1 && (
-            <PrimaryButton
-              
+          {vaga[Number(params.id)]?.vagasDisponiveis && vaga[Number(params.id)].vagasDisponiveis >= 1 && (
+            <PrimaryButton         
               text="Agendar"
               handleClick={() => {
-                const centro = dataTable.find((v) => v.id === id);
-                fazInscricao(centro);
+                //const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+                //const centro = dataTable.find((v) => v.idCentro === (selectedRow as any).idCentro);
+                //fazInscricao(centro);
               }}
               // disabled={!vagas[0]?.vagasDisponiveis || vagas[0].vagasDisponiveis <= 0}
             />

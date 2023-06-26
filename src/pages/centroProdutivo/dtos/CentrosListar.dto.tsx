@@ -1,5 +1,6 @@
 export interface CentrosListarDTO {
-    id : number;
+    id:number,
+    idCentro : number;
     data_agendada: string;
     descricao: string;
     status: boolean;
