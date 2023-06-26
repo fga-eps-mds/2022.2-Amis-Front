@@ -212,11 +212,6 @@ export function Turmas(this: any) {
       descricao: data.descricao,
     } as TurmasCadastrarDTO;
 
-    // if (turma.nome_turma.length > 70) {
-    //   toast.error("Nome da turma inválido, use menos de 70 caracteres.");
-    //   return;
-    // }
-
     if (!validateHorarios(turma.inicio_aula, turma.fim_aula)) {
       // Datas inválidas, tratar o erro ou fornecer feedback ao usuário
       toast.error(
@@ -226,14 +221,19 @@ export function Turmas(this: any) {
     }
 
     if (turma.capacidade_turma <= 0) {
-      toast.error("A capacidade_turma deve ser um número maior que 0.");
+      toast.error("A capacidade turma deve ser um número maior que 0.");
       return;
     }
 
     turma.data_inicio = transformDate(turma.data_inicio);
     turma.data_fim = transformDate(turma.data_fim);
 
-    // console.log(turma);
+     //console.log(turma);
+    turma.fk_curso = Math.round(turma.fk_curso);
+    if (!Number.isInteger(turma.fk_curso)) {
+      toast.error("O curso deve ser um inteiro!");
+      return;
+    }
 
     const response = await cadastrarTurmas(turma);
     if (response.status === 201) {
@@ -242,6 +242,7 @@ export function Turmas(this: any) {
     } else {
       toast.error("Erro ao criar a turma.");
     }
+    queryClient.invalidateQueries("listar_turmas");
   };
 
   // faz uma requisição assincrona a função listar turmas
@@ -291,19 +292,6 @@ export function Turmas(this: any) {
 
     await listarVagas(turma.codigo);
   };
-
-  // const carregarAlunaSelecionada = async (id: any) => {
-  //   //console.log("O id da aluna:"+id);
-  //   const response = dataTableAlunas.find((element: any) => {
-  //     if (element.id === id) {
-  //       return element;
-  //     }
-  //   });
-
-  //   const aluna = response as AlunasListarDTO;
-  //   setAlunaSelecionada(aluna);
-  //   //console.log("login da aluna: "+aluna.login);
-  // };
 
   const deleteTurmas = async () => {
     console.log(selectedTurma.toString());
@@ -408,6 +396,7 @@ export function Turmas(this: any) {
   };
 
   const desmatAluna = async (codigoTurma: number, idAluna: string) => {
+    console.log("id da aluna:"+idAluna);
     const response = await desmatricularAluna(codigoTurma, idAluna);
     if (response.status === 204) {
       toast.success("Aluna(s) removida(s) da turma com sucesso!");
@@ -424,7 +413,7 @@ export function Turmas(this: any) {
   const columnsTableAlunas = [
     { field: "nome", headerName: "Nome", flex: 2 },
     { field: "cpf", headerName: "CPF", flex: 1 },
-    { field: "data_nascimento", headerName: "Data de Nascimentos", flex: 1 },
+    { field: "data_nascimento", headerName: "Data de Nascimento", flex: 1 },
     {
       field: "actions",
       headerName: "Desmatricular",
@@ -436,8 +425,10 @@ export function Turmas(this: any) {
           icon={<BsFillPersonDashFill size={18} />}
           label="Desmatricular aluna da turma"
           onClick={async () => {
-            await listarIDAluna(dataTableAlunas[params.id as number].login);
-            setId(dataTableAlunas[params.id as number].login);
+            //console.log(dataTableAlunas[params.id as number].login);
+            console.log(alunasTurma[params.id as number].login);
+            await listarIDAluna(alunasTurma[params.id as number].login);
+            setId(alunasTurma[params.id as number].login);
             handleDesmatOpenConfirmation();
           }}
         />,
@@ -456,6 +447,9 @@ export function Turmas(this: any) {
     status: string
   ): Promise<number> => {
     const response = await listarAlunasNaTurma(codigoTurma);
+    //if (response.status===404){
+    console.log("o status:"+response.status);
+    //}
     // console.log("Fui chamado:"+response.status);
     if (status == "false") {
       if (response.status === 200) {
@@ -465,7 +459,6 @@ export function Turmas(this: any) {
           for (let index = 0; index < response.data.length; index++) {
             const value = response.data[index];
             const response2 = await listaAlunaAtual(value.idAluna);
-            // console.log(response2.data.nome);
             const nomeDaAluna = response2.data.nome;
             const cpfDaAluna = response2.data.cpf;
             // const [year, month, day] = response2.data.data_nascimento.split("-");
@@ -475,7 +468,8 @@ export function Turmas(this: any) {
               idAluna: value.idAluna,
               nome: nomeDaAluna,
               cpf: cpfDaAluna,
-              data_nascimento: value.data_nascimento,
+              data_nascimento: response2.data.data_nascimento,
+              login:response2.data.login,
             });
           }
           setAlunasTurma(temp);
@@ -487,20 +481,15 @@ export function Turmas(this: any) {
           return 0;
         }
       } else {
-        console.log("Deu erro");
-        toast.error("A turma não tem alunas matriculas!");
         setAlunasTurma([]);
         return 0;
       }
     } else {
-      // console.log("codigo da turma no consultarAlunasTurma: "+codigoTurma);
 
       const response2 = await listarAlunasNaTurma(codigoTurma);
 
       setVagasAtual(response2.data.length);
-      // console.log("Vagas atual:"+response2.data.length);
       return response2.data.length;
-      // console.log("Entrou vagas atual");
     }
   };
 
@@ -538,16 +527,17 @@ export function Turmas(this: any) {
   });
 
   const listarIDAluna = (idDaAluna: string) => {
+    //console.log("O id da aluna no listar:"+idDaAluna);
     setIdAluna(idDaAluna);
   };
 
   const listarVagas = async (codigoTurmaVagas: number) => {
+    //console.log("Passou aq");
     const response = await listarTurma(codigoTurmaVagas);
     const response2 = await consultaAlunasNaTurma(codigoTurmaVagas, "true");
     // console.log("codigo da turma no listarvagas"+codigoTurmaVagas);
     if (response.status === 200) {
-      response.data.vagasDisponiveis =
-        response.data.capacidade_turma - response2;
+      response.data.vagasDisponiveis = response.data.capacidade_turma - response2;
       setVagas(response.data as VagasListarDTO);
     }
   };
@@ -596,16 +586,20 @@ export function Turmas(this: any) {
           }}
         />,
         // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
+        <IconButton
           data-testid="teste-excluir"
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
           onClick={() => {
-            // carregarExcluirTurma(params.id);
-            setSelectedTurma(params.id);
-            handleOpenConfirmation();
+            setId(params.id);
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            if (selectedRow) {
+              setSelectedTurma((selectedRow as any).codigo);
+              handleOpenConfirmation();
+            }
           }}
-        />,
+        >
+          <BsFillTrashFill size={18} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
       ],
     },
     { field: "nome_turma", headerName: "Turma", width: 250 },
