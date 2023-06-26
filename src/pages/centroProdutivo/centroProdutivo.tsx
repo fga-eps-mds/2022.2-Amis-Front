@@ -101,6 +101,22 @@ const style = {
   overflowY: 'scroll',
 }
 
+const styleBigBox = {
+  position: 'absolute' as const,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '85%',
+  height: '75%',
+  bgcolor: 'background.paper',
+  border: 'none',
+  boxShadow: 24,
+  p: 4,
+  padding: '25px',
+  overflow: 'hidden',
+  overflowY: 'scroll',
+}
+
 export function CentroProdutivo() {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
@@ -121,10 +137,13 @@ export function CentroProdutivo() {
     formState: { errors },
   } = methods
   const { role } = useContext(AuthContext)
+  const [openExportar, setOpenExportar] = useState(false)
   const handleOpenExportar = () => {
+    setOpenExportar(true)
     console.log('Abrir tela de exportação')
   }
   const handleCloseExportar = () => {
+    setOpenExportar(false)
     console.log('Fechar tela de exportação')
   }
   const [openAgendar, setOpenAgendar] = useState(false)
@@ -433,6 +452,11 @@ export function CentroProdutivo() {
               <PrimaryButton text={'Agendar'} />
             </Form>
           </FormProvider>
+        </Box>
+      </Modal>
+      <Modal open={openExportar} onClose={() => setOpenExportar(false)}>
+        <Box sx={styleBigBox}>
+          <FormText> Relatório da produção </FormText>
         </Box>
       </Modal>
     </Container>
