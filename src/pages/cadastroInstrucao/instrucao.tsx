@@ -183,7 +183,7 @@ export function Instrucao() {
         <Box sx={style}>
           <FormProvider {...methods}>
             <FormText id="cabecalho">
-              Preencha corretamente os dados cadastrais.
+              Preencha corretamente os dados cadastrais da instrução.
             </FormText>
             <Form onSubmit={handleSubmit(cadastrarInstrucoes)}>
               <TextField
@@ -202,7 +202,7 @@ export function Instrucao() {
               />
               <TextField
                 id="outlined-observacao"
-                label="Observação"
+                label="Instrução"
                 required={true}
                 multiline 
                 rows={10} 

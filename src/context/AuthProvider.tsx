@@ -18,11 +18,7 @@ interface IUser {
 export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IAuthContext extends IUser {
   user: IUser | null;
-  authenticate: (
-    email: string,
-    senha: string,
-    role: Roles
-  ) => Promise<IUser>;
+  authenticate: (email: string, senha: string, role: Roles) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -41,8 +37,8 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     const response = await LoginRequest(email, senha, role2);
 
     const payload = {
-      token: response?.token,
       role: role2,
+      token: response?.token,
       email: response?.email,
     };
 
@@ -55,7 +51,8 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     async function loadUser() {
       const userLocalStorage = await getUserLocalStorage();
-      setRole(userLocalStorage.role)
+
+      setRole(userLocalStorage.role);
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       if (userLocalStorage) {
@@ -63,6 +60,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       }
       setLoading(false);
     }
+    
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadUser();

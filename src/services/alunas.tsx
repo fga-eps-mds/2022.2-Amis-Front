@@ -18,6 +18,15 @@ export const listarAlunas = async () => {
     .catch((error) => error);
 };
 
+export const listaAlunaAtual = async (alunaId:string) => {
+  
+  return await apiUser
+    .get("/student/"+alunaId)
+    .then((response) => response)
+    .catch((error) => error);
+};
+
+
 export const editarAluna = async (alunaId: string, aluna: Object) => {
   //console.log("Aluna id vai serrr:"+alunaId);
   try {

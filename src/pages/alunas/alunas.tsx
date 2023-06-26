@@ -18,7 +18,6 @@ import { validateLogin } from "../../shared/validations/validarLogin";
 import { validateNome } from "../../shared/validations/validarNome";
 import { validateSenha } from "../../shared/validations/validarSenha";
 
-
 import {
   Box,
   FormControl,

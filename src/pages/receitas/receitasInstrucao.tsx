@@ -164,6 +164,7 @@ export function ReceitasInstrucao() {
   };
 
   useQuery("carregaReceitas", async () => {
+
     await apiClassroom.get(`/receita/${index}`).then((response: any) => {
       if (response.status === 200) {
         setReceitaDetail(response.data);

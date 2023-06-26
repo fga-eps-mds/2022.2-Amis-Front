@@ -4,6 +4,11 @@ import styled from "styled-components";
 import home_image1 from "../../assets/home_image1.png";
 import home_image2 from "../../assets/home_image2.png";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import { QtdAlunasDTO } from "./dtos/QtdAlunas.dto";
+import axios from "axios";
+import { useQuery } from "react-query";
+import { QtdAlunasFormDTO } from "./dtos/QtdAlunasForm.dto";
+
 
 const DivPresentation = styled.div`
   background-color: ${(props) => props.theme.colors.gray};
@@ -85,7 +90,19 @@ const TituloReceitas = styled.h1`
 `;
 
 export function Home() {
-  //
+  /*const [qtdAluna, setQtdAluna] = useState<QtdAlunasDTO>();
+  const [qtdAlunaForm, setQtdAlunaForm] = useState<QtdAlunasFormDTO>();
+
+  useQuery("quantidade_alunas", async () => {
+    const responseQtdAlunas = await baseApi.get("/alunas/count/");
+    setQtdAluna(responseQtdAlunas.data as QtdAlunasDTO);
+  });
+
+  useQuery("quantidade_alunasFormadas", async () => {
+    const responseQtdFormadas = await baseApi.get("/alunas/count/formada");
+    setQtdAlunaForm(responseQtdFormadas.data as QtdAlunasFormDTO);
+  });*/
+
 
   return (
     <div>

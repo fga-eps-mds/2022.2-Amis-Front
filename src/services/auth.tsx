@@ -1,7 +1,6 @@
 import { ErrorResponse } from "@remix-run/router";
 import axios from "axios";
 import { Roles } from "../context/AuthProvider";
-// import api from "./api";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_AMIS_API_BASE_URL_USER,
@@ -16,6 +15,7 @@ export async function LoginRequest(
     const params = new URLSearchParams();
     params.append("username", email);
     params.append("password", senha);
+    params.append("role", role);
 
     const request = await api.post(`/login/${role}`, params);
 

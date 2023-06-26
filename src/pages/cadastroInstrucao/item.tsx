@@ -173,12 +173,11 @@ export function Item(props: any) {
             </div>
             <p>{props.descricao}</p>
             <div style={{ justifyContent: 'center' }}>
-              <br />
               <PrimaryButton text="Fechar" handleClick={handleClick} />
             </div>
           </div>
         </div>
       )}
         </div>
-    );
-  };
+);
+};
