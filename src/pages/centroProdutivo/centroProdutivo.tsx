@@ -106,19 +106,34 @@ const styleBigBox = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '85%',
-  height: '75%',
+  width: '95%',
+  height: '85%',
   bgcolor: 'background.paper',
   border: 'none',
   boxShadow: 24,
   p: 4,
   padding: '25px',
   overflow: 'hidden',
-  overflowY: 'scroll',
+  overflowY: 'hidden',
   display: 'flex',
   flexDirection: 'column',
-  alignItemms: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '30px',
+}
+
+const styleBoxForm = {
+  overflowY: 'scroll',
+  height: '90%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'top',
+  alignItems: 'center',
+  marginBottom: '100px',
   gap: '20px',
+}
+const styleFormMiniBox = {
+  margin: '5px',
 }
 
 export function CentroProdutivo() {
@@ -149,6 +164,18 @@ export function CentroProdutivo() {
   const handleCloseExportar = () => {
     setOpenExportar(false)
     console.log('Fechar tela de exportação')
+  }
+  interface formData {
+    nome: string
+    comentario: string
+    frequencia: number
+    nota: number
+    qtdProduzida: number
+    qtdDesejada: number
+  }
+  const [formDataArray, setFormDataArray] = useState<formData[]>([])
+  const handleAddForm = () => {
+    setFormDataArray([...formDataArray, {} as formData])
   }
   const [openAgendar, setOpenAgendar] = useState(false)
   const handleOpenAgendar = () => {
@@ -461,16 +488,46 @@ export function CentroProdutivo() {
       <Modal open={openExportar} onClose={() => setOpenExportar(false)}>
         <Box sx={styleBigBox}>
           <FormText> Relatório da produção </FormText>
-
-          <form>
-            <TextField label='Nome' required />
-            <TextField label='Comentário' />
-            <TextField label='Frequência' required />
-            <TextField label='Nota' required />
-            <TextField label='Qtd Produzida' required />
-            <TextField label='Qtd Desejada' required />
-          </form>
-          <PrimaryButton text='Adicionar Aluno' />
+          <Box sx={styleBoxForm}>
+            {formDataArray.map((formData, index) => (
+              <form key={index}>
+                <TextField sx={styleFormMiniBox} label='Nome' required />
+                <TextField sx={styleFormMiniBox} label='Comentário' />
+                <TextField sx={styleFormMiniBox} label='Frequência' required />
+                <TextField sx={styleFormMiniBox} label='Nota' required />
+                <TextField
+                  sx={styleFormMiniBox}
+                  label='Qtd Produzida'
+                  required
+                />
+                <TextField
+                  sx={styleFormMiniBox}
+                  label='Qtd Desejada'
+                  required
+                />
+              </form>
+            ))}
+          </Box>
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '20px',
+              margin: '20px',
+            }}
+          >
+            <DivButtons>
+              <PrimaryButton
+                text='Adicionar Aluno'
+                handleClick={handleAddForm}
+              />
+            </DivButtons>
+            <DivButtons>
+              <PrimaryButton text='Exportar PDF' />
+            </DivButtons>
+          </Box>
         </Box>
       </Modal>
     </Container>
