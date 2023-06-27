@@ -288,6 +288,7 @@ export function CentroProdutivo() {
       flex: 1,
       getActions: (params: { id: GridRowId }) => [
         <IconButton
+          key='editar'
           id='meu-grid-actions-cell-item'
           data-testid='teste-editar'
           onClick={async () => {
@@ -299,6 +300,7 @@ export function CentroProdutivo() {
         </IconButton>,
 
         <IconButton
+          key='excluir'
           data-testid='teste-excluir'
           onClick={() => {
             setId(params.id)
@@ -308,9 +310,13 @@ export function CentroProdutivo() {
           <BsFillTrashFill size={18} />
           <Typography variant='body2'></Typography>
         </IconButton>,
-
-        <ActionButton text={'Agendar'} handleClick={handleOpenAgendar} />,
         <ActionButton
+          key='agendar'
+          text={'Agendar'}
+          handleClick={handleOpenAgendar}
+        />,
+        <ActionButton
+          key='exportar'
           text={'Exportar'}
           handleClick={handleOpenExportar}
         ></ActionButton>,
