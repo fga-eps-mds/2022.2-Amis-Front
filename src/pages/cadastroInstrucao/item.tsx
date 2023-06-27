@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import PrimaryButton from '../../shared/components/PrimaryButton/PrimaryButton';
+import { IconButton, Typography, Dialog, DialogActions, DialogTitle, Button } from "@mui/material";
+import { AiFillEdit } from "react-icons/ai";
+import { BsFillTrashFill } from "react-icons/bs";
+import { excluirInstrucao } from "../../services/instrucoes";
+import { toast } from "react-toastify";
+import { listarCursoPorId } from '../../services/cursos';
+import { queryClient } from "../../services/queryClient";
 
 interface Styles {
-  flexContainer: React.CSSProperties;
-  item: React.CSSProperties;
-  modal: React.CSSProperties;
-  modalContent: React.CSSProperties;
-  button: React.CSSProperties;
+    flexContainer: React.CSSProperties;
+    item: React.CSSProperties;
+    modal: React.CSSProperties;
+    modalContent: React.CSSProperties;
+    button: React.CSSProperties;
+    p: React.CSSProperties;
 }
-
+  
 const styles: Styles = {
   flexContainer: {
     margin: '20px',
@@ -27,7 +35,10 @@ const styles: Styles = {
     padding: '20px',
     transition: 'height 0.3s ease',
     cursor: 'pointer',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'column'
   },
   modal: {
     position: 'fixed',
@@ -44,34 +55,116 @@ const styles: Styles = {
   modalContent: {
     boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)',
     cursor: 'default',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Alterado para um valor de transparência
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: '10px',
     padding: '20px',
     maxWidth: '700px',
     minWidth: '500px',
     minHeight: '300px',
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'column'
   },
   button: {
-    display: 'flex', // Alterado para 'flex' em vez de 'table-column'
+    transform: 'scale(0.5)',
+    marginTop: 'auto',
+    display: 'flex',
     justifyContent: 'flex-end',
   },
+  p: {
+    height: '80px',
+    overflow: 'hidden'
+  }
 };
 
+
 export function Item(props: any) {
-  const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const [curso, setCurso] = useState(Object);
+    const handleCloseConfirmation = () => setOpenConfirmation(false);
+    const [openConfirmation, setOpenConfirmation] = useState(false);
+    const handleOpenConfirmation = () => setOpenConfirmation(true);
 
-  const handleClick = () => {
-    setExpanded(!expanded);
-  };
+    const handleClick = () => {
+      setExpanded(!expanded);
+    };
+    
+    const handleClickModal = (id: any) => {
+      props.openModal(id);
+    }
 
-  return (
-    <div style={styles.item} onClick={handleClick}>
-      <div style={{ fontWeight: 'bold', justifyContent: 'space-between', display: 'flex', paddingBottom: '20px' }}>
-        <h3>{props.titulo}</h3>
-        <h3 style={{ color: 'red' }}>Curso {props.subtitulo}</h3>
-      </div>
-      <p>{props.descricao}</p>
-      {expanded && ( 
+    const deleteInstrucao = async (): Promise<void> => {
+      const idItem = props.id
+      if (idItem) {
+        const response = await excluirInstrucao(idItem); // Passa o login para a função apagaInstrucao
+        if (response.status === 204) {
+          toast.success("Instrucao excluída com sucesso!");
+        } else {
+          toast.error("Erro ao excluir a instucao.");
+        }
+  
+        handleCloseConfirmation();
+        await queryClient.invalidateQueries("listar_instrucoes");
+      }
+    };
+
+    // const getCurso = async (): Promise<void> =>  {
+    //   const response = await listarCursoPorId(props.subtitulo);
+    //   console.log(response)
+    //   setCurso(response.data);
+    // }
+
+    // getCurso()
+    // console.log(curso)
+
+    return (
+      <div style={styles.item}>
+        <div onClick={handleClick}>
+          <div style={{ fontWeight: 'bold', justifyContent: 'space-between', display: 'flex', paddingBottom: '20px' }}>
+            <h3>{props.titulo}</h3>
+            <h3 style={{ color: 'red' }}>{props.subtitulo}</h3>
+          </div>
+          <p style={styles.p}>{props.descricao}</p>
+        </div>
+        <div>
+      
+          <IconButton
+            id="meu-grid-actions-cell-item"
+            data-testid="teste-editar"
+            onClick={async () => {
+              handleClickModal(props.id)
+            }}
+            >
+            <AiFillEdit size={20} />
+            <Typography variant="body2"></Typography>
+          </IconButton>
+          <IconButton
+            data-testid="teste-excluir"
+            onClick={() => {
+              handleOpenConfirmation();
+            }}
+            >
+            <BsFillTrashFill size={18} />
+            <Typography variant="body2"></Typography>
+          </IconButton>
+        </div>
+        <Dialog
+          open={openConfirmation}
+          onClose={setOpenConfirmation}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Você tem certeza que deseja excluir?"}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmation}>Não</Button>
+            <Button onClick={deleteInstrucao} autoFocus>
+              Sim
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {expanded && ( 
         <div style={styles.modal} onClick={handleClick}>
           <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div style={{ fontWeight: 'bold', justifyContent: 'space-between', display: 'flex', paddingBottom: '20px' }}>
@@ -80,12 +173,11 @@ export function Item(props: any) {
             </div>
             <p>{props.descricao}</p>
             <div style={{ justifyContent: 'center' }}>
-              <br />
               <PrimaryButton text="Fechar" handleClick={handleClick} />
             </div>
           </div>
         </div>
       )}
-    </div>
-  );
+        </div>
+);
 };

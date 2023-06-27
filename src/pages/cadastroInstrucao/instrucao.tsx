@@ -1,186 +1,255 @@
-import { Box, Modal, TextField } from "@mui/material";
-import { GridRowId } from "@mui/x-data-grid";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import styled from "styled-components";
-import { cadastrarInstrucao } from "../../services/instrucoes";
+import { listarCurso } from "../../services/cursos";
+import { cadastrarInstrucao, editarInstrucao, listarInstrucoes, listarInstrucoesPorCurso } from "../../services/instrucoes";
 import { queryClient } from "../../services/queryClient";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
 import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
+import { CursosListarDTO } from "../curso/dtos/CursosListar.dto";
 import { InstrucoesCadastrarDTO } from "./dtos/InstrucoesCadastrar.dto";
+import { InstrucoesListarDTO } from "./dtos/InstrucoesListar.dto";
+
 import VisualizarInstrucao from "./visualizarInstrucao";
 
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  background: ${(props) => props.theme.colors.grey};
-  display: inline-flex;
-`;
+import {
+  getContainerStyles,
+  getContentStyles,
+  getDivButtonsStyles,
+  getFormStyles,
+  getFormTextStyles,
+  getInlineStyles,
+} from '../../shared/components/Style/style';
 
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
+import {
+  Box,
+  Modal,
+  TextField,
+} from "@mui/material";
 
-const DivButtons = styled.div`
-  width: 85%;
-  display: inline-flex;
-  justify-content: flex-end;
-  gap: 20px;
-  margin: 0 auto;
-  margin-right: 40px;
-  padding-top: 70px;
-`;
+import { FormProvider } from "react-hook-form";
+import CursoSelect from "./cursoSelect";
 
-const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-`;
+const Container = getContainerStyles();
+const Content = getContentStyles();
+const DivButtons = getDivButtonsStyles();
+const Form = getFormStyles();
+const FormText = getFormTextStyles();
+const style = getInlineStyles();
 
-const FormText = styled.h1`
-  color: #525252;
-  font-size: 18px;
-  font-weight: 400;
-  text-align: left;
-  padding-bottom: 25px;
-`;
 
-const TextBox = styled.h1`
-  color: #525252;
-  font-size: 18px;
-  font-weight: 400;
-  text-align: left;
-  padding-bottom: 25px;
-`;
-
-const style = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  border: "none",
-  boxShadow: 24,
-  p: 4,
-  padding: "50px",
-  height: "85%",
-  overflow: "hidden",
-  overflowY: "scroll",
-};
-
-interface Item1 {
-  nome: string;
-  idCurso: string;
-  descricao: string;
-}
 
 export function Instrucao() {
+
   const [open, setOpen] = useState(false);
+  const [instrucao,setInstrucao] = useState(Object);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [instrucao, setInstrucao] = useState(Object);
-  const [dataTable, setDataTable] = useState<Object[]>([]);
-  const [id, setId] = useState<GridRowId>(0);
-  const [selectedInstrucao, setSelectedInstrucao] = useState(null);
-  const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const handleOpenConfirmation = () => setOpenConfirmation(true);
-  const handleCloseConfirmation = () => setOpenConfirmation(false);
+  const handleCloseEdit = () => setOpenEdit(false);
+  const [items, setItems] = useState<InstrucoesListarDTO[]>([]);
+  const [options, setOptions] = useState<CursosListarDTO[]>([]);
+  const [selectedOption, setSelectedOption] = useState('');
+
+  useQuery("listar_instrucoes", async () => {
+    const fetchData = async () => {
+      try {
+        const response = await listarInstrucoes();
+        const data = await response.data;
+  
+        setItems(data);
+      } catch (error) {
+        console.error('Erro ao buscar as Intruções:', error);
+      }
+    };
+    const fetchOptions = async () => {
+      try {
+        const response = await listarCurso();
+        const options = await response.data;
+        setOptions(options);
+      } catch (error) {
+        console.error('Erro ao buscar as Intruções', error);
+      }
+    };
+
+    fetchData();
+    fetchOptions();
+  });
+
+  const methods = useForm();
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = methods;
 
-  const registerInstrucao = async (data: any) => {
+  const cadastrarInstrucoes = async (data: any): Promise<void> => {
     const currentDate = new Date().toISOString().split("T")[0];
-
     const instrucao = {
-      nome: data.nomeReceita,
-      idCurso: data.curso,
-      descricao: data.instrucao,
-      dataCadastro: currentDate.toString(),
+      nome: data.nome,
+      idCurso: data.idCurso,
+      descricao: data.descricao,
+      dataCadastro: currentDate,
     } as InstrucoesCadastrarDTO;
-    console.log(instrucao);
 
-    const response = await cadastrarInstrucao(instrucao);
-
+    const response: any = await cadastrarInstrucao(instrucao);
     if (response.status === 201) {
-      setOpen(false);
+      handleClose();
       toast.success("Instrução cadastrada com sucesso!");
+    } else {
+      toast.error("Erro ao cadastrar a instrucao.");
+    }
+    await queryClient.invalidateQueries("listar_instrucoes");
+  };
+
+  const carregarInstrucoes = async (id: any) => {
+    const response = items.find((item: any) => {
+      if (item.id === id) {
+        return item;
+      }
+    });
+
+    const instrucao = response as InstrucoesListarDTO;
+    setInstrucao(instrucao);
+    setValue("nomeEdit", instrucao.nome);
+    setValue("idCursoEdit", instrucao.idCurso);
+    setValue("descricaoEdit",instrucao.descricao);
+    setOpenEdit(true);
+  };
+
+
+  const editInstrucoes = async (data: any): Promise<void> => {
+    
+    const instrucaoEditada = {
+      nome: data.nomeEdit,
+      idCurso: data.idCursoEdit,
+      descricao: data.descricaoEdit,
+      dataCadastro: instrucao.dataCadastro,
+      id: instrucao.id
+      
+    } as InstrucoesCadastrarDTO;
+    const response = await editarInstrucao(instrucao.id, instrucaoEditada);
+      if (response.status === 200 || response.status === 204 || response.status === 201) {
+        toast.success("Instrução atualizada com sucesso!");
+      } else {
+        toast.error("Erro na atualização da instrução.");
+      }
+      setOpenEdit(false);
+      await queryClient.invalidateQueries("listar_instrucoes");
+  };
+
+  const handleSelectChange = async (event: any) => {
+    //setSelectedOption(event.target.value);
+    console.log(event)
+    if(event == null) 
+      await queryClient.invalidateQueries("listar_instrucoes");
+    else {
+      const response = await listarInstrucoesPorCurso(event);
+      if (response.status === 200 || response.status === 204) {
+        const data = await response.data;
+        setItems(data);
+        toast.success("Instruções filtradas com sucesso!");
+      } else {
+        toast.error("Erro no filtro das instruções.");
+      }
     }
   };
 
-  // const deletarInstrucao = async () => {
-  //   const response = await excluirInstrucao(id.toString());
-
-  //   if (response.status === 204) {
-  //     toast.success("Instrução excluída com sucesso!");
-  //   } else {
-  //     toast.error("Erro ao excluir Instrução");
-  //   }
-  // };
-
   return (
     <Container>
-      {" "}
       <Sidebar />
       <Content>
         <Navbarlog text={"Instruções"} />
+        <CursoSelect 
+          cursos={options} 
+          onSelectCurso={handleSelectChange}
+        />
         <DivButtons>
           <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+          {/* <PrimaryButton text={"Editar"} /> */}
         </DivButtons>
-        <VisualizarInstrucao />
-        {}
+        
+        <VisualizarInstrucao
+          items={items}
+          openModal={carregarInstrucoes}
+        />
+
       </Content>
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={open} onClose={handleClose} aria-label="Modal de Cadastro">
         <Box sx={style}>
-          <FormText>
-            Preencha corretamente os dados cadastrais da instrução
-          </FormText>
-          <Form onSubmit={handleSubmit(registerInstrucao)}>
-            <TextField
-              id="outlined-nomReceita"
-              label="Título"
-              required={true}
-              inputProps={{ maxLenght: 70 }}
-              {...register("nomeReceita")}
-              sx={{ width: "100%", backgroud: "F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nomCurso"
-              label="Curso"
-              required={true}
-              inputProps={{ maxLenght: 70 }}
-              {...register("curso")}
-              sx={{ width: "100%", backgroud: "F5F4FF" }}
-            />
-            <TextField
-              id="outlined-nomInstrucao"
-              label="Instrução"
-              required={true}
-              inputProps={{ maxLenght: 100 }}
-              {...register("instrucao")}
-              sx={{
-                width: "100%",
-                marginBottom: "5rem",
-                backgroud: "F5F4FF",
-                paddingBottom: "10px",
-              }}
-            />
-            <PrimaryButton text="Cadastrar" />
-          </Form>
+          <FormProvider {...methods}>
+            <FormText id="cabecalho">
+              Preencha corretamente os dados cadastrais da instrução.
+            </FormText>
+            <Form onSubmit={handleSubmit(cadastrarInstrucoes)}>
+              <TextField
+                id="outlined-nome"
+                label="Título"
+                required={true}
+                {...register("nome")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-curso"
+                label="Curso"
+                required={true}
+                {...register("idCurso")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-observacao"
+                label="Instrução"
+                required={true}
+                multiline 
+                rows={10} 
+                {...register("descricao")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <PrimaryButton text={"Confirmar"} />
+            </Form>
+          </FormProvider>
         </Box>
       </Modal>
+      <Modal open={openEdit} onClose={handleCloseEdit} aria-label="Modal de Cadastro">
+        <Box sx={style}>
+          <FormProvider {...methods}>
+            <FormText id="cabecalho">
+              Editar os dados cadastrais.
+            </FormText>
+            <Form onSubmit={handleSubmit(editInstrucoes)}>
+              <TextField
+                id="outlined-nome"
+                label="Título"
+                required={true}
+                {...register("nomeEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-nome"
+                label="Curso"
+                required={true}
+                {...register("idCursoEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-nome"
+                label="Observção"
+                required={true}
+                multiline 
+                rows={10} 
+                {...register("descricaoEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <PrimaryButton text={"Confirmar"} />
+            </Form>
+          </FormProvider>
+        </Box>
+      </Modal>
+
     </Container>
   );
 }

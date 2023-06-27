@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Item } from './item';
-import { listarInstrucoes } from '../../services/instrucoes';
 
 interface Styles {
   flexContainer: React.CSSProperties;
-}
-
-interface Item1 {
-  nome: string;
-  idCurso: string;
-  descricao: string;
 }
 
 const styles: Styles = {
@@ -21,32 +14,22 @@ const styles: Styles = {
   },
 };
 
-
-const VisualizarInstrucao = () => {
-  const [items, setItems] = useState<Item1[]>([]);
-
-  useEffect(() => {
-    // Função para fazer a requisição GET à API
-    const fetchData = async () => {
-      try {
-        const response = await listarInstrucoes();
-        const data = await response.data;
-        setItems(data);
-      } catch (error) {
-        console.error('Erro ao buscar os dados da API:', error);
-      }
-    };
-
-    fetchData(); // Chama a função de requisição ao montar o componente
-  }, []);
+const VisualizarInstrucao = (props: any | []) => {
+  const handleClickModal = (id: any) => {
+    // Chamando a função de callback passada como propriedade
+    console.log(id)
+    props.openModal(id);
+  }
 
   return (
     <div style={styles.flexContainer}>
-      {items.map((item) => (
+      {props?.items?.map((item: any) => (
         <Item
+          id={item.id}
           titulo={item.nome}
           subtitulo={item.idCurso}
           descricao={item.descricao}
+          openModal={handleClickModal}
         />
       ))}
     </div>

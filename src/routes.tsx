@@ -66,7 +66,6 @@ export default function AppRoutes() {
           path="/instrucoes"
           element={<PrivateRoute component={Instrucao} />}
         />
-        <Route path="/curso" element={<PrivateRoute component={Curso} />} />
         <Route path="/centroProdutivo" element={<PrivateRoute component={CentroProdutivo} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/receita/:index" element={<ReceitasInstrucao />} />

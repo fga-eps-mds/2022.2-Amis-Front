@@ -16,7 +16,7 @@ import {
 } from "react-icons/bi";
 import { MdSchool } from 'react-icons/md';
 import { FiSettings } from "react-icons/fi";
-import { FaChalkboardTeacher, FaUserShield, FaIndustry } from "react-icons/fa";
+import { FaChalkboardTeacher, FaUserShield, FaIndustry, FaHeart } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { grey } from "@mui/material/colors";
@@ -91,6 +91,18 @@ export function Sidebar() {
         />
       ),
       allowedRoles: ["socialWorker", "student", "supervisor", "teacher"],
+    },
+    {
+      id: 8,
+      name: "Área Aluna",
+      path: "/instrucoes",
+      icon: (
+        <BiBookHeart
+          color={pathname === "/instrucoes" ? "#da4d3d" : "#525252"}
+          size={22}
+        />
+      ),
+      allowedRoles: ["teacher", "socialWorker", "student"],
     },
     {
       id: 2,
@@ -179,7 +191,7 @@ export function Sidebar() {
       name: "Cursos",
       path: "/curso",
       icon: (
-        <BiBookHeart
+        <BiBook
           color={pathname === "/curso" ? "#da4d3d" : "#525252"}
           size={22}
         />
