@@ -1,5 +1,7 @@
+import { NotaAlunoCadastrarDTO } from "../pages/assistentes/dtos/NotaAlunoCadastrarDTO";
 import { CentrosCadastrarDTO } from "../pages/centroProdutivo/dtos/CentrosCadastrar.dto";
 import { apiProduction} from "./api";
+import { apiUser } from "./api";
 
 export const cadastrarCentro = async (payload: CentrosCadastrarDTO) => {
   return await apiProduction
@@ -27,4 +29,16 @@ export const excluirCentro = async (CentroId: string) => {
     .delete("/centro/" + CentroId)
     .then((response) => response)
     .catch((error) => error);
+};
+
+export const cadastrarNotaAluno = async (payload: NotaAlunoCadastrarDTO) => {
+
+  try{
+    const response = await apiUser.post("/alunas/", payload);
+    return response;
+  } catch (error) {
+    //console.error(error)
+    return error;
+  }
+
 };

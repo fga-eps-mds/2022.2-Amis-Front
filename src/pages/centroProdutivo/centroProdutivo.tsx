@@ -28,6 +28,7 @@ import {
   editarCentro,
   excluirCentro,
   listarCentro,
+  cadastrarNotaAluno,
 } from '../../services/centroProdutivo'
 import { queryClient } from '../../services/queryClient'
 import Navbarlog from '../../shared/components/NavbarLogada/navbarLogada'
@@ -37,6 +38,7 @@ import Sidebar from '../../shared/components/Sidebar/sidebar'
 import DataTable from '../../shared/components/TablePagination/tablePagination'
 import { CentrosCadastrarDTO } from './dtos/CentrosCadastrar.dto'
 import { CentrosListarDTO } from './dtos/CentrosListar.dto'
+import { NotaAlunoCadastrarDTO } from '../assistentes/dtos/NotaAlunoCadastrarDTO'
 import { AuthContext } from '../../context/AuthProvider'
 import ValueMask from '../../shared/components/Masks/ValueMask'
 
@@ -186,6 +188,26 @@ export function CentroProdutivo() {
     setOpenAgendar(false)
     console.log('Fechar tela de agendamento')
   }
+  const registerNotaAluno = async (data: any) => {
+    const NotaAluno = {
+      nome: data.nome,
+      comentario: data.comentario,
+      frequencia: data.frequencia,
+      nota: data.frequencia,
+      qtdProduzida: data.qtdProduzida,
+      qtdDesejada: data.qtdDesejada,
+    } as NotaAlunoCadastrarDTO;
+
+    const response: any = await cadastrarNotaAluno(NotaAluno);
+
+    if (response.status === 201) {
+      setOpen(false);
+      queryClient.invalidateQueries("listar_NotaAluno");
+      toast.success("Nota do aluno cadastrada com sucesso!");
+    }
+  }
+
+
   const registerCentro = async (data: any) => {
     const dataFormatada = transformDate(data.data_agendada)
     const centro = {
@@ -496,7 +518,7 @@ export function CentroProdutivo() {
           <FormText> Relatório da produção </FormText>
           <Box sx={styleBoxForm}>
             {formDataArray.map((formData, index) => (
-              <form key={index}>
+              <form key={index} onSubmit={handleSubmit(registerNotaAluno)}>
                 <TextField sx={styleFormMiniBox} label='Nome' required />
                 <TextField sx={styleFormMiniBox} label='Comentário' />
                 <TextField sx={styleFormMiniBox} label='Frequência' required />
