@@ -1,4 +1,4 @@
-import { NotaAlunoCadastrarDTO } from "../pages/assistentes/dtos/NotaAlunoCadastrarDTO";
+import { NotaAlunoCadastrarDTO } from "../pages/centroProdutivo/dtos/NotaAlunoCadastrarDTO";
 import { CentrosCadastrarDTO } from "../pages/centroProdutivo/dtos/CentrosCadastrar.dto";
 import { apiProduction} from "./api";
 import { apiUser } from "./api";

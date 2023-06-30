@@ -38,9 +38,10 @@ import Sidebar from '../../shared/components/Sidebar/sidebar'
 import DataTable from '../../shared/components/TablePagination/tablePagination'
 import { CentrosCadastrarDTO } from './dtos/CentrosCadastrar.dto'
 import { CentrosListarDTO } from './dtos/CentrosListar.dto'
-import { NotaAlunoCadastrarDTO } from '../assistentes/dtos/NotaAlunoCadastrarDTO'
+import { NotaAlunoCadastrarDTO } from './dtos/NotaAlunoCadastrarDTO'
 import { AuthContext } from '../../context/AuthProvider'
 import ValueMask from '../../shared/components/Masks/ValueMask'
+import AlunasSelect from "./alunasSelect";
 
 function transformDate(date: any) {
   const parts = date.split('/')
@@ -519,7 +520,7 @@ export function CentroProdutivo() {
           <Box sx={styleBoxForm}>
             {formDataArray.map((formData, index) => (
               <form key={index} onSubmit={handleSubmit(registerNotaAluno)}>
-                <TextField sx={styleFormMiniBox} label='Nome' required />
+                <AlunasSelect alunas={options} onSelectAlunas={handleSelectChange} />
                 <TextField sx={styleFormMiniBox} label='Comentário' />
                 <TextField sx={styleFormMiniBox} label='Frequência' required />
                 <TextField sx={styleFormMiniBox} label='Nota' required />
@@ -530,6 +531,7 @@ export function CentroProdutivo() {
                 />
                 <TextField
                   sx={styleFormMiniBox}
+                  
                   label='Qtd Desejada'
                   required
                 />
@@ -553,7 +555,7 @@ export function CentroProdutivo() {
               />
             </DivButtons>
             <DivButtons>
-              <PrimaryButton text='Exportar PDF' />
+              <PrimaryButton text={"Exportar PDF"} />
             </DivButtons>
           </Box>
         </Box>
