@@ -212,7 +212,7 @@ export function CentroProdutivo() {
         descricao: centroProd.descricao,
         status: 2,
         turno: centroProd.turno,
-        vagas: centroProd.vagasRestantes + 1,
+        vagas: centroProd.vagasRestantes,
       };
       console.log(centroEditado);
       const response = await editarCentro(
@@ -223,7 +223,7 @@ export function CentroProdutivo() {
         toast.success("Centro Agendado com sucesso!");
         await queryClient.invalidateQueries("listar_centro");
       } else {
-        toast.error("Centro");
+        toast.warning("Não foi possivel Agendar esse Centro");
       }
     }
     if ((centroProd.vagasRestantes > 0) & (centroProd.status == 2)) {
@@ -233,7 +233,7 @@ export function CentroProdutivo() {
         descricao: centroProd.descricao,
         status: 1,
         turno: centroProd.turno,
-        // vagas: centroProd.vagasRestantes+1,
+        vagas: centroProd.vagasRestantes,
       };
       console.log(centroEditado);
       const response = await editarCentro(
@@ -244,7 +244,7 @@ export function CentroProdutivo() {
         toast.success("Centro Desagendado com sucesso!");
         await queryClient.invalidateQueries("listar_centro");
       } else {
-        toast.warning("Centro");
+        toast.warning("Não foi possivel Desagendar esse Centro");
       }
     } 
   };
@@ -383,6 +383,7 @@ export function CentroProdutivo() {
         <div>
           {vaga[Number(params.id)]?.vagasDisponiveis &&
           vaga[Number(params.id)].vagasDisponiveis >= 1 &&
+          params.row.status === 1 &&
           role === "student" ? (
             <PrimaryButton
               text="Inscrever-me"
