@@ -204,6 +204,51 @@ export function CentroProdutivo() {
     }
   };
 
+  const fazAgendamento = async (centroProd: CentrosListarDTO) => {
+    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 1)) {
+      const centroEditado = {
+        id: centroProd.idCentro,
+        data_agendada: centroProd.data_agendada,
+        descricao: centroProd.descricao,
+        status: 2,
+        turno: centroProd.turno,
+        vagas: centroProd.vagasRestantes,
+      };
+      console.log(centroEditado);
+      const response = await editarCentro(
+        centroEditado.id.toString(),
+        centroEditado
+      );
+      if (response.status === 201) {
+        toast.success("Centro Agendado com sucesso!");
+        await queryClient.invalidateQueries("listar_centro");
+      } else {
+        toast.warning("Centro");
+      }
+    }
+    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 2)) {
+      const centroEditado = {
+        id: centroProd.idCentro,
+        data_agendada: centroProd.data_agendada,
+        descricao: centroProd.descricao,
+        status: 1,
+        turno: centroProd.turno,
+        vagas: centroProd.vagasRestantes,
+      };
+      console.log(centroEditado);
+      const response = await editarCentro(
+        centroEditado.id.toString(),
+        centroEditado
+      );
+      if (response.status === 201) {
+        toast.success("Centro Desagendado com sucesso!");
+        await queryClient.invalidateQueries("listar_centro");
+      } else {
+        toast.warning("Centro");
+      }
+    } 
+  };
+
   const deletarCentro = async () => {
     const response = await excluirCentro(id.toString());
 
@@ -294,12 +339,12 @@ export function CentroProdutivo() {
     { field: "idCentro", headerName: "Centro Produtivo", flex: 2 },
     { field: "descricao", headerName: "Descrição", flex: 2 },
     { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
-    { 
-      field: "status", 
-      headerName: "Status", 
-      flex: 2, 
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 2,
       valueGetter: (params) => {
-        switch(params.row.status) {
+        switch (params.row.status) {
           case 1:
             return "Disponível";
           case 2:
@@ -309,12 +354,12 @@ export function CentroProdutivo() {
         }
       },
     },
-    { 
-      field: "turno", 
-      headerName: "Turno", 
-      flex: 2, 
+    {
+      field: "turno",
+      headerName: "Turno",
+      flex: 2,
       valueGetter: (params) => {
-        switch(params.row.turno) {
+        switch (params.row.turno) {
           case 1:
             return "Matutino";
           case 2:
@@ -322,7 +367,7 @@ export function CentroProdutivo() {
           case 3:
             return "Noturno";
           case 4:
-              return "Diurno";
+          return "Diurno";
           default:
             return "";
         }
@@ -356,20 +401,20 @@ export function CentroProdutivo() {
       headerName: "Agendar",
       type: "actions",
       flex: 2,
-      getActions: (params: { id: GridRowId }) => [
+      getActions: (params) => [
         <div>
           {vaga[Number(params.id)]?.vagasDisponiveis &&
-            vaga[Number(params.id)].vagasDisponiveis >= 1 && (
+          vaga[Number(params.id)].vagasDisponiveis >= 1 &&
+          role === "supervisor" ? (
             <PrimaryButton
               text="Agendar"
-              handleClick={() => {
-                // const selectedRow = dataTable.find((item) => (item as any).id === params.id);
-                // const centro = dataTable.find((v) => v.idCentro === (selectedRow as any).idCentro);
-                // fazInscricao(centro);
-              }}
-              // disabled={!vagas[0]?.vagasDisponiveis || vagas[0].vagasDisponiveis <= 0}
+                handleClick={() => {
+                  fazAgendamento(params.row);
+                }}
             />
-            )}
+          ) : (
+            <></>
+          )}
         </div>,
       ],
     },
