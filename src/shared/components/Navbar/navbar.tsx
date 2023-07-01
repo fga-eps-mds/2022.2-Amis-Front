@@ -84,7 +84,7 @@ export function Navbar(props: any) {
           ))}
         </DivNavbarMenu>
         {props.hideButton !== true && (
-          <Link to={auth.isAuthenticated ? "/curso" : "/login"}>
+          <Link to={auth.isAuthenticated ? "/instrucoes" : "/login"}>
             <PrimaryButton text="Área Logada" />
           </Link>
         )}

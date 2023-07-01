@@ -108,6 +108,7 @@ export function Login() {
           <Title>Acesse sua conta</Title>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <TextField
+              required={true}
               id="outlined-cpf"
               label="Login"
               {...register("login")}
@@ -117,7 +118,10 @@ export function Login() {
               sx={{ width: "60%", background: "#F5F4FF" }}
               variant="outlined"
             >
-              <InputLabel htmlFor="outlined-adornment-password">
+              <InputLabel 
+              required={true}
+              htmlFor="outlined-adornment-password"
+              >
                 Senha
               </InputLabel>
               <OutlinedInput
@@ -150,6 +154,7 @@ export function Login() {
             <FormControl
               sx={{ width: "60%", background: "#F5F4FF" }}
               variant="outlined"
+              required={true}
             >
               <InputLabel id="select-login-label">Tipo de Login</InputLabel>
               <Select
