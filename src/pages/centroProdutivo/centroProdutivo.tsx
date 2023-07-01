@@ -141,7 +141,7 @@ export function CentroProdutivo() {
       descricao: data.descricao,
       status: data.status,
       turno: data.turno,
-      vagasRestantes: data.vagasRestantes,
+      vagas: data.vagasRestantes,
     } as CentrosCadastrarDTO;
     console.log(data);
     const response = await cadastrarCentro(centro);
@@ -294,8 +294,40 @@ export function CentroProdutivo() {
     { field: "idCentro", headerName: "Centro Produtivo", flex: 2 },
     { field: "descricao", headerName: "Descrição", flex: 2 },
     { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
-    { field: "status", headerName: "Status", flex: 2 },
-    { field: "turno", headerName: "Turno", flex: 2 },
+    { 
+      field: "status", 
+      headerName: "Status", 
+      flex: 2, 
+      valueGetter: (params) => {
+        switch(params.row.status) {
+          case 1:
+            return "Disponível";
+          case 2:
+            return "Ocupado";
+          default:
+            return "";
+        }
+      },
+    },
+    { 
+      field: "turno", 
+      headerName: "Turno", 
+      flex: 2, 
+      valueGetter: (params) => {
+        switch(params.row.turno) {
+          case 1:
+            return "Matutino";
+          case 2:
+            return "Vespertino";
+          case 3:
+            return "Noturno";
+          case 4:
+              return "Diurno";
+          default:
+            return "";
+        }
+      },
+    },
     { field: "vagasRestantes", headerName: "Vagas", flex: 2 },
     role === "student" && {
       field: "inscricao",
