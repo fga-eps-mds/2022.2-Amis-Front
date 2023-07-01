@@ -19,6 +19,7 @@ import { ReceitasInstrucao } from "./pages/receitas/receitasInstrucao";
 import { Curso } from "./pages/curso/cursos";
 import { Supervisor } from "./pages/supervisor/supervisor";
 import { CentroProdutivo } from "./pages/centroProdutivo/centroProdutivo";
+import VisualizarInstrucao from "./pages/cadastroInstrucao/visualizarInstrucao";
 
 interface Props {
   component: React.ComponentType;
@@ -46,7 +47,6 @@ export default function AppRoutes() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/receitas" element={<Receitas />} />
         <Route path="/alunas" element={<PrivateRoute component={Alunas} />} />
         <Route
           path="/assistentes"
@@ -57,6 +57,10 @@ export default function AppRoutes() {
           element={<PrivateRoute component={Professores} />}
         />
         <Route path="/turmas" element={<PrivateRoute component={Turmas} />} />
+        <Route
+          path="/receitas"
+          element={<Instrucao home={true} />}
+        />
         <Route path="/curso" element={<PrivateRoute component={Curso} />} />
         <Route
           path="/supervisor"
@@ -64,11 +68,10 @@ export default function AppRoutes() {
         />
         <Route
           path="/instrucoes"
-          element={<PrivateRoute component={Instrucao} />}
+          element={<PrivateRoute component={() => <Instrucao home={false} />} />}
         />
         <Route path="/centroProdutivo" element={<PrivateRoute component={CentroProdutivo} />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/receita/:index" element={<ReceitasInstrucao />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

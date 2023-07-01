@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PrimaryButton from '../../shared/components/PrimaryButton/PrimaryButton';
 import { IconButton, Typography, Dialog, DialogActions, DialogTitle, Button } from "@mui/material";
 import { AiFillEdit } from "react-icons/ai";
@@ -7,6 +7,7 @@ import { excluirInstrucao } from "../../services/instrucoes";
 import { toast } from "react-toastify";
 import { listarCursoPorId } from '../../services/cursos';
 import { queryClient } from "../../services/queryClient";
+import { AuthContext } from "../../context/AuthProvider";
 
 interface Styles {
     flexContainer: React.CSSProperties;
@@ -84,6 +85,7 @@ export function Item(props: any) {
     const handleCloseConfirmation = () => setOpenConfirmation(false);
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const handleOpenConfirmation = () => setOpenConfirmation(true);
+    const { role } = useContext(AuthContext);
 
     const handleClick = () => {
       setExpanded(!expanded);
@@ -126,8 +128,8 @@ export function Item(props: any) {
           </div>
           <p style={styles.p}>{props.descricao}</p>
         </div>
+          {role !== "student" && (
         <div>
-      
           <IconButton
             id="meu-grid-actions-cell-item"
             data-testid="teste-editar"
@@ -148,6 +150,7 @@ export function Item(props: any) {
             <Typography variant="body2"></Typography>
           </IconButton>
         </div>
+          )}
         <Dialog
           open={openConfirmation}
           onClose={setOpenConfirmation}

@@ -33,7 +33,7 @@ import {
       <QueryClientProvider client={queryClient}>
       <Router>
           <ThemeProvider theme={theme}>
-          <Instrucao />
+          <Instrucao home={false} />
           </ThemeProvider>
       </Router>
       </QueryClientProvider>

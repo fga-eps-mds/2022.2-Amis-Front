@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useForm } from 'react-hook-form';
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ import Sidebar from "../../shared/components/Sidebar/sidebar";
 import { CursosListarDTO } from "../curso/dtos/CursosListar.dto";
 import { InstrucoesCadastrarDTO } from "./dtos/InstrucoesCadastrar.dto";
 import { InstrucoesListarDTO } from "./dtos/InstrucoesListar.dto";
+import { AuthContext } from "../../context/AuthProvider";
 
 import VisualizarInstrucao from "./visualizarInstrucao";
 
@@ -31,6 +32,7 @@ import {
 
 import { FormProvider } from "react-hook-form";
 import CursoSelect from "./cursoSelect";
+import { Navbar } from "../../shared/components/Navbar/navbar";
 
 const Container = getContainerStyles();
 const Content = getContentStyles();
@@ -41,7 +43,7 @@ const style = getInlineStyles();
 
 
 
-export function Instrucao() {
+export function Instrucao(props: any) {
 
   const [open, setOpen] = useState(false);
   const [instrucao,setInstrucao] = useState(Object);
@@ -52,6 +54,7 @@ export function Instrucao() {
   const [items, setItems] = useState<InstrucoesListarDTO[]>([]);
   const [options, setOptions] = useState<CursosListarDTO[]>([]);
   const [selectedOption, setSelectedOption] = useState('');
+  const { role } = useContext(AuthContext);
 
   useQuery("listar_instrucoes", async () => {
     const fetchData = async () => {
@@ -161,18 +164,25 @@ export function Instrucao() {
 
   return (
     <Container>
+      {props.home === false &&
       <Sidebar />
+      }
       <Content>
-        <Navbarlog text={"Instruções"} />
+      {props.home === true && (
+        <Navbar hideButton={true}/>
+      )}
+        <Navbarlog text={"Receitas"} />
         <CursoSelect 
           cursos={options} 
           onSelectCurso={handleSelectChange}
         />
         <DivButtons>
-          <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-          {/* <PrimaryButton text={"Editar"} /> */}
+        {role !== "student" && props.home == false ? (
+            <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
+        ) : (
+            <></>
+        )}
         </DivButtons>
-        
         <VisualizarInstrucao
           items={items}
           openModal={carregarInstrucoes}

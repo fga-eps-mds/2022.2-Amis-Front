@@ -102,7 +102,7 @@ export function Sidebar() {
           size={22}
         />
       ),
-      allowedRoles: ["teacher", "socialWorker", "student"],
+      allowedRoles: ["teacher", "socialWorker", "student", "supervisor"],
     },
     {
       id: 2,
