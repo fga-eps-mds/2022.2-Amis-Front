@@ -541,13 +541,14 @@ export function Turmas(this: any) {
       setVagas(response.data as VagasListarDTO);
     }
   };
-
+  console.log("ROLEEEEEEE = " + role)
   const columnsTable = [
-    role!=="student" &&{
+    {
       field: "actions",
       headerName: "Ações",
       type: "actions",
       width: 200,
+      hide: role === "student",
       getActions: (params: { id: GridRowId }) => [
         // eslint-disable-next-line react/jsx-key
         <GridActionsCellItem

@@ -194,11 +194,12 @@ export function Curso() {
   };
 
   const columnsTableCursos = [
-    role!=="student" &&{
+    {
       field: "actions",
       headerName: "Ações",
       type: "actions",
       flex: 1,
+      hide: role === "student",
       getActions: (params: { id: GridRowId }) => [
         <IconButton
           id="meu-grid-actions-cell-item"
