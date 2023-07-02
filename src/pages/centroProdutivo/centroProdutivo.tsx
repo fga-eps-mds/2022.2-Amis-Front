@@ -344,21 +344,20 @@ export function CentroProdutivo() {
       headerName: "Status",
       flex: 2,
       valueGetter: (params) => {
-      if(params.row.vagas == 0){
+      if(params.row.vagasRestantes <= 0){
         return "Ocupado";
-      }else{
-
+      }else {
         switch (params.row.status){
           case 1:
             return "Disponível";
-            case 2:
+            case 2 :
               return "Ocupado";
               default:
                 return "";
               }
-          } 
-            },
-    },
+            }         
+          }, 
+      },
     {
       field: "turno",
       headerName: "Turno",
