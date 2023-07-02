@@ -204,7 +204,7 @@ export function CentroProdutivo() {
     }
   };
 
-  const fazAgendamento = async (centroProd: CentrosListarDTO) => {
+  const alteraAgendamento = async (centroProd: CentrosListarDTO) => {
     if ((centroProd.vagasRestantes > 0) & (centroProd.status == 1)) {
       const centroEditado = {
         id: centroProd.idCentro,
@@ -220,10 +220,10 @@ export function CentroProdutivo() {
         centroEditado
       );
       if (response.status === 201) {
-        toast.success("Centro Agendado com sucesso!");
+        toast.success("Centro Desagendado com sucesso!");
         await queryClient.invalidateQueries("listar_centro");
       } else {
-        toast.warning("Não foi possivel Agendar esse Centro");
+        toast.warning("Não foi possivel Desagendar esse Centro");
       }
     }
     if ((centroProd.vagasRestantes > 0) & (centroProd.status == 2)) {
@@ -241,10 +241,10 @@ export function CentroProdutivo() {
         centroEditado
       );
       if (response.status === 201) {
-        toast.success("Centro Desagendado com sucesso!");
+        toast.success("Centro Agendado com sucesso!");
         await queryClient.invalidateQueries("listar_centro");
       } else {
-        toast.warning("Não foi possivel Desagendar esse Centro");
+        toast.warning("Não foi possivel Agendar esse Centro");
       }
     } 
   };
@@ -409,16 +409,16 @@ export function CentroProdutivo() {
           params.row.status === 1 &&
           role === "supervisor" ? (
             <PrimaryButton
-              text="Agendar"
+              text="Desagendar"
               handleClick={() => {
-                fazAgendamento(params.row);
+                alteraAgendamento(params.row);
               }}
             />
           ) : vaga[Number(params.id)].vagasDisponiveis >= 1 && params.row.status === 2 ? (
             <PrimaryButton
-              text="Desagendar"
+              text="Agendar"
               handleClick={() => {
-                fazAgendamento(params.row);
+                alteraAgendamento(params.row);
               }}
             />
           ) : null}
