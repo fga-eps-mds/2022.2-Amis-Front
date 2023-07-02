@@ -344,7 +344,7 @@ export function CentroProdutivo() {
       headerName: "Status",
       flex: 2,
       valueGetter: (params) => {
-      if(params.row.vagasRestantes <= 0){
+      if(params.row.vagasRestantes <=0){
         return "Ocupado";
       }else {
         switch (params.row.status){
@@ -411,7 +411,7 @@ export function CentroProdutivo() {
           {vaga[Number(params.id)]?.vagasDisponiveis &&
           vaga[Number(params.id)].vagasDisponiveis >= 1 &&
           params.row.status === 1 &&
-          role === "supervisor" ? (
+          role === "supervisor" ?(
             <PrimaryButton
               text="Desagendar"
               handleClick={() => {

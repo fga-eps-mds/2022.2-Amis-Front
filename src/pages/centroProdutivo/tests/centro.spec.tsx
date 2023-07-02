@@ -18,7 +18,8 @@ import {
   const listaCentrosSpy = jest.spyOn(centrosService, 'listarCentro');
   const editaCentroSpy = jest.spyOn(centrosService, 'editarCentro');
   const excluiCentroSpy = jest.spyOn(centrosService, 'excluirCentro');
-  
+  const inscreveAlunaCentro = jest.spyOn(centrosService, 'inscreveAlunaCentro');
+
   jest.mock('react-toastify', () => ({
   toast: {
       success: jest.fn(),
@@ -153,5 +154,19 @@ import {
       fireEvent.click(simButton);
       });
   });
+
+  it("Teste de clique no botão Inscrever-me",  () => {
+    // eslint-disable-next-line react/react-in-jsx-scope
+    renderComponent();
+    // Encontre o botão "Cadastrar" pelo texto do botão
+    const inscreverMeButton = screen.getByText("Inscrever-me");
+
+    // Simule o clique no botão "Inscrever-me"
+    fireEvent.click(inscreverMeButton);
+    // Você pode adicionar asserções adicionais aqui para verificar se o comportamento esperado ocorre após o clique no botão
+    const modalTitle = screen.getByText('Você foi cadastrada com sucesso!');
+    expect(modalTitle).toBeInTheDocument();
+    });
+
   
   });
