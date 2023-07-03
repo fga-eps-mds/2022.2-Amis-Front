@@ -307,11 +307,12 @@ export function CentroProdutivo() {
   };
 
   const columnsTableCentros = [
-    role === "supervisor" && {
+    {
       field: "actions",
       headerName: "Ações",
       type: "actions",
       flex: 3,
+      hide: role === "student",
       getActions: (params: { id: GridRowId }) => [
         <IconButton
           id="meu-grid-actions-cell-item"
