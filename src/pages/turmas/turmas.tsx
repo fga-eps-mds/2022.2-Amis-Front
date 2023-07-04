@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useContext, useState } from "react";
+import React, { SyntheticEvent, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import Sidebar from "../../shared/components/Sidebar/sidebar";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
@@ -32,6 +32,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { TurmasListarDTO } from "./dtos/TurmasListar.dto";
 import { TurmasDTO } from "./dtos/Turmas.dto";
 import { TurmasCadastrarDTO } from "./dtos/TurmasCadastrar.dto";
+import { ProfessoresCadastrarDTO } from "../professores/dtos/ProfessoresCadastrar.dto";
 import { VagasListarDTO } from "./dtos/VagasListar.dto";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
 import {
@@ -63,6 +64,7 @@ import { parse, compareAsc } from "date-fns";
 import { AiFillEdit } from "react-icons/ai";
 import { excluirAssistente } from "../../services/assistentes";
 import { AuthContext } from "../../context/AuthProvider";
+import { listaProfessores } from "../../services/professores";
 
 const Container = styled.div`
   width: 100%;
@@ -152,6 +154,9 @@ export function Turmas(this: any) {
   const [open, setOpen] = useState(false);
   const [turma, setTurma] = useState(Object);
   const [alunaSelecionada, setAlunaSelecionada] = useState(Object);
+  const [professores, setProfessores] = useState(Array<string>);
+  const [professor, setProfessor] = React.useState<string | null>(null);
+  const [inputValue, setInputValue] = React.useState('');
   const [id, setId] = useState<GridRowId>(0);
   const [codigoTurma, setcodigoTurma] = useState<GridRowId>(0);
   const [codigoRegister, setCodigoRegister] = useState<GridRowId>(0);
@@ -202,7 +207,7 @@ export function Turmas(this: any) {
     const turma = {
       codigo: data.codigo,
       fk_curso: data.fk_curso,
-      fk_professor: data.fk_professor,
+      fk_professor: professor,
       nome_turma: data.nome_turma,
       capacidade_turma: data.capacidade_turma,
       inicio_aula: data.inicio_aula,
@@ -609,7 +614,25 @@ export function Turmas(this: any) {
     { field: "fim_aula", headerName: "Horário de Término", width: 180 },
     { field: "data_inicio", headerName: "Data de Início", width: 165 },
     { field: "data_fim", headerName: "Data de Término", width: 165 },
+  
   ];
+
+  const getProfessores = async () => {
+
+    const response = await listaProfessores();
+    const professoresApi:ProfessoresCadastrarDTO[]= response.data
+    const menuItemProfessores = professoresApi.map((professor:ProfessoresCadastrarDTO) => {
+      return professor.nome
+      
+    });
+
+    setProfessores(menuItemProfessores)
+
+  }
+  
+  useEffect(()=>{
+     getProfessores()
+  },[])
 
   return (
     <Container>
@@ -705,13 +728,30 @@ export function Turmas(this: any) {
               <ValueMask label="inicio_aula" />
               <ValueMask label="fim_aula" />
 
-              <TextField
+              <Autocomplete
+                value={professor}
+                onChange={(event: any, newValue: string | null) => {
+                  setProfessor(newValue);
+                }}
+                inputValue={inputValue}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(newInputValue);
+                }}
+                disablePortal
+                id="combo-box-demo"
+                options={professores}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+                renderInput={(params) => <TextField {...params} label="Professor" />}
+              />
+
+              {/* <TextField
                 id="outlined-professor"
                 required={true}
                 label="Professor"
                 {...register("fk_professor")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
-              />
+              /> */}
+
               <TextField
                 id="outlined-descricao"
                 label="Descrição"
@@ -737,6 +777,7 @@ export function Turmas(this: any) {
               {...register("nomeTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             />
+
             {/* <TextField
               id="outlined-descricao"
               label="Descrição"
@@ -744,6 +785,7 @@ export function Turmas(this: any) {
               {...register("descricaoTurmaEdit")}
               sx={{ width: "100%", background: "#F5F4FF" }}
             /> */}
+
             <TextField
               id="outlined-capacidade_turma"
               label="Número de vagas"
