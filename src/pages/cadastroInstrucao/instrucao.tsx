@@ -45,15 +45,17 @@ const style = getInlineStyles();
 
 export function Instrucao(props: any) {
 
+  const [selected, setSelected] = useState(String);
   const [open, setOpen] = useState(false);
   const [instrucao,setInstrucao] = useState(Object);
+  const [idCurso, setIdCurso] = useState('');
+  const [idCursoEdit, setIdCursoEdit] = useState('');
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [openEdit, setOpenEdit] = useState(false);
   const handleCloseEdit = () => setOpenEdit(false);
   const [items, setItems] = useState<InstrucoesListarDTO[]>([]);
   const [options, setOptions] = useState<CursosListarDTO[]>([]);
-  const [selectedOption, setSelectedOption] = useState('');
   const { role } = useContext(AuthContext);
 
   useQuery("listar_instrucoes", async () => {
@@ -94,7 +96,7 @@ export function Instrucao(props: any) {
     const currentDate = new Date().toISOString().split("T")[0];
     const instrucao = {
       nome: data.nome,
-      idCurso: data.idCurso,
+      idCurso: idCurso,
       descricao: data.descricao,
       dataCadastro: currentDate,
     } as InstrucoesCadastrarDTO;
@@ -103,6 +105,11 @@ export function Instrucao(props: any) {
     if (response.status === 201) {
       handleClose();
       toast.success("Instrução cadastrada com sucesso!");
+      setInstrucao(instrucao);
+      setValue("nome", '');
+      setValue("idCurso", '');
+      setValue("descricao",'');
+      setIdCurso('');
     } else {
       toast.error("Erro ao cadastrar a instrucao.");
     }
@@ -121,6 +128,7 @@ export function Instrucao(props: any) {
     setValue("nomeEdit", instrucao.nome);
     setValue("idCursoEdit", instrucao.idCurso);
     setValue("descricaoEdit",instrucao.descricao);
+    setIdCursoEdit(instrucao.idCurso);
     setOpenEdit(true);
   };
 
@@ -129,7 +137,7 @@ export function Instrucao(props: any) {
     
     const instrucaoEditada = {
       nome: data.nomeEdit,
-      idCurso: data.idCursoEdit,
+      idCurso: idCursoEdit,
       descricao: data.descricaoEdit,
       dataCadastro: instrucao.dataCadastro,
       id: instrucao.id
@@ -146,8 +154,7 @@ export function Instrucao(props: any) {
   };
 
   const handleSelectChange = async (event: any) => {
-    //setSelectedOption(event.target.value);
-    console.log(event)
+    setSelected(event)
     if(event == null) 
       await queryClient.invalidateQueries("listar_instrucoes");
     else {
@@ -162,6 +169,15 @@ export function Instrucao(props: any) {
     }
   };
 
+  const handleSelectCurso= async (event: any) => {
+    setIdCurso(event);
+ 
+  };
+  const handleSelectCursoEdit= async (event: any) => {
+    setIdCursoEdit(event);
+ 
+  };
+
   return (
     <Container>
       {props.home === false &&
@@ -171,17 +187,18 @@ export function Instrucao(props: any) {
       {props.home === true && (
         <Navbar hideButton={true}/>
       )}
-        <Navbarlog text={"Receitas"} />
-        <CursoSelect 
-          cursos={options} 
-          onSelectCurso={handleSelectChange}
-        />
+        <Navbarlog text={"Instruções"} />
         <DivButtons>
-        {role !== "student" && props.home == false ? (
+          <CursoSelect 
+            cursos={options} 
+            onSelectCurso={handleSelectChange}
+            selectedOption={selected}
+          />
+          {role !== "student" && props.home == false ? (
             <PrimaryButton text={"Cadastrar"} handleClick={handleOpen} />
-        ) : (
-            <></>
-        )}
+          ) : (
+              <></>
+          )}
         </DivButtons>
         <VisualizarInstrucao
           items={items}
@@ -203,12 +220,10 @@ export function Instrucao(props: any) {
                 {...register("nome")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              <TextField
-                id="outlined-curso"
-                label="Curso"
-                required={true}
-                {...register("idCurso")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
+              <CursoSelect 
+                cursos={options} 
+                onSelectCurso={handleSelectCurso}
+                selectedOption={idCurso}
               />
               <TextField
                 id="outlined-observacao"
@@ -238,12 +253,10 @@ export function Instrucao(props: any) {
                 {...register("nomeEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
-              <TextField
-                id="outlined-nome"
-                label="Curso"
-                required={true}
-                {...register("idCursoEdit")}
-                sx={{ width: "100%", background: "#F5F4FF" }}
+              <CursoSelect 
+                cursos={options} 
+                onSelectCurso={handleSelectCursoEdit}
+                selectedOption={idCursoEdit}
               />
               <TextField
                 id="outlined-nome"

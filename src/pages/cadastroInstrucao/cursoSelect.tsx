@@ -10,14 +10,15 @@ interface Styles {
 
 const styles: Styles = {
   container: {
-    marginLeft: '30px',
+    position: 'relative',
+    marginLeft: '0px',
     display: 'flex',
     alignItems: 'center',
     borderRadius: '4px',
-    background: '#ffffff',
-    width: '300px'
+    width: '100%'
   },
   select: {
+    backgroundColor: "#F5F4FF",
     border: '1px solid #cccccc',
     borderRadius: '4px',
     color: '#555555',
@@ -27,13 +28,15 @@ const styles: Styles = {
     paddingRight: '30px' // Aumentando o padding à direita para acomodar o ícone de lupa
   },
   searchIcon: {
-    marginLeft: '-40px',
+    position: 'absolute',
+    right: '20px',
     color: '#555555', // Definindo a cor do ícone como a cor do texto
   },
 };
 
 interface CursoSelectProps {
   cursos: CursosListarDTO[];
+  selectedOption: any;
   onSelectCurso: (curso: any) => void; // Função para manipular a seleção do curso
 }
 
@@ -45,8 +48,8 @@ const CursoSelect: React.FC<CursoSelectProps> = (props) => {
 
   return (
     <div style={styles.container}>
-      <select style={styles.select} onChange={handleCursoChange}>
-        <option value="">Selecione um curso</option> {/* Adicionando a primeira opção */}
+      <select value={props?.selectedOption} style={styles.select} onChange={handleCursoChange}>
+        <option>Selecione um curso</option> {/* Adicionando a primeira opção */}
         {props?.cursos?.map((curso: CursosListarDTO) => (
           <option key={curso.id} value={curso.id.toString()}>{curso.nome}</option>
         ))}
