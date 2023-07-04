@@ -177,7 +177,7 @@ export function CentroProdutivo() {
   const [selectedCentro, setSelectedCentro] = useState(null)
   const [Centro, setCentro] = useState(Object)
   const [id, setId] = useState<GridRowId>(0)
-  const [openEdit, setOpenEdit] = useState(false)
+  const [openEdit, setOpenEdit] = useState(false);
   const [dataTable, setDataTable] = useState(Array<Object>)
   const {
     register,
@@ -185,8 +185,10 @@ export function CentroProdutivo() {
     setValue,
     formState: { errors },
   } = methods
-  const { role } = useContext(AuthContext)
-  const [openExportar, setOpenExportar] = useState(false)
+  const { role } = useContext(AuthContext);
+
+  const [openExportar, setOpenExportar] = useState(false);
+
   const handleOpenExportar = () => {
     setOpenExportar(true)
     console.log('Abrir tela de exportação')
@@ -329,7 +331,7 @@ export function CentroProdutivo() {
     setValue('descricaoEdit', centro.descricao)
     setValue('statusEdit', centro.status)
     setValue('turnoEdit', centro.turno)
-    setOpenEdit(true)
+    carregarAlunasDoCentro(centro.id);
   }
 
   const editCentro = async (data: any) => {
@@ -364,7 +366,7 @@ export function CentroProdutivo() {
       flex: 2,
       renderCell: (params:any) => (
         <TextField
-          value={params.value}
+          //value={params.value}
           onChange={(e) => {
             handleCellValueChange({ id: params.row.id, field: 'comentario', value: e.target.value });
           }}
@@ -380,7 +382,7 @@ export function CentroProdutivo() {
       flex: 1,
       renderCell: (params:any) => (
         <TextField
-          value={params.value}
+          //value={params.value}
           onChange={(e) => {
             handleCellValueChange({ id: params.row.id, field: 'status', value: e.target.value });
           }}
@@ -396,7 +398,7 @@ export function CentroProdutivo() {
       flex: 1,
       renderCell: (params:any) => (
         <TextField
-          value={params.value}
+          //value={params.value}
           onChange={(e) => {
             handleCellValueChange({ id: params.row.id, field: 'nota', value: e.target.value });
           }}
@@ -412,7 +414,7 @@ export function CentroProdutivo() {
       flex: 1,
       renderCell: (params:any) => (
         <TextField
-          value={params.value}
+          //value={params.value}
           onChange={(e) => {
             handleCellValueChange({ id: params.row.id, field: 'quantidade_produzida', value: e.target.value });
           }}
@@ -428,7 +430,7 @@ export function CentroProdutivo() {
       flex: 1,
       renderCell: (params:any) => (
         <TextField
-          value={params.value}
+          //value={params.value}
           onChange={(e) => {
             handleCellValueChange({ id: params.row.id, field: 'quantidade_desejada', value: e.target.value });
           }}
@@ -458,6 +460,7 @@ export function CentroProdutivo() {
           data-testid='teste-editar'
           onClick={async () => {
             carregarCentro(params.id)
+            setOpenEdit(true);
           }}
         >
           <AiFillEdit size={20} />
@@ -485,9 +488,8 @@ export function CentroProdutivo() {
           text={'Exportar'}
           handleClick={() => {
             //queryClient.invalidateQueries('listar_alunas_cadastradas');
-            handleOpenExportar();
             carregarCentro(params.id);
-            carregarAlunasDoCentro(Centro.id);
+            handleOpenExportar();
           }}
         ></ActionButton>,
       ],
@@ -525,6 +527,7 @@ export function CentroProdutivo() {
           </DialogActions>
         </Dialog>
       </Content>
+
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <FormProvider {...methods}>
@@ -580,6 +583,69 @@ export function CentroProdutivo() {
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
+          <Box sx={style}>
+          <FormProvider {...methods}>
+            <FormText>Altere os dados cadastrados</FormText>
+            <Form onSubmit={handleSubmit(editCentro)}>
+            <TextField
+                id="outlined-codigo"
+                label="Código"
+                required={true}
+                disabled={true}
+                {...register("idEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-descricao"
+                label="Descrição"
+                required={true}
+                inputProps={{ maxLength: 170 }}
+                {...register("descricaoEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label" required={true}>
+                  Status
+                </InputLabel>
+                <Select
+                  id="simple-select-label-status"
+                  labelId="simple-select-status"
+                  label="Status"
+                  {...register("statusEdit")}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
+                >
+                  <MenuItem value={1 as any}>Disponível</MenuItem>
+                  <MenuItem value={2 as any}>Ocupado</MenuItem>
+                </Select>
+
+              </FormControl>
+
+              <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label" required={true}>
+                    Turno
+                  </InputLabel>
+                  <Select
+                    id="simple-select-label-turno"
+                    labelId="simple-select-turno"
+                    label="Turno"
+                    {...register("turnoEdit")}
+                    sx={{ width: "100%", background: "#F5F4FF" }}
+                  >
+                    <MenuItem value={1 as any}>Matutino</MenuItem>
+                    <MenuItem value={2 as any}>Vespertino</MenuItem>
+                    <MenuItem value={3 as any}>Noturno</MenuItem>
+                    <MenuItem value={4 as any}>Diurno</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <ValueMask label="data_agendadaEdit" />
+
+              <PrimaryButton text={"Editar"} />
+            </Form>
+            </FormProvider>
+          </Box>
+      </Modal>
+      <Modal open={openExportar} onClose={() => setOpenExportar(false)}>
       <Box sx={style} style={{ width: 900 }}>
           <FormProvider {...methods}>
             <FormText
@@ -623,7 +689,8 @@ export function CentroProdutivo() {
             >
               <PrimaryButton
                 text={"Exportar PDF"}
-                handleClick={() => salvarDadosRelatorio(listaDeAlunas[0])}
+                handleClick={() => {salvarDadosRelatorio(listaDeAlunas)
+                handleCloseExportar();}}
                 //handleClick={() => console.log(listaDeAlunas[0].status)}
               />
             </div>
