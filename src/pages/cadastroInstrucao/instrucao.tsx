@@ -186,6 +186,7 @@ export function Instrucao(props: any) {
         <VisualizarInstrucao
           items={items}
           openModal={carregarInstrucoes}
+          home={props.home}
         />
 
       </Content>

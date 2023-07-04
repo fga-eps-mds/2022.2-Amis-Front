@@ -128,7 +128,7 @@ export function Item(props: any) {
           </div>
           <p style={styles.p}>{props.descricao}</p>
         </div>
-          {role !== "student" && (
+          {role !== "student" && props.home == false && (
         <div>
           <IconButton
             id="meu-grid-actions-cell-item"

@@ -30,6 +30,7 @@ const VisualizarInstrucao = (props: any | []) => {
           subtitulo={item.idCurso}
           descricao={item.descricao}
           openModal={handleClickModal}
+          home={props.home}
         />
       ))}
     </div>
