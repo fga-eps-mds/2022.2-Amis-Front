@@ -42,3 +42,18 @@ export const cadastrarNotaAluno = async (payload: NotaAlunoCadastrarDTO) => {
   }
 
 };
+
+export const listarAlunasCentro = async (CentroId: string) => {
+  console.log("O id que chegou:"+CentroId);
+  return await apiProduction
+    .get("/centro/" + CentroId+"/inscricoes/")
+    .then((response) => response)
+    .catch((error) => error);
+};
+
+export const gerarRelatorio = async (payload: any) => {
+  return await apiProduction
+    .post("/relatorio/", payload)
+    .then((response) => response)
+    .catch((error) => error);
+};

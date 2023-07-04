@@ -14,8 +14,15 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  TableContainer,
+  Table,
+  Paper,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@mui/material'
-import { GridActionsCellItem, GridRowId } from '@mui/x-data-grid'
+import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
 import { useState, useContext } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { AiFillEdit } from 'react-icons/ai'
@@ -29,6 +36,8 @@ import {
   excluirCentro,
   listarCentro,
   cadastrarNotaAluno,
+  listarAlunasCentro,
+  gerarRelatorio,
 } from '../../services/centroProdutivo'
 import { queryClient } from '../../services/queryClient'
 import Navbarlog from '../../shared/components/NavbarLogada/navbarLogada'
@@ -41,7 +50,7 @@ import { CentrosListarDTO } from './dtos/CentrosListar.dto'
 import { NotaAlunoCadastrarDTO } from './dtos/NotaAlunoCadastrarDTO'
 import { AuthContext } from '../../context/AuthProvider'
 import ValueMask from '../../shared/components/Masks/ValueMask'
-import AlunasSelect from "./alunasSelect";
+
 
 function transformDate(date: any) {
   const parts = date.split('/')
@@ -140,6 +149,24 @@ const styleFormMiniBox = {
 }
 
 export function CentroProdutivo() {
+  const [listaDeAlunas, setListaDeAlunas] = useState<any[]>([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleSelectionChange = (selectionModel:any) => {
+    setSelectedRows(selectionModel);
+  };
+
+  const handleCellValueChange = (params:any) => {
+    const updatedRows = listaDeAlunas.map((row:any) => {
+      if (row.id === params.id) {
+        return { ...row, [params.field]: params.value };
+      }
+      return row;
+    });
+
+    setListaDeAlunas(updatedRows);
+  };
+
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -177,9 +204,11 @@ export function CentroProdutivo() {
     qtdDesejada: number
   }
   const [formDataArray, setFormDataArray] = useState<formData[]>([])
+
   const handleAddForm = () => {
     setFormDataArray([...formDataArray, {} as formData])
   }
+
   const [openAgendar, setOpenAgendar] = useState(false)
   const handleOpenAgendar = () => {
     setOpenAgendar(true)
@@ -189,25 +218,53 @@ export function CentroProdutivo() {
     setOpenAgendar(false)
     console.log('Fechar tela de agendamento')
   }
-  const registerNotaAluno = async (data: any) => {
-    const NotaAluno = {
-      nome: data.nome,
-      comentario: data.comentario,
-      frequencia: data.frequencia,
-      nota: data.frequencia,
-      qtdProduzida: data.qtdProduzida,
-      qtdDesejada: data.qtdDesejada,
-    } as NotaAlunoCadastrarDTO;
 
-    const response: any = await cadastrarNotaAluno(NotaAluno);
+  // const registerNotaAluno = async (data: any) => {
+  //   const NotaAluno = {
+  //     nome: data.nome,
+  //     comentario: data.comentario,
+  //     frequencia: data.frequencia,
+  //     nota: data.frequencia,
+  //     qtdProduzida: data.qtdProduzida,
+  //     qtdDesejada: data.qtdDesejada,
+  //   } as NotaAlunoCadastrarDTO;
+
+  //   const response: any = await cadastrarNotaAluno(NotaAluno);
+
+  //   if (response.status === 201) {
+  //     setOpen(false);
+  //     queryClient.invalidateQueries("listar_NotaAluno");
+  //     toast.success("Nota do aluno cadastrada com sucesso!");
+  //   }
+  // }
+
+  const carregarAlunasDoCentro= async (idDoCentro: any) => {
+    const response = await listarAlunasCentro(idDoCentro);
+    const temp: any[] = [];
+    response.data.forEach((value: any, index: number) => {
+      temp.push({
+        id: index,
+        nome_aluno: value.nome,
+        login: value.login,
+        confirmado: value.confirmado,
+        centroId: value.status,
+      });
+    });
+    setListaDeAlunas(temp);
+  };
+
+  const salvarDadosRelatorio = async(dadosAlunas:any)=>{
+    const response = await gerarRelatorio(dadosAlunas);
 
     if (response.status === 201) {
-      setOpen(false);
-      queryClient.invalidateQueries("listar_NotaAluno");
-      toast.success("Nota do aluno cadastrada com sucesso!");
+      //setOpen(false)
+      //queryClient.invalidateQueries('listar_centro')
+      toast.success('Dados do relatorio salvos com sucesso!')
+    } else {
+      toast.error('Campos inválidos')
     }
-  }
 
+  }
 
   const registerCentro = async (data: any) => {
     const dataFormatada = transformDate(data.data_agendada)
@@ -218,7 +275,7 @@ export function CentroProdutivo() {
       turno: data.turno,
     } as CentrosCadastrarDTO
     console.log(data)
-    const response = await cadastrarCentro(centro)
+    const response = await cadastrarCentro(centro);
 
     if (response.status === 201) {
       setOpen(false)
@@ -266,6 +323,7 @@ export function CentroProdutivo() {
     })
     const centro = response as CentrosListarDTO
     setCentro(centro)
+    console.log("Carregando o centro: "+centro.id);
     setValue('idEdit', centro.id)
     setValue('data_agendadaEdit', centro.data_agendada)
     setValue('descricaoEdit', centro.descricao)
@@ -298,17 +356,101 @@ export function CentroProdutivo() {
     }
   }
 
+  const columnsTableAlunasNoCentro = [
+    { field: 'nome_aluno', headerName: 'Nome da Aluna', flex: 2 },
+    {
+      field: 'comentario',
+      headerName: 'Comentario',
+      flex: 2,
+      renderCell: (params:any) => (
+        <TextField
+          value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'comentario', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'status',
+      headerName: 'Frequencia',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'status', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'nota',
+      headerName: 'Nota',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'nota', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'quantidade_produzida',
+      headerName: 'Qtd Produzida',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'quantidade_produzida', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'quantidade_desejada',
+      headerName: 'Qtd Desejada',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'quantidade_desejada', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+  ];
+
   const columnsTableCentros = [
-    { field: 'id', headerName: 'Código', flex: 2 },
+    { field: 'id', headerName: 'Código', flex: 1 },
     { field: 'descricao', headerName: 'Descrição', flex: 2 },
     { field: 'data_agendada', headerName: 'Data de Alocação', flex: 2 },
-    { field: 'status', headerName: 'Status', flex: 2 },
-    { field: 'turno', headerName: 'Turno', flex: 2 },
+    { field: 'status', headerName: 'Status', flex: 1 },
+    { field: 'turno', headerName: 'Turno', flex: 1 },
     {
       field: 'actions',
       headerName: 'Ações',
       type: 'actions',
-      flex: 1,
+      flex: 3,
       getActions: (params: { id: GridRowId }) => [
         <IconButton
           key='editar'
@@ -341,7 +483,12 @@ export function CentroProdutivo() {
         <ActionButton
           key='exportar'
           text={'Exportar'}
-          handleClick={handleOpenExportar}
+          handleClick={() => {
+            //queryClient.invalidateQueries('listar_alunas_cadastradas');
+            handleOpenExportar();
+            carregarCentro(params.id);
+            carregarAlunasDoCentro(Centro.id);
+          }}
         ></ActionButton>,
       ],
     },
@@ -433,131 +580,54 @@ export function CentroProdutivo() {
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
-        <Box sx={style}>
+      <Box sx={style} style={{ width: 900 }}>
           <FormProvider {...methods}>
-            <FormText>Altere os dados cadastrados</FormText>
-            <Form onSubmit={handleSubmit(editCentro)}>
-              <TextField
-                id='outlined-codigo'
-                label='Código'
-                required={true}
-                disabled={true}
-                {...register('idEdit')}
-                sx={{ width: '100%', background: '#F5F4FF' }}
-              />
-              <TextField
-                id='outlined-descricao'
-                label='Descrição'
-                required={true}
-                inputProps={{ maxLength: 170 }}
-                {...register('descricaoEdit')}
-                sx={{ width: '100%', background: '#F5F4FF' }}
-              />
-              <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label' required={true}>
-                  Status
-                </InputLabel>
-                <Select
-                  id='simple-select-label-status'
-                  labelId='simple-select-status'
-                  label='Status'
-                  {...register('statusEdit')}
-                  sx={{ width: '100%', background: '#F5F4FF' }}
+            <FormText
+              style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
+            >
+              Relatório da Produção.
+            </FormText>
+            <div
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                marginBottom: 50,
+              }}
+            >
+              <TableContainer
+                component={Paper}
+                style={{ width: 280, justifyContent: "center" }}
+              >
+                <Table
+                  sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
+                  aria-label="simple table"
                 >
-                  <MenuItem value={1 as any}>Disponível</MenuItem>
-                  <MenuItem value={2 as any}>Ocupado</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label' required={true}>
-                  Turno
-                </InputLabel>
-                <Select
-                  id='simple-select-label-turno'
-                  labelId='simple-select-turno'
-                  label='Turno'
-                  {...register('turnoEdit')}
-                  sx={{ width: '100%', background: '#F5F4FF' }}
-                >
-                  <MenuItem value={1 as any}>Matutino</MenuItem>
-                  <MenuItem value={2 as any}>Vespertino</MenuItem>
-                  <MenuItem value={3 as any}>Noturno</MenuItem>
-                  <MenuItem value={4 as any}>Diurno</MenuItem>
-                </Select>
-              </FormControl>
-
-              <ValueMask label='data_agendadaEdit' />
-
-              <PrimaryButton text={'Editar'} />
-            </Form>
-          </FormProvider>
-        </Box>
-      </Modal>
-      <Modal open={openAgendar} onClose={() => setOpenAgendar(false)}>
-        <Box sx={style}>
-          <FormProvider {...methods}>
-            <FormText>Preencha corretamente os dados cadastrais</FormText>
-            <Form onSubmit={handleSubmit(editCentro)}>
-              <TextField
-                id='outlined-descricao'
-                label='Descrição'
-                required={true}
-                inputProps={{ maxLength: 170 }}
-                {...register('descricaoEdit')}
-                sx={{ width: '100%', background: '#F5F4FF' }}
-              />
-              <ValueMask label='data_agendadaEdit' />
-
-              <PrimaryButton text={'Agendar'} />
-            </Form>
-          </FormProvider>
-        </Box>
-      </Modal>
-      <Modal open={openExportar} onClose={() => setOpenExportar(false)}>
-        <Box sx={styleBigBox}>
-          <FormText> Relatório da produção </FormText>
-          <Box sx={styleBoxForm}>
-            {formDataArray.map((formData, index) => (
-              <form key={index} onSubmit={handleSubmit(registerNotaAluno)}>
-                <AlunasSelect alunas={options} onSelectAlunas={handleSelectChange} />
-                <TextField sx={styleFormMiniBox} label='Comentário' />
-                <TextField sx={styleFormMiniBox} label='Frequência' required />
-                <TextField sx={styleFormMiniBox} label='Nota' required />
-                <TextField
-                  sx={styleFormMiniBox}
-                  label='Qtd Produzida'
-                  required
-                />
-                <TextField
-                  sx={styleFormMiniBox}
-                  
-                  label='Qtd Desejada'
-                  required
-                />
-              </form>
-            ))}
-          </Box>
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 0,
-              display: 'flex',
-              flexDirection: 'row',
-              gap: '20px',
-              margin: '20px',
-            }}
-          >
-            <DivButtons>
+                </Table>
+              </TableContainer>
+            </div>
+            {/* { TABELA DE ALUNAS NO CENTRO} */}
+            {
+              <DataGrid
+              rows={listaDeAlunas}
+              columns={columnsTableAlunasNoCentro}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+            />
+            }
+            <div
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                marginTop: 20,
+              }}
+            >
               <PrimaryButton
-                text='Adicionar Aluno'
-                handleClick={handleAddForm}
+                text={"Exportar PDF"}
+                handleClick={() => salvarDadosRelatorio(listaDeAlunas[0])}
+                //handleClick={() => console.log(listaDeAlunas[0].status)}
               />
-            </DivButtons>
-            <DivButtons>
-              <PrimaryButton text={"Exportar PDF"} />
-            </DivButtons>
-          </Box>
+            </div>
+          </FormProvider>
         </Box>
       </Modal>
     </Container>
