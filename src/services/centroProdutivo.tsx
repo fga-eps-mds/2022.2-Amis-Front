@@ -1,5 +1,5 @@
 import { CentrosCadastrarDTO } from "../pages/centroProdutivo/dtos/CentrosCadastrar.dto";
-import { apiProduction} from "./api";
+import { apiProduction } from "./api";
 
 export const cadastrarCentro = async (payload: CentrosCadastrarDTO) => {
   return await apiProduction
@@ -25,6 +25,16 @@ export const editarCentro = async (CentroId: string, Centro: Object) => {
 export const excluirCentro = async (CentroId: string) => {
   return await apiProduction
     .delete("/centro/" + CentroId)
+    .then((response) => response)
+    .catch((error) => error);
+};
+
+export const inscreveAlunaCentro = async (
+  idCentroProd: string,
+  idAluna: string
+) => {
+  return await apiProduction
+    .post(`/centro/${idCentroProd}/inscrever/${idAluna}`)
     .then((response) => response)
     .catch((error) => error);
 };
