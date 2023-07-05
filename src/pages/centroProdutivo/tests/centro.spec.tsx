@@ -18,7 +18,8 @@ import {
   const listaCentrosSpy = jest.spyOn(centrosService, 'listarCentro');
   const editaCentroSpy = jest.spyOn(centrosService, 'editarCentro');
   const excluiCentroSpy = jest.spyOn(centrosService, 'excluirCentro');
-  
+  const inscreveAlunaCentro = jest.spyOn(centrosService, 'inscreveAlunaCentro');
+
   jest.mock('react-toastify', () => ({
   toast: {
       success: jest.fn(),
@@ -46,7 +47,7 @@ import {
       // eslint-disable-next-line react/react-in-jsx-scope
       renderComponent();
       // Encontre o botão "Cadastrar" pelo texto do botão
-      const cadastrarButton = screen.getByText("Cadastrar");
+      const cadastrarButton = screen.getByText("Agendar nova Produção");
   
       // Simule o clique no botão "Cadastrar"
       fireEvent.click(cadastrarButton);
@@ -63,7 +64,7 @@ import {
   
       renderComponent();
       
-      const cadastrarButton = screen.getByText('Cadastrar');
+      const cadastrarButton = screen.getByText('Agendar nova Produção');
       fireEvent.click(cadastrarButton);
       
       const inputDescricao = screen.getByLabelText("Descrição *");
@@ -84,7 +85,7 @@ import {
       // Verifique se o spy foi chamado corretamente
       expect(toastSuccessSpy).toHaveBeenCalledWith("Centro cadastrado com sucesso!");
   });
-  
+
   it('deve editar um centro ao submeter o formulário', async () => {
   
       const centro = {
@@ -153,5 +154,5 @@ import {
       fireEvent.click(simButton);
       });
   });
-  
-  });
+
+});

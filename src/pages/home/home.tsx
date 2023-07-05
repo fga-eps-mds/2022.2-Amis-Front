@@ -8,7 +8,6 @@ import { QtdAlunasDTO } from "./dtos/QtdAlunas.dto";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { QtdAlunasFormDTO } from "./dtos/QtdAlunasForm.dto";
-import { baseApi, userApi } from "../../services/api";
 
 
 const DivPresentation = styled.div`

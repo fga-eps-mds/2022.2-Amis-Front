@@ -13,16 +13,13 @@ interface Props {
 
 interface IUser {
   token?: string;
+  email?: string;
 }
 
 export type Roles = "socialWorker" | "student" | "teacher" | "supervisor";
 interface IAuthContext extends IUser {
   user: IUser | null;
-  authenticate: (
-    email: string,
-    senha: string,
-    role: Roles
-  ) => Promise<IUser>;
+  authenticate: (email: string, senha: string, role: Roles) => Promise<IUser>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -38,12 +35,13 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [role, setRole] = useState<Roles | undefined>(undefined);
 
   async function authenticate(email: string, senha: string, role2: Roles) {
+    console.log({ email, senha });
     const response = await LoginRequest(email, senha, role2);
 
     const payload = {
       role: role2,
       token: response?.token,
-      email: response?.email,
+      email,
     };
 
     setRole(role2);
@@ -64,7 +62,6 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       }
       setLoading(false);
     }
-    
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadUser();

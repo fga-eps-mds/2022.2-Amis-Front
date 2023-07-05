@@ -28,6 +28,7 @@ import {
   Typography,
   OutlinedInput,
   InputAdornment,
+  IconButton,
 } from "@mui/material";
 
 import { ProfessoresListarDTO } from "./dtos/ProfessoresListar.dto";
@@ -355,10 +356,6 @@ export function Professores() {
   };
 
   const columnsTable = [
-    { field: "nome", headerName: "Nome", flex: 2 },
-    { field: "login", headerName: "Login", flex: 2 },
-    { field: "cpf", headerName: "CPF", flex: 2 },
-    { field: "data_nascimento", headerName: "Data Nascimento", flex: 2 },
     {
       field: "actions",
       headerName: "Ações",
@@ -366,31 +363,40 @@ export function Professores() {
       flex: 1,
       getActions: (params: { id: GridRowId }) => [
         // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          icon={<AiFillEdit size={20} />}
-          label="Editar"
-          onClick={async () => {
-            carregarProfessores(params.id);
-            setId(params.id);
-            setOpenEdit(true);
-          }}
-        />,
-        // eslint-disable-next-line react/jsx-key
-        <GridActionsCellItem
-          key={params.id}
-          icon={<BsFillTrashFill size={18} />}
-          label="Deletar"
+        <IconButton
+          id="meu-grid-actions-cell-item"
+            data-testid="teste-editar"
+            onClick={async () => {
+              carregarProfessores(params.id);
+              setId(params.id);
+              setOpenEdit(true);
+            }}
+          >
+            <AiFillEdit size={20} />
+            <Typography variant="body2"></Typography>
+          </IconButton>,
+
+          <IconButton
+          data-testid="teste-excluir"
           onClick={() => {
             setId(params.id);
             const selectedRow = dataTable.find((item) => (item as any).id === params.id);
             if (selectedRow) {
               setSelectedProfessor((selectedRow as any).login);
               handleOpenConfirmation();
-            }
           }}
-        />,
+          }>
+          <BsFillTrashFill size={18} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+        // eslint-disable-next-line react/jsx-key
       ],
     },
+    { field: "nome", headerName: "Nome", flex: 2 },
+    { field: "login", headerName: "Login", flex: 2 },
+    { field: "cpf", headerName: "CPF", flex: 2 },
+    { field: "data_nascimento", headerName: "Data Nascimento", flex: 2 },
+    
   ];
 
   return (

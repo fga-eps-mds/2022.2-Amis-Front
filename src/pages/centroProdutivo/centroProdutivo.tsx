@@ -21,41 +21,45 @@ import {
   TableRow,
   TableCell,
   TableBody,
-} from '@mui/material'
+} from '@mui/material';
+// import { AuthContext, Roles } from "../../../context/AuthProvider";
+import { Roles } from "../../context/AuthProvider";
 import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
-import { useState, useContext } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { AiFillEdit } from 'react-icons/ai'
-import { BsFillTrashFill } from 'react-icons/bs'
-import { useQuery } from 'react-query'
-import { toast } from 'react-toastify'
-import styled from 'styled-components'
+import ActionButton from '../../shared/components/ActionButton/ActionButton'
+import { useState, useContext, useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { AiFillEdit } from "react-icons/ai";
+import { BsFillTrashFill } from "react-icons/bs";
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
+import styled from "styled-components";
 import {
   cadastrarCentro,
   editarCentro,
+  inscreveAlunaCentro,
   excluirCentro,
   listarCentro,
-  cadastrarNotaAluno,
   listarAlunasCentro,
   gerarRelatorio,
-} from '../../services/centroProdutivo'
-import { queryClient } from '../../services/queryClient'
-import Navbarlog from '../../shared/components/NavbarLogada/navbarLogada'
-import PrimaryButton from '../../shared/components/PrimaryButton/PrimaryButton'
-import ActionButton from '../../shared/components/ActionButton/ActionButton'
-import Sidebar from '../../shared/components/Sidebar/sidebar'
-import DataTable from '../../shared/components/TablePagination/tablePagination'
-import { CentrosCadastrarDTO } from './dtos/CentrosCadastrar.dto'
-import { CentrosListarDTO } from './dtos/CentrosListar.dto'
-import { NotaAlunoCadastrarDTO } from './dtos/NotaAlunoCadastrarDTO'
-import { AuthContext } from '../../context/AuthProvider'
-import ValueMask from '../../shared/components/Masks/ValueMask'
-
+} from "../../services/centroProdutivo";
+import { queryClient } from "../../services/queryClient";
+import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
+import PrimaryButton from "../../shared/components/PrimaryButton/PrimaryButton";
+import ButtonAgendar from "../../shared/components/ButtonAgendar/ButtonAgendar";
+import Sidebar from "../../shared/components/Sidebar/sidebar";
+import DataTable from "../../shared/components/TablePagination/tablePagination";
+import { CentrosCadastrarDTO } from "./dtos/CentrosCadastrar.dto";
+import { CentrosListarDTO } from "./dtos/CentrosListar.dto";
+import { AuthContext } from "../../context/AuthProvider";
+import ValueMask from "../../shared/components/Masks/ValueMask";
+// import { VagasCentroProdutivoDTO } from "./dtos/VagasCentroProdutivo";
+import { VagasListarCentroDTO } from "./dtos/VagasListarCentro.dto";
+// Estado inicial vazio
 
 function transformDate(date: any) {
-  const parts = date.split('/')
-  const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`
-  return transformedDate
+  const parts = date.split("/");
+  const transformedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  return transformedDate;
 }
 
 const Container = styled.div`
@@ -63,14 +67,14 @@ const Container = styled.div`
   height: 100vh;
   background: ${(props) => props.theme.colors.grey};
   display: inline-flex;
-`
+`;
 
 const Content = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-`
+`;
 
 const DivButtons = styled.div`
   width: 85%;
@@ -79,7 +83,7 @@ const DivButtons = styled.div`
   gap: 20px;
   margin: 0 auto;
   padding-top: 30px;
-`
+`;
 
 const Form = styled.form`
   width: 100%;
@@ -87,7 +91,7 @@ const Form = styled.form`
   flex-direction: column;
   align-items: center;
   gap: 30px;
-`
+`;
 
 const FormText = styled.h1`
   color: #525252;
@@ -95,66 +99,44 @@ const FormText = styled.h1`
   font-weight: 400;
   text-align: left;
   padding-bottom: 25px;
-`
+`;
 
 const style = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute" as const,
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 600,
-  bgcolor: 'background.paper',
-  border: 'none',
+  bgcolor: "background.paper",
+  border: "none",
   boxShadow: 24,
   p: 4,
-  padding: '50px',
-  height: '75%',
-  overflow: 'hidden',
-  overflowY: 'scroll',
-}
-
-const styleBigBox = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '95%',
-  height: '85%',
-  bgcolor: 'background.paper',
-  border: 'none',
-  boxShadow: 24,
-  p: 4,
-  padding: '25px',
-  overflow: 'hidden',
-  overflowY: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '30px',
-}
-
-const styleBoxForm = {
-  overflowY: 'scroll',
-  height: '90%',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'top',
-  alignItems: 'center',
-  marginBottom: '100px',
-  gap: '20px',
-}
-const styleFormMiniBox = {
-  margin: '5px',
-}
+  padding: "50px",
+  height: "75%",
+  overflow: "hidden",
+  overflowY: "scroll",
+};
 
 export function CentroProdutivo() {
   const [listaDeAlunas, setListaDeAlunas] = useState<any[]>([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-
-  const handleSelectionChange = (selectionModel:any) => {
-    setSelectedRows(selectionModel);
-  };
+  const [open, setOpen] = useState(false);
+  const [openExportar, setOpenExportar] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const handleOpenConfirmation = () => setOpenConfirmation(true);
+  const handleCloseConfirmation = () => setOpenConfirmation(false);
+  const methods = useForm();
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [selectedCentro, setSelectedCentro] = useState(null);
+  const [Centro, setCentro] = useState(Object);
+  const [id, setId] = useState<GridRowId>(0);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [dataTable, setDataTable] = useState(Array<Object>);
+  const [vaga, setVagas] = useState<VagasListarCentroDTO[]>([]);
+  // const para alterar vagas disponiveis
+  const [inscrito, setInscrito] = useState(false);
+  const [codigoCentro, setcodigoCentro] = useState<GridRowId>(0);
+  const auth = useContext(AuthContext);
 
   const handleCellValueChange = (params:any) => {
     const updatedRows = listaDeAlunas.map((row:any) => {
@@ -167,28 +149,6 @@ export function CentroProdutivo() {
     setListaDeAlunas(updatedRows);
   };
 
-  const [open, setOpen] = useState(false)
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
-  const handleOpenConfirmation = () => setOpenConfirmation(true)
-  const handleCloseConfirmation = () => setOpenConfirmation(false)
-  const methods = useForm()
-  const [openConfirmation, setOpenConfirmation] = useState(false)
-  const [selectedCentro, setSelectedCentro] = useState(null)
-  const [Centro, setCentro] = useState(Object)
-  const [id, setId] = useState<GridRowId>(0)
-  const [openEdit, setOpenEdit] = useState(false);
-  const [dataTable, setDataTable] = useState(Array<Object>)
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = methods
-  const { role } = useContext(AuthContext);
-
-  const [openExportar, setOpenExportar] = useState(false);
-
   const handleOpenExportar = () => {
     setOpenExportar(true)
     console.log('Abrir tela de exportação')
@@ -197,63 +157,14 @@ export function CentroProdutivo() {
     setOpenExportar(false)
     console.log('Fechar tela de exportação')
   }
-  interface formData {
-    nome: string
-    comentario: string
-    frequencia: number
-    nota: number
-    qtdProduzida: number
-    qtdDesejada: number
-  }
-  const [formDataArray, setFormDataArray] = useState<formData[]>([])
 
-  const handleAddForm = () => {
-    setFormDataArray([...formDataArray, {} as formData])
-  }
-
-  const [openAgendar, setOpenAgendar] = useState(false)
-  const handleOpenAgendar = () => {
-    setOpenAgendar(true)
-    console.log('Abrir tela de agendamento')
-  }
-  const handleCloseAgendar = () => {
-    setOpenAgendar(false)
-    console.log('Fechar tela de agendamento')
-  }
-
-  // const registerNotaAluno = async (data: any) => {
-  //   const NotaAluno = {
-  //     nome: data.nome,
-  //     comentario: data.comentario,
-  //     frequencia: data.frequencia,
-  //     nota: data.frequencia,
-  //     qtdProduzida: data.qtdProduzida,
-  //     qtdDesejada: data.qtdDesejada,
-  //   } as NotaAlunoCadastrarDTO;
-
-  //   const response: any = await cadastrarNotaAluno(NotaAluno);
-
-  //   if (response.status === 201) {
-  //     setOpen(false);
-  //     queryClient.invalidateQueries("listar_NotaAluno");
-  //     toast.success("Nota do aluno cadastrada com sucesso!");
-  //   }
-  // }
-
-  const carregarAlunasDoCentro= async (idDoCentro: any) => {
-    const response = await listarAlunasCentro(idDoCentro);
-    const temp: any[] = [];
-    response.data.forEach((value: any, index: number) => {
-      temp.push({
-        id: index,
-        nome_aluno: value.nome,
-        login: value.login,
-        confirmado: value.confirmado,
-        centroId: value.status,
-      });
-    });
-    setListaDeAlunas(temp);
-  };
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = methods;
+  const { role } = useContext(AuthContext);
 
   const salvarDadosRelatorio = async(dadosAlunas:any)=>{
     const response = await gerarRelatorio(dadosAlunas);
@@ -269,94 +180,340 @@ export function CentroProdutivo() {
   }
 
   const registerCentro = async (data: any) => {
-    const dataFormatada = transformDate(data.data_agendada)
+    const dataFormatada = transformDate(data.data_agendada);
     const centro = {
       data_agendada: dataFormatada,
       descricao: data.descricao,
       status: data.status,
       turno: data.turno,
-    } as CentrosCadastrarDTO
-    console.log(data)
+      vagas: data.vagasRestantes,
+      vagasRestantes:data.data.vagasRestantes,
+    } as CentrosCadastrarDTO;
+    console.log(data);
     const response = await cadastrarCentro(centro);
 
     if (response.status === 201) {
-      setOpen(false)
-      queryClient.invalidateQueries('listar_centro')
-      toast.success('Centro cadastrado com sucesso!')
+      setOpen(false);
+      queryClient.invalidateQueries("listar_centro");
+      toast.success("Centro cadastrado com sucesso!");
     } else {
-      toast.error('Campos inválidos')
+      toast.error("Campos inválidos");
     }
-  }
+  };
 
-  useQuery('listar_centro', async () => {
-    const response = await listarCentro()
+  useQuery("listar_centro", async () => {
+    const response = await listarCentro();
+    const vagasAtuais: VagasListarCentroDTO[] = [
+      {
+        vagasTotais: 0,
+        vagasDisponiveis: 0,
+      },
+    ];
 
-    const temp: CentrosListarDTO[] = []
+    const temp: CentrosListarDTO[] = [];
     response.data.forEach((value: CentrosListarDTO, index: number) => {
-      console.log(value)
       temp.push({
-        id: value.id,
+        id: index,
+        idCentro: value.id,
         data_agendada: value.data_agendada,
         descricao: value.descricao,
         status: value.status,
         turno: value.turno,
-      })
-    })
-    setDataTable(temp)
-  })
+        vagasRestantes: value.vagasRestantes,
+      });
+      vagasAtuais[index] = {
+        vagasTotais: value.vagasRestantes,
+        vagasDisponiveis: value.vagasRestantes,
+      };
+    });
+    setVagas(vagasAtuais);
+    setDataTable(temp);
+  });
+
+  const fazInscricao = async (centroProd: CentrosListarDTO) => {
+    // Verifique se ainda há vagas disponíveis
+    // console.log("O que chegou aqui" + centroProd.idCentro);
+    console.log("O que chegou aqui", centroProd);
+    console.log("Login Aluno: ", auth);
+    if (centroProd.vagasRestantes > 0) {
+      const response = await inscreveAlunaCentro(
+        centroProd.idCentro,
+        auth.user?.email
+      );
+      console.log(response);
+      if (response.status === 201) {
+        toast.success("Você foi cadastrada com sucesso!");
+        await queryClient.invalidateQueries("listar_centro");
+      } else {
+        toast.warning("Você já está cadastrado!");
+      }
+    }
+  };
+
+  const alteraAgendamento = async (centroProd: CentrosListarDTO) => {
+    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 1)) {
+      const centroEditado = {
+        id: centroProd.idCentro,
+        data_agendada: centroProd.data_agendada,
+        descricao: centroProd.descricao,
+        status: 2,
+        turno: centroProd.turno,
+        vagas: centroProd.vagasRestantes,
+      };
+      console.log(centroEditado);
+      const response = await editarCentro(
+        centroEditado.id.toString(),
+        centroEditado
+      );
+      if (response.status === 201) {
+        toast.success("Centro Desagendado com sucesso!");
+        await queryClient.invalidateQueries("listar_centro");
+      } else {
+        toast.warning("Não foi possivel Desagendar esse Centro");
+      }
+    }
+    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 2)) {
+      const centroEditado = {
+        id: centroProd.idCentro,
+        data_agendada: centroProd.data_agendada,
+        descricao: centroProd.descricao,
+        status: 1,
+        turno: centroProd.turno,
+        vagas: centroProd.vagasRestantes,
+      };
+      console.log(centroEditado.vagas);
+      const response = await editarCentro(
+        centroEditado.id.toString(),
+        centroEditado
+      );
+      if (response.status === 201) {
+        toast.success("Centro Agendado com sucesso!");
+        await queryClient.invalidateQueries("listar_centro");
+      } else {
+        toast.warning("Não foi possivel Agendar esse Centro");
+      }
+    } 
+  };
 
   const deletarCentro = async () => {
-    const response = await excluirCentro(id.toString())
+    const response = await excluirCentro(id.toString());
 
     if (response.status === 204) {
-      toast.success('Centro excluído com sucesso!')
-    } else {
-      toast.error('Erro ao excluir urso')
+      toast.success("Centro excluído com sucesso!");
+    } else{
+      toast.error("O centro produtivo não pode ser excluído, pois tem alunas cadastradas.");
     }
 
-    handleCloseConfirmation()
-    await queryClient.invalidateQueries('listar_centro')
-  }
+    handleCloseConfirmation();
+    await queryClient.invalidateQueries("listar_centro");
+  };
+
+  const carregarAlunasDoCentro= async (idDoCentro: any) => {
+    const response = await listarAlunasCentro(idDoCentro);
+    const temp: any[] = [];
+    response.data.forEach((value: any, index: number) => {
+
+      temp.push({
+        id: index,
+        nome_aluno: value.nome,
+        login: value.login,
+        confirmado: value.confirmado,
+        centroId: value.status,
+      });
+      console.log(temp);
+    });
+    setListaDeAlunas(temp);
+  };
+
   const carregarCentro = async (id: any) => {
+    console.log("o id q chegou: "+id);
     const response = dataTable.find((element: any) => {
-      if (element.id === id) {
+      if (element.idCentro === id) {
         return element
       }
     })
-    const centro = response as CentrosListarDTO
+    const centro = response as CentrosListarDTO;
     setCentro(centro)
-    console.log("Carregando o centro: "+centro.id);
-    setValue('idEdit', centro.id)
+    console.log("Carregando o centro: "+centro);
+    setValue('idEdit', centro.idCentro)
+    setValue('vagasEdit', centro.vagasRestantes);
     setValue('data_agendadaEdit', centro.data_agendada)
     setValue('descricaoEdit', centro.descricao)
     setValue('statusEdit', centro.status)
     setValue('turnoEdit', centro.turno)
-    carregarAlunasDoCentro(centro.id);
   }
 
   const editCentro = async (data: any) => {
     const centroEditado = {
-      id: Centro.id,
+      id: Centro.idCentro,
       data_agendada: data.data_agendadaEdit,
       descricao: data.descricaoEdit,
       status: data.statusEdit,
       turno: data.turnoEdit,
-    }
+      vagas: data.vagasEdit,
+    };
+    console.log(centroEditado);
 
     const response = await editarCentro(
       centroEditado.id.toString(),
       centroEditado
-    )
+    );
     if (response.status === 201) {
       try {
-        await queryClient.invalidateQueries('listar_centro')
-        setOpenEdit(false)
-        toast.success('Centro editado com sucesso!')
+        await queryClient.invalidateQueries("listar_centro");
+        setOpenEdit(false);
+        toast.success("Centro editado com sucesso!");
       } catch (error) {
-        toast.error('Campos inválidos')
+        toast.error("Campos inválidos");
       }
     }
-  }
+  };
+
+  const columnsTableCentros = [
+    {
+      field: "actions",
+      headerName: "Ações",
+      type: "actions",
+      flex: 4,
+      hide: role === "student",
+      getActions: (params: any) => [
+        <IconButton
+          id="meu-grid-actions-cell-item"
+          data-testid="teste-editar"
+          onClick={async () => {
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            
+            carregarCentro((selectedRow as any).idCentro);
+            setOpenEdit(true);
+          }}
+        >
+          <AiFillEdit size={20} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+
+        <IconButton
+          data-testid="teste-excluir"
+          onClick={() => {
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            setId((selectedRow as any).idCentro);
+            handleOpenConfirmation();
+          }}
+        >
+          <BsFillTrashFill size={18} />
+          <Typography variant="body2"></Typography>
+        </IconButton>,
+      ],
+    },
+    { field: "idCentro", headerName: "Centro Produtivo", flex: 2 },
+    { field: "descricao", headerName: "Descrição", flex: 2 },
+    { field: "data_agendada", headerName: "Data de Alocação", flex: 2 },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 2,
+      valueGetter: (params:any) => {
+      if(params.row.vagasRestantes <=0){
+        return "Ocupado";
+      }else {
+        switch (params.row.status){
+          case 1:
+            return "Disponível";
+            case 2 :
+              return "Ocupado";
+              default:
+                return "";
+              }
+            }         
+          }, 
+      },
+    {
+      field: "turno",
+      headerName: "Turno",
+      flex: 2,
+      valueGetter: (params:any) => {
+        switch (params.row.turno) {
+          case 1:
+            return "Matutino";
+          case 2:
+            return "Vespertino";
+          case 3:
+            return "Noturno";
+          case 4:
+          return "Diurno";
+          default:
+            return "";
+        }
+      },
+    },
+    { field: "vagasRestantes", headerName: "Vagas", flex: 2 },
+    role === "student" && {
+      field: "inscricao",
+      headerName: "Inscrições",
+      type: "actions",
+      flex: 2,
+      getActions: (params:any) => [
+        <div>
+          {vaga[Number(params.id)]?.vagasDisponiveis &&
+          vaga[Number(params.id)].vagasDisponiveis >= 1 &&
+          params.row.status === 1 &&
+          role === "student" ? (
+            <ActionButton
+              text="Inscrever-me"
+                handleClick={() => {
+                  fazInscricao(params.row);
+                }}
+            />
+          ) : (
+            <></>
+          )}
+        </div>,
+      ],
+    },
+    role === "supervisor" && {
+      field: "Agendar",
+      headerName: "Agendar",
+      type: "actions",
+      flex: 4,
+      getActions: (params: {row: any; id: GridRowId }) => [
+        <ActionButton
+          key={params.id}
+          text={'Exportar'}
+          
+          handleClick={() => {
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            console.log("A linha selecionada: "+(selectedRow as any).idCentro);
+            if (selectedRow) {
+              //carregarCentro((selectedRow as any).idCentro);
+              carregarAlunasDoCentro((selectedRow as any).idCentro);
+              handleOpenExportar();
+            }
+            //queryClient.invalidateQueries('listar_alunas_cadastradas');
+            
+          }}
+      ></ActionButton>,
+        <div>
+          {vaga[Number(params.id)]?.vagasDisponiveis &&
+          vaga[Number(params.id)].vagasDisponiveis >= 1 &&
+          params.row.status === 1 &&
+          role === "supervisor" ?(
+            <ActionButton
+              text="Desagendar"
+              handleClick={() => {
+                alteraAgendamento(params.row);
+              }}
+            />
+          ) : vaga[Number(params.id)].vagasDisponiveis >= 1 && params.row.status === 2 ? (
+            <ActionButton
+              text="Agendar"
+              handleClick={() => {
+                alteraAgendamento(params.row);
+              }}
+            />
+          ) : null}
+        </div>,
+      ],
+    },
+  ].filter(Boolean);
 
   const columnsTableAlunasNoCentro = [
     { field: 'nome_aluno', headerName: 'Nome da Aluna', flex: 2 },
@@ -442,69 +599,19 @@ export function CentroProdutivo() {
     },
   ];
 
-  const columnsTableCentros = [
-    { field: 'id', headerName: 'Código', flex: 1 },
-    { field: 'descricao', headerName: 'Descrição', flex: 2 },
-    { field: 'data_agendada', headerName: 'Data de Alocação', flex: 2 },
-    { field: 'status', headerName: 'Status', flex: 1 },
-    { field: 'turno', headerName: 'Turno', flex: 1 },
-    {
-      field: 'actions',
-      headerName: 'Ações',
-      type: 'actions',
-      flex: 3,
-      getActions: (params: { id: GridRowId }) => [
-        <IconButton
-          key='editar'
-          id='meu-grid-actions-cell-item'
-          data-testid='teste-editar'
-          onClick={async () => {
-            carregarCentro(params.id)
-            setOpenEdit(true);
-          }}
-        >
-          <AiFillEdit size={20} />
-          <Typography variant='body2'></Typography>
-        </IconButton>,
-
-        <IconButton
-          key='excluir'
-          data-testid='teste-excluir'
-          onClick={() => {
-            setId(params.id)
-            handleOpenConfirmation()
-          }}
-        >
-          <BsFillTrashFill size={18} />
-          <Typography variant='body2'></Typography>
-        </IconButton>,
-        <ActionButton
-          key='agendar'
-          text={'Agendar'}
-          handleClick={handleOpenAgendar}
-        />,
-        <ActionButton
-          key='exportar'
-          text={'Exportar'}
-          handleClick={() => {
-            //queryClient.invalidateQueries('listar_alunas_cadastradas');
-            carregarCentro(params.id);
-            handleOpenExportar();
-          }}
-        ></ActionButton>,
-      ],
-    },
-  ]
 
   return (
     <Container>
-      {' '}
+      {" "}
       <Sidebar />
       <Content>
-        <Navbarlog text={'Centros Produtivos'} />
+        <Navbarlog text={"Centros Produtivos"} />
         <DivButtons>
-          {role !== 'student' ? (
-            <PrimaryButton text={'Cadastrar'} handleClick={handleOpen} />
+          {role !== "student" ? (
+            <ButtonAgendar
+              text={"Agendar nova Produção"}
+              handleClick={handleOpen}
+            />
           ) : (
             <></>
           )}
@@ -513,11 +620,11 @@ export function CentroProdutivo() {
         <Dialog
           open={openConfirmation}
           onClose={setOpenConfirmation}
-          aria-labelledby='alert-dialog-title'
-          aria-describedby='alert-dialog-description'
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id='alert-dialog-title'>
-            {'Você tem certeza que deseja excluir?'}
+          <DialogTitle id="alert-dialog-title">
+            {"Você tem certeza que deseja excluir?"}
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleCloseConfirmation}>Não</Button>
@@ -527,30 +634,37 @@ export function CentroProdutivo() {
           </DialogActions>
         </Dialog>
       </Content>
-
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <FormProvider {...methods}>
             <FormText>Preencha corretamente os dados cadastrais.</FormText>
             <Form onSubmit={handleSubmit(registerCentro)}>
               <TextField
-                id='outlined-descricao'
-                label='Descrição'
+                id="outlined-descricao"
+                label="Descrição"
                 required={true}
                 inputProps={{ maxLength: 500 }}
-                {...register('descricao')}
-                sx={{ width: '100%', background: '#F5F4FF' }}
+                {...register("descricao")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
+              <TextField
+                id="outlined-vagas"
+                label="Vagas"
+                required={true}
+                inputProps={{ maxLength: 500 }}
+                {...register("vagasRestantes")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
               />
               <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label' required={true}>
+                <InputLabel id="demo-simple-select-label" required={true}>
                   Status
                 </InputLabel>
                 <Select
-                  id='simple-select-label-status'
-                  labelId='simple-select-status'
-                  label='Status'
-                  {...register('status')}
-                  sx={{ width: '100%', background: '#F5F4FF' }}
+                  id="simple-select-label-status"
+                  labelId="simple-select-status"
+                  label="Status"
+                  {...register("status")}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
                 >
                   <MenuItem value={1 as any}>Disponível</MenuItem>
                   <MenuItem value={2 as any}>Ocupado</MenuItem>
@@ -558,15 +672,15 @@ export function CentroProdutivo() {
               </FormControl>
 
               <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label' required={true}>
+                <InputLabel id="demo-simple-select-label" required={true}>
                   Turno
                 </InputLabel>
                 <Select
-                  id='simple-select-label-turno'
-                  labelId='simple-select-turno'
-                  label='Turno'
-                  {...register('turno')}
-                  sx={{ width: '100%', background: '#F5F4FF' }}
+                  id="simple-select-label-turno"
+                  labelId="simple-select-turno"
+                  label="Turno"
+                  {...register("turno")}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
                 >
                   <MenuItem value={1 as any}>Matutino</MenuItem>
                   <MenuItem value={2 as any}>Vespertino</MenuItem>
@@ -575,19 +689,19 @@ export function CentroProdutivo() {
                 </Select>
               </FormControl>
 
-              <ValueMask label='data_agendada' />
+              <ValueMask label="data_agendada" />
 
-              <PrimaryButton text={'Confirmar'} />
+              <PrimaryButton text={"Confirmar"} />
             </Form>
           </FormProvider>
         </Box>
       </Modal>
       <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
-          <Box sx={style}>
+        <Box sx={style}>
           <FormProvider {...methods}>
             <FormText>Altere os dados cadastrados</FormText>
             <Form onSubmit={handleSubmit(editCentro)}>
-            <TextField
+              <TextField
                 id="outlined-codigo"
                 label="Código"
                 required={true}
@@ -603,13 +717,22 @@ export function CentroProdutivo() {
                 {...register("descricaoEdit")}
                 sx={{ width: "100%", background: "#F5F4FF" }}
               />
+              <TextField
+                id="outlined-vagas"
+                label="Vagas"
+                required={true}
+                inputProps={{ maxLength: 170 }}
+                {...register("vagasEdit")}
+                sx={{ width: "100%", background: "#F5F4FF" }}
+              />
               <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label" required={true}>
+                <InputLabel id="demo-simple-select-label" required={true}>
                   Status
                 </InputLabel>
                 <Select
                   id="simple-select-label-status"
                   labelId="simple-select-status"
+                  defaultValue={Centro.status}
                   label="Status"
                   {...register("statusEdit")}
                   sx={{ width: "100%", background: "#F5F4FF" }}
@@ -617,33 +740,33 @@ export function CentroProdutivo() {
                   <MenuItem value={1 as any}>Disponível</MenuItem>
                   <MenuItem value={2 as any}>Ocupado</MenuItem>
                 </Select>
-
               </FormControl>
 
               <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label" required={true}>
-                    Turno
-                  </InputLabel>
-                  <Select
-                    id="simple-select-label-turno"
-                    labelId="simple-select-turno"
-                    label="Turno"
-                    {...register("turnoEdit")}
-                    sx={{ width: "100%", background: "#F5F4FF" }}
-                  >
-                    <MenuItem value={1 as any}>Matutino</MenuItem>
-                    <MenuItem value={2 as any}>Vespertino</MenuItem>
-                    <MenuItem value={3 as any}>Noturno</MenuItem>
-                    <MenuItem value={4 as any}>Diurno</MenuItem>
-                  </Select>
-                </FormControl>
+                <InputLabel id="demo-simple-select-label" required={true}>
+                  Turno
+                </InputLabel>
+                <Select
+                  id="simple-select-label-turno"
+                  labelId="simple-select-turno"
+                  label="Turno"
+                  defaultValue={Centro.turno}
+                  {...register("turnoEdit")}
+                  sx={{ width: "100%", background: "#F5F4FF" }}
+                >
+                  <MenuItem value={1 as any}>Matutino</MenuItem>
+                  <MenuItem value={2 as any}>Vespertino</MenuItem>
+                  <MenuItem value={3 as any}>Noturno</MenuItem>
+                  <MenuItem value={4 as any}>Diurno</MenuItem>
+                </Select>
+              </FormControl>
 
-                <ValueMask label="data_agendadaEdit" />
+              <ValueMask label="data_agendadaEdit" />
 
               <PrimaryButton text={"Editar"} />
             </Form>
-            </FormProvider>
-          </Box>
+          </FormProvider>
+        </Box>
       </Modal>
       <Modal open={openExportar} onClose={() => setOpenExportar(false)}>
       <Box sx={style} style={{ width: 900 }}>
@@ -698,5 +821,5 @@ export function CentroProdutivo() {
         </Box>
       </Modal>
     </Container>
-  )
+  );
 }

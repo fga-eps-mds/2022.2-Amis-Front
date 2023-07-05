@@ -15,6 +15,13 @@ export const listarCurso = async () => {
     .catch((error) => error);
 };
 
+export const listarCursoPorId = async (cursoId: string) => {
+  return await apiClassroom
+    .get("/curso/" + cursoId)
+    .then((response) => response)
+    .catch((error) => error);
+};
+
 export const editarCurso = async (cursoId: string, curso: Object) => {
   return await apiClassroom
     .put("/curso/" + cursoId, curso)

@@ -57,3 +57,13 @@ export const gerarRelatorio = async (payload: any) => {
     .then((response) => response)
     .catch((error) => error);
 };
+
+export const inscreveAlunaCentro = async (
+  idCentroProd: string,
+  idAluna: string
+) => {
+  return await apiProduction
+    .post(`/centro/${idCentroProd}/inscrever/${idAluna}`)
+    .then((response) => response)
+    .catch((error) => error);
+};

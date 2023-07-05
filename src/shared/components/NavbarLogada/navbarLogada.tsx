@@ -67,13 +67,13 @@ export function Navbarlog({ text }: TitleProps) {
   return (
     <DivNavbar>
       <Title> {text} </Title>
-      <DivUser>
+      {/* <DivUser>
         <DivUserName>
           <UserName>JOSÉ MARIA</UserName>
           <UserFunction>Admin</UserFunction>
         </DivUserName>
         <UserImage />
-      </DivUser>
+      </DivUser> */}
     </DivNavbar>
   );
 }
