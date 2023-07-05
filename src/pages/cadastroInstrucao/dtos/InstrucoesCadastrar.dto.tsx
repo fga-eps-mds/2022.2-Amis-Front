@@ -1,6 +1,6 @@
 export interface InstrucoesCadastrarDTO {
   nome: string;
-  idCurso: number;
+  idCurso: string;
   descricao: string;
   dataCadastro: string;
 }
