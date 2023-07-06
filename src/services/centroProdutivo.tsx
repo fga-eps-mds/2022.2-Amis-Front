@@ -18,6 +18,7 @@ export const listarCentro = async () => {
 };
 
 export const editarCentro = async (CentroId: string, Centro: Object) => {
+  console.log(Centro)
   return await apiProduction
     .put("/centro/" + CentroId, Centro)
     .then((response) => response)

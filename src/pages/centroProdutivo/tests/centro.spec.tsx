@@ -20,6 +20,8 @@ import {
   const excluiCentroSpy = jest.spyOn(centrosService, 'excluirCentro');
   const inscreveAlunaCentro = jest.spyOn(centrosService, 'inscreveAlunaCentro');
 
+  const inscreveAlunaCentro = jest.spyOn(centrosService, 'inscreveAlunaCentro');
+
   jest.mock('react-toastify', () => ({
   toast: {
       success: jest.fn(),

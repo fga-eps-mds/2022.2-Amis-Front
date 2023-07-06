@@ -162,6 +162,7 @@ export function CentroProdutivo() {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = methods;
   const { role } = useContext(AuthContext);
@@ -181,21 +182,21 @@ export function CentroProdutivo() {
 
   const registerCentro = async (data: any) => {
     const dataFormatada = transformDate(data.data_agendada);
+    console.log(data)
     const centro = {
       data_agendada: dataFormatada,
       descricao: data.descricao,
       status: data.status,
       turno: data.turno,
       vagas: data.vagasRestantes,
-      vagasRestantes:data.data.vagasRestantes,
     } as CentrosCadastrarDTO;
-    console.log(data);
     const response = await cadastrarCentro(centro);
 
     if (response.status === 201) {
       setOpen(false);
       queryClient.invalidateQueries("listar_centro");
       toast.success("Centro cadastrado com sucesso!");
+      reset();
     } else {
       toast.error("Campos inválidos");
     }
@@ -221,6 +222,10 @@ export function CentroProdutivo() {
         turno: value.turno,
         vagasRestantes: value.vagasRestantes,
       });
+      vagasAtuais[index] = {
+        vagasTotais: value.vagasRestantes,
+        vagasDisponiveis: value.vagasRestantes,
+      };
       vagasAtuais[index] = {
         vagasTotais: value.vagasRestantes,
         vagasDisponiveis: value.vagasRestantes,
@@ -251,7 +256,7 @@ export function CentroProdutivo() {
   };
 
   const alteraAgendamento = async (centroProd: CentrosListarDTO) => {
-    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 1)) {
+    if ((centroProd.vagasRestantes > 0) && (centroProd.status == 1)) {
       const centroEditado = {
         id: centroProd.idCentro,
         data_agendada: centroProd.data_agendada,
@@ -272,7 +277,7 @@ export function CentroProdutivo() {
         toast.warning("Não foi possivel Desagendar esse Centro");
       }
     }
-    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 2)) {
+    if ((centroProd.vagasRestantes > 0) && (centroProd.status == 2)) {
       const centroEditado = {
         id: centroProd.idCentro,
         data_agendada: centroProd.data_agendada,
@@ -609,7 +614,7 @@ export function CentroProdutivo() {
         <DivButtons>
           {role !== "student" ? (
             <ButtonAgendar
-              text={"Agendar nova Produção"}
+              text={"Agendar nova produção"}
               handleClick={handleOpen}
             />
           ) : (
