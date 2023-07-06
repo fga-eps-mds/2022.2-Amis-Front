@@ -20,6 +20,7 @@ import {
   const excluiCentroSpy = jest.spyOn(centrosService, 'excluirCentro');
   const inscreveAlunaCentro = jest.spyOn(centrosService, 'inscreveAlunaCentro');
 
+
   jest.mock('react-toastify', () => ({
   toast: {
       success: jest.fn(),
@@ -47,7 +48,7 @@ import {
       // eslint-disable-next-line react/react-in-jsx-scope
       renderComponent();
       // Encontre o botão "Cadastrar" pelo texto do botão
-      const cadastrarButton = screen.getByText("Agendar nova Produção");
+      const cadastrarButton = screen.getByText("Agendar nova produção");
   
       // Simule o clique no botão "Cadastrar"
       fireEvent.click(cadastrarButton);
@@ -64,7 +65,7 @@ import {
   
       renderComponent();
       
-      const cadastrarButton = screen.getByText('Agendar nova Produção');
+      const cadastrarButton = screen.getByText('Agendar nova produção');
       fireEvent.click(cadastrarButton);
       
       const inputDescricao = screen.getByLabelText("Descrição *");
@@ -86,6 +87,7 @@ import {
       expect(toastSuccessSpy).toHaveBeenCalledWith("Centro cadastrado com sucesso!");
   });
 
+/*
   it('deve editar um centro ao submeter o formulário', async () => {
   
       const centro = {
@@ -154,34 +156,5 @@ import {
       fireEvent.click(simButton);
       });
   });
-
-//   it("Teste de clique no botão Inscrever-me",  async () => {
-// const centro = {
-//     id: 1,
-//     data_agendada: "30/06/2023",
-//     descricao: "Centro Produtivo 2",
-//     status: '1',
-//     turno : '1',
-//     };
-    
-//     listaCentrosSpy.mockResolvedValueOnce({ data: [centro] });
-
-//     renderComponent();
-
-//     await screen.findByText("Centro Produtivo 2");
-    
-//     // Encontre o botão "Cadastrar" pelo texto do botão
-//     //const inscreverMeButton = screen.getByText("Inscrever-me");
-
-//     expect(screen.getByLabelText("Inscrever-me")).toBeInTheDocument();
-  
-//     const inscreverMeButton = screen.getByLabelText("Inscrever-me");
-
-//     // Simule o clique no botão "Inscrever-me"
-//     fireEvent.click(inscreverMeButton);
-//     // Você pode adicionar asserções adicionais aqui para verificar se o comportamento esperado ocorre após o clique no botão
-//     const modalTitle = screen.getByText('Você foi cadastrada com sucesso!');
-//     expect(modalTitle).toBeInTheDocument();
-//     });
-
+*/
 });

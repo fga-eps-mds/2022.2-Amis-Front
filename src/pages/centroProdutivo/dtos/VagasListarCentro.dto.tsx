@@ -1,6 +1,5 @@
 export interface VagasListarCentroDTO {
-    vagasTotais: number;
-    vagasDisponiveis: number;
-    vagasRestantes: number; 
-  }
-  
+  vagasTotais: number;
+  vagasDisponiveis: number;
+  //vagasRestantes: number; 
+}

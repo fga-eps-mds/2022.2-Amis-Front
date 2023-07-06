@@ -3,5 +3,5 @@ export interface CentrosCadastrarDTO {
     descricao: string;
     status: boolean;
     turno : number;
-    vagasRestantes: number;
+    vagas: number;
   }

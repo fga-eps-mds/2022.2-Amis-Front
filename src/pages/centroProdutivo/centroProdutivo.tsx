@@ -14,10 +14,18 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from "@mui/material";
+  TableContainer,
+  Table,
+  Paper,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from '@mui/material';
 // import { AuthContext, Roles } from "../../../context/AuthProvider";
 import { Roles } from "../../context/AuthProvider";
-import { GridActionsCellItem, GridRowId } from "@mui/x-data-grid";
+import { GridActionsCellItem, GridRowId, DataGrid } from "@mui/x-data-grid";
+import ActionButton from '../../shared/components/ActionButton/ActionButton'
 import { useState, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { AiFillEdit } from "react-icons/ai";
@@ -31,6 +39,8 @@ import {
   inscreveAlunaCentro,
   excluirCentro,
   listarCentro,
+  listarAlunasCentro,
+  gerarRelatorio,
 } from "../../services/centroProdutivo";
 import { queryClient } from "../../services/queryClient";
 import Navbarlog from "../../shared/components/NavbarLogada/navbarLogada";
@@ -108,7 +118,9 @@ const style = {
 };
 
 export function CentroProdutivo() {
+  const [listaDeAlunas, setListaDeAlunas] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
+  const [openExportar, setOpenExportar] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleOpenConfirmation = () => setOpenConfirmation(true);
@@ -126,16 +138,51 @@ export function CentroProdutivo() {
   const [codigoCentro, setcodigoCentro] = useState<GridRowId>(0);
   const auth = useContext(AuthContext);
 
+  const handleCellValueChange = (params:any) => {
+    const updatedRows = listaDeAlunas.map((row:any) => {
+      if (row.id === params.id) {
+        return { ...row, [params.field]: params.value };
+      }
+      return row;
+    });
+
+    setListaDeAlunas(updatedRows);
+  };
+
+  const handleOpenExportar = () => {
+    setOpenExportar(true)
+    console.log('Abrir tela de exportação')
+  }
+  const handleCloseExportar = () => {
+    setOpenExportar(false)
+    console.log('Fechar tela de exportação')
+  }
+
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = methods;
   const { role } = useContext(AuthContext);
 
+  const salvarDadosRelatorio = async(dadosAlunas:any)=>{
+    const response = await gerarRelatorio(dadosAlunas);
+
+    if (response.status === 201) {
+      //setOpen(false)
+      //queryClient.invalidateQueries('listar_centro')
+      toast.success('Dados do relatorio salvos com sucesso!')
+    } else {
+      toast.error('Campos inválidos')
+    }
+
+  }
+
   const registerCentro = async (data: any) => {
     const dataFormatada = transformDate(data.data_agendada);
+    console.log(data)
     const centro = {
       data_agendada: dataFormatada,
       descricao: data.descricao,
@@ -143,13 +190,13 @@ export function CentroProdutivo() {
       turno: data.turno,
       vagas: data.vagasRestantes,
     } as CentrosCadastrarDTO;
-    console.log(data);
     const response = await cadastrarCentro(centro);
 
     if (response.status === 201) {
       setOpen(false);
       queryClient.invalidateQueries("listar_centro");
       toast.success("Centro cadastrado com sucesso!");
+      reset();
     } else {
       toast.error("Campos inválidos");
     }
@@ -175,6 +222,10 @@ export function CentroProdutivo() {
         turno: value.turno,
         vagasRestantes: value.vagasRestantes,
       });
+      vagasAtuais[index] = {
+        vagasTotais: value.vagasRestantes,
+        vagasDisponiveis: value.vagasRestantes,
+      };
       vagasAtuais[index] = {
         vagasTotais: value.vagasRestantes,
         vagasDisponiveis: value.vagasRestantes,
@@ -205,7 +256,7 @@ export function CentroProdutivo() {
   };
 
   const alteraAgendamento = async (centroProd: CentrosListarDTO) => {
-    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 1)) {
+    if ((centroProd.vagasRestantes > 0) && (centroProd.status == 1)) {
       const centroEditado = {
         id: centroProd.idCentro,
         data_agendada: centroProd.data_agendada,
@@ -226,7 +277,7 @@ export function CentroProdutivo() {
         toast.warning("Não foi possivel Desagendar esse Centro");
       }
     }
-    if ((centroProd.vagasRestantes > 0) & (centroProd.status == 2)) {
+    if ((centroProd.vagasRestantes > 0) && (centroProd.status == 2)) {
       const centroEditado = {
         id: centroProd.idCentro,
         data_agendada: centroProd.data_agendada,
@@ -235,7 +286,7 @@ export function CentroProdutivo() {
         turno: centroProd.turno,
         vagas: centroProd.vagasRestantes,
       };
-      console.log(centroEditado);
+      console.log(centroEditado.vagas);
       const response = await editarCentro(
         centroEditado.id.toString(),
         centroEditado
@@ -254,32 +305,48 @@ export function CentroProdutivo() {
 
     if (response.status === 204) {
       toast.success("Centro excluído com sucesso!");
-    } else {
-      toast.error("Erro ao excluir urso");
+    } else{
+      toast.error("O centro produtivo não pode ser excluído, pois tem alunas cadastradas.");
     }
 
     handleCloseConfirmation();
     await queryClient.invalidateQueries("listar_centro");
   };
 
-  const carregarCentro = async (id: any) => {
-    const response = dataTable.find((element: any) => {
-      if (element.id === id) {
-        return element;
-      }
+  const carregarAlunasDoCentro= async (idDoCentro: any) => {
+    const response = await listarAlunasCentro(idDoCentro);
+    const temp: any[] = [];
+    response.data.forEach((value: any, index: number) => {
+
+      temp.push({
+        id: index,
+        nome_aluno: value.nome,
+        login: value.login,
+        confirmado: value.confirmado,
+        centroId: value.status,
+      });
+      console.log(temp);
     });
-    const centro = response as CentrosListarDTO;
-
-    setValue("idEdit", centro.idCentro);
-    setValue("data_agendadaEdit", centro.data_agendada);
-    setValue("descricaoEdit", centro.descricao);
-    setValue("statusEdit", centro.status);
-    setValue("turnoEdit", centro.turno);
-    setValue("vagasEdit", centro.vagasRestantes);
-
-    setOpenEdit(true);
-    setCentro(centro);
+    setListaDeAlunas(temp);
   };
+
+  const carregarCentro = async (id: any) => {
+    console.log("o id q chegou: "+id);
+    const response = dataTable.find((element: any) => {
+      if (element.idCentro === id) {
+        return element
+      }
+    })
+    const centro = response as CentrosListarDTO;
+    setCentro(centro)
+    console.log("Carregando o centro: "+centro);
+    setValue('idEdit', centro.idCentro)
+    setValue('vagasEdit', centro.vagasRestantes);
+    setValue('data_agendadaEdit', centro.data_agendada)
+    setValue('descricaoEdit', centro.descricao)
+    setValue('statusEdit', centro.status)
+    setValue('turnoEdit', centro.turno)
+  }
 
   const editCentro = async (data: any) => {
     const centroEditado = {
@@ -290,6 +357,7 @@ export function CentroProdutivo() {
       turno: data.turnoEdit,
       vagas: data.vagasEdit,
     };
+    console.log(centroEditado);
 
     const response = await editarCentro(
       centroEditado.id.toString(),
@@ -311,14 +379,17 @@ export function CentroProdutivo() {
       field: "actions",
       headerName: "Ações",
       type: "actions",
-      flex: 3,
+      flex: 4,
       hide: role === "student",
-      getActions: (params: { id: GridRowId }) => [
+      getActions: (params: any) => [
         <IconButton
           id="meu-grid-actions-cell-item"
           data-testid="teste-editar"
           onClick={async () => {
-            carregarCentro(params.id);
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            
+            carregarCentro((selectedRow as any).idCentro);
+            setOpenEdit(true);
           }}
         >
           <AiFillEdit size={20} />
@@ -328,7 +399,8 @@ export function CentroProdutivo() {
         <IconButton
           data-testid="teste-excluir"
           onClick={() => {
-            setId(params.id);
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            setId((selectedRow as any).idCentro);
             handleOpenConfirmation();
           }}
         >
@@ -344,7 +416,7 @@ export function CentroProdutivo() {
       field: "status",
       headerName: "Status",
       flex: 2,
-      valueGetter: (params) => {
+      valueGetter: (params:any) => {
       if(params.row.vagasRestantes <=0){
         return "Ocupado";
       }else {
@@ -363,7 +435,7 @@ export function CentroProdutivo() {
       field: "turno",
       headerName: "Turno",
       flex: 2,
-      valueGetter: (params) => {
+      valueGetter: (params:any) => {
         switch (params.row.turno) {
           case 1:
             return "Matutino";
@@ -384,13 +456,13 @@ export function CentroProdutivo() {
       headerName: "Inscrições",
       type: "actions",
       flex: 2,
-      getActions: (params) => [
+      getActions: (params:any) => [
         <div>
           {vaga[Number(params.id)]?.vagasDisponiveis &&
           vaga[Number(params.id)].vagasDisponiveis >= 1 &&
           params.row.status === 1 &&
           role === "student" ? (
-            <PrimaryButton
+            <ActionButton
               text="Inscrever-me"
                 handleClick={() => {
                   fazInscricao(params.row);
@@ -406,21 +478,37 @@ export function CentroProdutivo() {
       field: "Agendar",
       headerName: "Agendar",
       type: "actions",
-      flex: 2,
-      getActions: (params) => [
+      flex: 4,
+      getActions: (params: {row: any; id: GridRowId }) => [
+        <ActionButton
+          key={params.id}
+          text={'Exportar'}
+          
+          handleClick={() => {
+            const selectedRow = dataTable.find((item) => (item as any).id === params.id);
+            console.log("A linha selecionada: "+(selectedRow as any).idCentro);
+            if (selectedRow) {
+              //carregarCentro((selectedRow as any).idCentro);
+              carregarAlunasDoCentro((selectedRow as any).idCentro);
+              handleOpenExportar();
+            }
+            //queryClient.invalidateQueries('listar_alunas_cadastradas');
+            
+          }}
+      ></ActionButton>,
         <div>
           {vaga[Number(params.id)]?.vagasDisponiveis &&
           vaga[Number(params.id)].vagasDisponiveis >= 1 &&
           params.row.status === 1 &&
           role === "supervisor" ?(
-            <PrimaryButton
+            <ActionButton
               text="Desagendar"
               handleClick={() => {
                 alteraAgendamento(params.row);
               }}
             />
           ) : vaga[Number(params.id)].vagasDisponiveis >= 1 && params.row.status === 2 ? (
-            <PrimaryButton
+            <ActionButton
               text="Agendar"
               handleClick={() => {
                 alteraAgendamento(params.row);
@@ -432,6 +520,91 @@ export function CentroProdutivo() {
     },
   ].filter(Boolean);
 
+  const columnsTableAlunasNoCentro = [
+    { field: 'nome_aluno', headerName: 'Nome da Aluna', flex: 2 },
+    {
+      field: 'comentario',
+      headerName: 'Comentario',
+      flex: 2,
+      renderCell: (params:any) => (
+        <TextField
+          //value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'comentario', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'status',
+      headerName: 'Frequencia',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          //value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'status', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'nota',
+      headerName: 'Nota',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          //value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'nota', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'quantidade_produzida',
+      headerName: 'Qtd Produzida',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          //value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'quantidade_produzida', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'quantidade_desejada',
+      headerName: 'Qtd Desejada',
+      flex: 1,
+      renderCell: (params:any) => (
+        <TextField
+          //value={params.value}
+          onChange={(e) => {
+            handleCellValueChange({ id: params.row.id, field: 'quantidade_desejada', value: e.target.value });
+          }}
+          fullWidth
+          variant="outlined"
+          size="small"
+        />
+      ),
+    },
+  ];
+
+
   return (
     <Container>
       {" "}
@@ -441,7 +614,7 @@ export function CentroProdutivo() {
         <DivButtons>
           {role !== "student" ? (
             <ButtonAgendar
-              text={"Agendar nova Produção"}
+              text={"Agendar nova produção"}
               handleClick={handleOpen}
             />
           ) : (
@@ -597,6 +770,58 @@ export function CentroProdutivo() {
 
               <PrimaryButton text={"Editar"} />
             </Form>
+          </FormProvider>
+        </Box>
+      </Modal>
+      <Modal open={openExportar} onClose={() => setOpenExportar(false)}>
+      <Box sx={style} style={{ width: 900 }}>
+          <FormProvider {...methods}>
+            <FormText
+              style={{ textAlign: "center", fontWeight: "bold", fontSize: 30 }}
+            >
+              Relatório da Produção.
+            </FormText>
+            <div
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                marginBottom: 50,
+              }}
+            >
+              <TableContainer
+                component={Paper}
+                style={{ width: 280, justifyContent: "center" }}
+              >
+                <Table
+                  sx={{ minWidth: 50, width: 280, whiteSpace: "nowrap" }}
+                  aria-label="simple table"
+                >
+                </Table>
+              </TableContainer>
+            </div>
+            {/* { TABELA DE ALUNAS NO CENTRO} */}
+            {
+              <DataGrid
+              rows={listaDeAlunas}
+              columns={columnsTableAlunasNoCentro}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+            />
+            }
+            <div
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                marginTop: 20,
+              }}
+            >
+              <PrimaryButton
+                text={"Exportar PDF"}
+                handleClick={() => {salvarDadosRelatorio(listaDeAlunas)
+                handleCloseExportar();}}
+                //handleClick={() => console.log(listaDeAlunas[0].status)}
+              />
+            </div>
           </FormProvider>
         </Box>
       </Modal>

@@ -7,7 +7,7 @@
     "dev": "vite -- --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "jest -i",
     "test:cov": "jest --ci --coverage --testLocationInResults"
   },
   "dependencies": {
