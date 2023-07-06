@@ -228,7 +228,7 @@ export function Turmas(this: any) {
     turma.data_inicio = transformDate(turma.data_inicio);
     turma.data_fim = transformDate(turma.data_fim);
 
-     //console.log(turma);
+    // console.log(turma);
     turma.fk_curso = Math.round(turma.fk_curso);
     if (!Number.isInteger(turma.fk_curso)) {
       toast.error("O curso deve ser um inteiro!");
@@ -425,7 +425,7 @@ export function Turmas(this: any) {
           icon={<BsFillPersonDashFill size={18} />}
           label="Desmatricular aluna da turma"
           onClick={async () => {
-            //console.log(dataTableAlunas[params.id as number].login);
+            // console.log(dataTableAlunas[params.id as number].login);
             console.log(alunasTurma[params.id as number].login);
             await listarIDAluna(alunasTurma[params.id as number].login);
             setId(alunasTurma[params.id as number].login);
@@ -447,9 +447,9 @@ export function Turmas(this: any) {
     status: string
   ): Promise<number> => {
     const response = await listarAlunasNaTurma(codigoTurma);
-    //if (response.status===404){
+    // if (response.status===404){
     console.log("o status:"+response.status);
-    //}
+    // }
     // console.log("Fui chamado:"+response.status);
     if (status == "false") {
       if (response.status === 200) {
@@ -527,12 +527,12 @@ export function Turmas(this: any) {
   });
 
   const listarIDAluna = (idDaAluna: string) => {
-    //console.log("O id da aluna no listar:"+idDaAluna);
+    // console.log("O id da aluna no listar:"+idDaAluna);
     setIdAluna(idDaAluna);
   };
 
   const listarVagas = async (codigoTurmaVagas: number) => {
-    //console.log("Passou aq");
+    // console.log("Passou aq");
     const response = await listarTurma(codigoTurmaVagas);
     const response2 = await consultaAlunasNaTurma(codigoTurmaVagas, "true");
     // console.log("codigo da turma no listarvagas"+codigoTurmaVagas);
